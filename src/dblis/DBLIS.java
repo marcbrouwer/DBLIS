@@ -28,12 +28,14 @@ public class DBLIS implements Runnable {
     
     private final long now = (new Date()).getTime() / 1000;
     private final String nowString = String.valueOf(now);
-     
+    
+    private final String geocode = "geocode:51.444,5.491,100km";
+    private final String countrycode = "country_code:NL";
     private final String search = "sport football";
     private final long blocks15 = 900;
     private final int hours = 2;
     private final int blocks = hours * 4;
-    private final long starttime = now - blocks * 900; //1429452000;
+    private final long starttime = 1429461000; //now - blocks * 900; //1429452000;
     private final int top = 5;
     private final int searches = 5;
     
@@ -82,6 +84,8 @@ public class DBLIS implements Runnable {
         
         System.out.println("\n\nFinal search - " + searched.toString() + "\n");
         printCommon(top);
+        
+        scanLocations();
     }
     
     /**
@@ -101,7 +105,7 @@ public class DBLIS implements Runnable {
         Twitter twitter = tf.getInstance();
         
         try {
-            Query query = new Query(search);
+            Query query = new Query(search + " " + geocode);
             query.setSinceId(starttime);
             //query.setUntil(now);
             QueryResult result;
@@ -288,6 +292,27 @@ public class DBLIS implements Runnable {
         };
         
         wordsFilter.addAll(Arrays.asList(filter));
+    }
+    
+    /**
+     * Scans through all tweets to check if a location is set (Geo or Place)
+     */
+    private void scanLocations() {
+        final List<Status> withLocation = new ArrayList<>();
+        tweets.stream().forEach(status -> {
+            if (status.getGeoLocation() != null || status.getPlace() != null) {
+                withLocation.add(status);
+            }
+        });
+        System.out.println("\n\nTweets with location " + withLocation.size() + ":");
+        withLocation.stream().forEach(status -> {
+            if (status.getGeoLocation() != null) {
+                System.out.println("Geo: " + status.getGeoLocation());
+            }
+            if (status.getPlace() != null) {
+                System.out.println("Place: " + status.getPlace());
+            }
+        });
     }
     
 }
