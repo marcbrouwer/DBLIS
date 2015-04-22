@@ -1,6 +1,8 @@
 package dblis;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
@@ -18,10 +20,16 @@ import java.util.stream.Stream;
 import twitter4j.HashtagEntity;
 import twitter4j.Query;
 import twitter4j.QueryResult;
+import twitter4j.StallWarning;
 import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.StatusListener;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
@@ -30,18 +38,26 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 public class DBLIS implements Runnable {
     
+    // Timestamp for now
     private final long now = (new Date()).getTime() / 1000;
     private final String nowString = String.valueOf(now);
     
+    // Search settings (CAN BE CHANGED)
     private final String geocode = "geocode:51.444,5.491,100km";
     private final String search = "sport football";
+    private final long starttime = 1429461000; //now - blocks * 900; //1429452000;
+    private final boolean useStream = true;
+    
+    // Search block size
     private final long blocks15 = 900;
     private final int hours = 2;
     private final int blocks = hours * 4;
-    private final long starttime = 1429461000; //now - blocks * 900; //1429452000;
+    
+    // Search setting for auto searching most commonly used hashtags or words
     private final int top = 5;
     private final int searches = 5;
     
+    // Data maps and sets
     private final Map<String, List<Status>> tweets;
     private final Map<String, Integer> countHashtags;
     private final Map<String, Integer> countWords;
@@ -49,15 +65,15 @@ public class DBLIS implements Runnable {
     private final Set<String> searched;
     private final Set<String> wordsFilter;
     
+    // Storage file paths and data seperator
     private final String tweetsStorePath = getWorkingDirectory() + "tweets.txt";
     private final String usersStorePath = getWorkingDirectory() + "users.txt";
     private final String dataSeperator = ";&;";
     
+    // Number of tweets loaded
     private int numberOfTweets = 0;
 
-    /**
-     * Constructor
-     */
+    /** Constructor */
     public DBLIS() {
         this.tweets = new HashMap();
         this.countHashtags = new HashMap();
@@ -77,6 +93,15 @@ public class DBLIS implements Runnable {
         
         System.out.println("Start time: " + (new Date(starttime * 1000)) + "\n");
         
+        if (useStream) {
+            try {
+                twitterStream(search, false);
+            } catch (IOException ex) {
+                System.out.println("Twitter Stream error - " + ex);
+            }
+            return;
+        }
+        
         getTweets(search);
         
         // Searches for most commonly used hashtags
@@ -91,11 +116,24 @@ public class DBLIS implements Runnable {
             getTweetsMostCommonHashTag();
         }
         
+        // Final output
         System.out.println("\n\nFinal search - " + searched.toString() + "\n");
         printCommon(top);
         
         //scanLocations();
         storeData();
+    }
+    
+    /** Gets configuration builder for authentication */
+    private Configuration getAuth() {
+        final ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true);
+        cb.setOAuthConsumerKey("n2g9XOjAr9p44yJwFjXUbeUa2");
+        cb.setOAuthConsumerSecret("57FHkBBptp17yBGl1v853lldZO9Kh4osJnDQqQEcXd4d9C3xFA");
+        cb.setOAuthAccessToken("113906448-2fx9njfJgzQrGdnRaGchI9GlZTzLMXrayEzFk2ju");
+        cb.setOAuthAccessTokenSecret("FJOqMt7dtBp1yuW2VnQDfzksa7IS5h3IxxsJ1ixBGI1ny");
+        
+        return cb.build();
     }
     
     /**
@@ -104,20 +142,12 @@ public class DBLIS implements Runnable {
      * @param search keyword to search
      */
     private void getTweets(String search) {
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true);
-        cb.setOAuthConsumerKey("n2g9XOjAr9p44yJwFjXUbeUa2");
-        cb.setOAuthConsumerSecret("57FHkBBptp17yBGl1v853lldZO9Kh4osJnDQqQEcXd4d9C3xFA");
-        cb.setOAuthAccessToken("113906448-2fx9njfJgzQrGdnRaGchI9GlZTzLMXrayEzFk2ju");
-        cb.setOAuthAccessTokenSecret("FJOqMt7dtBp1yuW2VnQDfzksa7IS5h3IxxsJ1ixBGI1ny");
-        
-        TwitterFactory tf = new TwitterFactory(cb.build());
+        TwitterFactory tf = new TwitterFactory(getAuth());
         Twitter twitter = tf.getInstance();
         
         try {
             Query query = new Query(search + " " + geocode);
             query.setSinceId(starttime);
-            //query.setUntil(now);
             QueryResult result;
             
             for (int i = 0; i < blocks; i++) {
@@ -132,20 +162,6 @@ public class DBLIS implements Runnable {
                 searched.add(search.toLowerCase());
                 query.setSinceId(starttime + i * blocks15);
             }
-            
-            //do {
-                /*result = twitter.search(query);
-                updateCommon(result.getTweets());
-                searched.add(search.toLowerCase());*/
-                /*List<Status> tweets = result.getTweets();
-                for (Status tweet : tweets) {
-                    System.out.println(
-                            "@" + tweet.getUser().getScreenName() + " - " + 
-                                    tweet.getText() + " - " +
-                                    tweet.getUser().getLocation() + " - " + 
-                                    tweet.getCreatedAt());
-                }*/
-            //} while ((query = result.nextQuery()) != null);
         } catch (TwitterException te) {
             System.out.println("Failed to search tweets: " + te);
             System.out.println("\nRetry at: " + 
@@ -155,8 +171,59 @@ public class DBLIS implements Runnable {
     }
     
     /**
-     * Gets the most commonly used hashtag for which is not yet searched
+     * Runs a twitter stream, continously retrieving tweets
+     * 
+     * @param search keyword(s) to search
+     * @param append determine whether to append file or start empty
+     * @throws IOException on IO error
      */
+    private void twitterStream(String search, boolean append) throws IOException {
+        final PrintWriter tweetsPrinter = new PrintWriter(
+                new BufferedWriter(new FileWriter(tweetsStorePath, append)));
+        final PrintWriter usersPrinter = new PrintWriter(
+                new BufferedWriter(new FileWriter(usersStorePath, append)));
+        
+        final StatusListener listener = new StatusListener() {
+            @Override
+            public void onStatus(Status status) {
+                System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
+                tweetsPrinter.println(new TweetEntity(dataSeperator, status, search));
+                usersPrinter.println(new UserEntity(dataSeperator, status.getUser()));
+            }
+
+            @Override
+            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+                //System.out.println("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
+            }
+
+            @Override
+            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+                //System.out.println("Got track limitation notice:" + numberOfLimitedStatuses);
+            }
+
+            @Override
+            public void onScrubGeo(long userId, long upToStatusId) {
+                //System.out.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
+            }
+
+            @Override
+            public void onStallWarning(StallWarning warning) {
+                //System.out.println("Got stall warning:" + warning);
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                ex.printStackTrace();
+            }
+        };
+        TwitterStream twitterStream = new TwitterStreamFactory(getAuth()).getInstance();
+        twitterStream.addListener(listener);
+        // sample() method internally creates a thread which manipulates 
+        // TwitterStream and calls these adequate listener methods continuously.
+        twitterStream.sample();
+    }
+    
+    /** Gets the most commonly used hashtag for which is not yet searched */
     private void getTweetsMostCommonHashTag() {
         final List<Entry<String, Integer>> list = 
                 getCommonList(countHashtags, countHashtags.size());
@@ -280,9 +347,7 @@ public class DBLIS implements Runnable {
         System.out.println();
     }
     
-    /**
-     * Adds words to {@code wordsFilter} such that they can be excluded
-     */
+    /** Adds words to {@code wordsFilter} such that they can be excluded */
     private void initWordsFilter() {
         final String[] filter = new String[]{
             "", "&", "-", "...", ":", 
@@ -309,9 +374,7 @@ public class DBLIS implements Runnable {
         wordsFilter.addAll(Arrays.asList(filter));
     }
     
-    /**
-     * Scans through all tweets to check if a location is set (Geo or Place)
-     */
+    /** Scans through all tweets to check if a location is set (Geo or Place) */
     private void scanLocations() {
         final List<Status> withLocation = new ArrayList<>();
         tweets.entrySet().stream().forEach(entry -> {
@@ -333,8 +396,10 @@ public class DBLIS implements Runnable {
         });
     }
     
-    /**
-     * Stores data to files
+    /** 
+     * Stores data to files 
+     * 
+     * @param clear write from a clear file if true, else appends file
      */
     private void storeData() {
         final File tweetsFile = new File(tweetsStorePath);
@@ -355,14 +420,14 @@ public class DBLIS implements Runnable {
 
         try {
             try (PrintWriter tweetWriter = new PrintWriter(tweetsFile)) {
-               tweetEntities.stream().forEach(entity -> {
-                   tweetWriter.println(entity.toString());
-               });
+                tweetEntities.stream().forEach(entity -> {
+                    tweetWriter.println(entity.toString());
+                });
             }
             try (PrintWriter userWriter = new PrintWriter(usersFile)) {
                 userEntities.stream().forEach(entity -> {
-                   userWriter.println(entity.toString());
-               });
+                    userWriter.println(entity.toString());
+                });
             }
         } catch (IOException ex) {
             System.out.println("DBLIS - storeData() - error storing data" + ex);

@@ -34,7 +34,7 @@ public class TweetEntity {
         this.id = status.getId();
         this.retweets = status.getRetweetCount();
         this.favourites = status.getFavoriteCount();
-        this.text = status.getText();
+        this.text = formatText(status.getText());
         this.time = status.getCreatedAt().getTime();
         this.country = countrycode;
         this.userId = status.getUser().getId();
@@ -47,11 +47,18 @@ public class TweetEntity {
         this.id = id;
         this.retweets = retweets;
         this.favourites = favourites;
-        this.text = text;
+        this.text = formatText(text);
         this.time = time;
         this.country = country;
         this.userId = userId;
         this.keywords = keywords;
+    }
+    
+    private String formatText(String text) {
+        text = text.replace("\n", " ");
+        text = text.replace("  ", " ");
+        
+        return text;
     }
     
     public final long getID() {

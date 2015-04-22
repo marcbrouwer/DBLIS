@@ -26,10 +26,17 @@ public class UserEntity {
             int followers, int favourites, int friends) {
         this.dataSeperator = dataSeperator;
         this.id = id;
-        this.name = name;
+        this.name = formatText(name);
         this.followers = followers;
         this.favourites = favourites;
         this.friends = friends;
+    }
+    
+    private String formatText(String text) {
+        text = text.replace("\n", " ");
+        text = text.replace("  ", " ");
+        
+        return text;
     }
     
     public final long getID() {
