@@ -1,5 +1,9 @@
 package dblis;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +34,6 @@ public class DBLIS implements Runnable {
     private final String nowString = String.valueOf(now);
     
     private final String geocode = "geocode:51.444,5.491,100km";
-    private final String countrycode = "country_code:NL";
     private final String search = "sport football";
     private final long blocks15 = 900;
     private final int hours = 2;
@@ -39,12 +42,16 @@ public class DBLIS implements Runnable {
     private final int top = 5;
     private final int searches = 5;
     
-    private final List<Status> tweets;
+    private final Map<String, List<Status>> tweets;
     private final Map<String, Integer> countHashtags;
     private final Map<String, Integer> countWords;
     private final Map<String, Integer> countLocation;
     private final Set<String> searched;
     private final Set<String> wordsFilter;
+    
+    private final String tweetsStorePath = getWorkingDirectory() + "tweets.txt";
+    private final String usersStorePath = getWorkingDirectory() + "users.txt";
+    private final String dataSeperator = ";&;";
     
     private int numberOfTweets = 0;
 
@@ -52,7 +59,7 @@ public class DBLIS implements Runnable {
      * Constructor
      */
     public DBLIS() {
-        this.tweets = new ArrayList<>();
+        this.tweets = new HashMap();
         this.countHashtags = new HashMap();
         this.countWords = new HashMap();
         this.countLocation = new HashMap();
@@ -72,11 +79,13 @@ public class DBLIS implements Runnable {
         
         getTweets(search);
         
+        // Searches for most commonly used hashtags
         final String[] searchParts = search.split(" ");
         searched.addAll(Arrays.asList(searchParts));
         
         for (int s = 0; s < searches - 1; s++) {
-            System.out.println("\n\nSearch " + s + " - " + searched.toString() + "\n");
+            System.out.println("\n\nSearch " + s + " - " + 
+                    searched.toString() + "\n");
             printCommon(top);
 
             getTweetsMostCommonHashTag();
@@ -85,7 +94,8 @@ public class DBLIS implements Runnable {
         System.out.println("\n\nFinal search - " + searched.toString() + "\n");
         printCommon(top);
         
-        scanLocations();
+        //scanLocations();
+        storeData();
     }
     
     /**
@@ -112,7 +122,12 @@ public class DBLIS implements Runnable {
             
             for (int i = 0; i < blocks; i++) {
                 result = twitter.search(query);
-                tweets.addAll(result.getTweets());
+                
+                if (!tweets.containsKey(search)) {
+                    tweets.put(search, new ArrayList<>());
+                }
+                tweets.get(search).addAll(result.getTweets());
+                
                 updateCommon(result.getTweets());
                 searched.add(search.toLowerCase());
                 query.setSinceId(starttime + i * blocks15);
@@ -299,11 +314,14 @@ public class DBLIS implements Runnable {
      */
     private void scanLocations() {
         final List<Status> withLocation = new ArrayList<>();
-        tweets.stream().forEach(status -> {
-            if (status.getGeoLocation() != null || status.getPlace() != null) {
-                withLocation.add(status);
-            }
+        tweets.entrySet().stream().forEach(entry -> {
+            entry.getValue().stream().forEach(status -> {
+                if (status.getGeoLocation() != null || status.getPlace() != null) {
+                    withLocation.add(status);
+                }
+            });
         });
+        
         System.out.println("\n\nTweets with location " + withLocation.size() + ":");
         withLocation.stream().forEach(status -> {
             if (status.getGeoLocation() != null) {
@@ -313,6 +331,62 @@ public class DBLIS implements Runnable {
                 System.out.println("Place: " + status.getPlace());
             }
         });
+    }
+    
+    /**
+     * Stores data to files
+     */
+    private void storeData() {
+        final File tweetsFile = new File(tweetsStorePath);
+        final File usersFile = new File(usersStorePath);
+        final Set<TweetEntity> tweetEntities = new HashSet();
+        final Set<UserEntity> userEntities = new HashSet();
+        
+        tweets.entrySet().stream().forEach(entry -> {
+            entry.getValue().stream().forEach(
+                    status -> {
+                        tweetEntities.add(
+                                new TweetEntity(dataSeperator, status,
+                                        entry.getKey()));
+                        userEntities.add(
+                                new UserEntity(dataSeperator, status.getUser()));
+                    });
+        });
+
+        try {
+            try (PrintWriter tweetWriter = new PrintWriter(tweetsFile)) {
+               tweetEntities.stream().forEach(entity -> {
+                   tweetWriter.println(entity.toString());
+               });
+            }
+            try (PrintWriter userWriter = new PrintWriter(usersFile)) {
+                userEntities.stream().forEach(entity -> {
+                   userWriter.println(entity.toString());
+               });
+            }
+        } catch (IOException ex) {
+            System.out.println("DBLIS - storeData() - error storing data" + ex);
+        }
+    }
+    
+    /**
+     * Gets current working directory of executing process
+     * 
+     * @return directory as String
+     */
+    public final String getWorkingDirectory() {
+        try {
+            // get working directory as File
+            String path = DBLIS.class.getProtectionDomain().getCodeSource()
+                    .getLocation().toURI().getPath();
+            File folder = new File(path);
+            folder = folder.getParentFile().getParentFile(); // 2x .getParentFile() for debug, 1x for normal
+
+            // directory as String
+            return folder.getPath() + "/"; // /dist/ for debug, / for normal
+        } catch (URISyntaxException ex) {
+            return "./";
+        }
     }
     
 }
