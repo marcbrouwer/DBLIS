@@ -42,16 +42,16 @@ public class DBLIS implements Runnable {
     private final long now = (new Date()).getTime() / 1000;
     private final String nowString = String.valueOf(now);
     
-    // Search settings (CAN BE CHANGED)
-    private final String geocode = "geocode:51.444,5.491,100km";
-    private final String search = "sport football";
-    private final long starttime = 1429461000; //now - blocks * 900; //1429452000;
-    private final boolean useStream = true;
-    
     // Search block size
     private final long blocks15 = 900;
     private final int hours = 2;
     private final int blocks = hours * 4;
+    
+    // Search settings (CAN BE CHANGED)
+    private String geocode = "geocode:51.444,5.491,100km";
+    private String search = "sport football";
+    private final long starttime = now - blocks * 900; //1429452000;
+    private boolean useStream = true;
     
     // Search setting for auto searching most commonly used hashtags or words
     private final int top = 5;
@@ -72,7 +72,7 @@ public class DBLIS implements Runnable {
     
     // Number of tweets loaded
     private int numberOfTweets = 0;
-
+    
     /** Constructor */
     public DBLIS() {
         this.tweets = new HashMap();
@@ -83,8 +83,17 @@ public class DBLIS implements Runnable {
         this.wordsFilter = new HashSet();
     }
     
-    public static void main(String[] args) {
-        new DBLIS().run();
+    public DBLIS(String keywords, boolean stream) {
+        this();
+        this.search = keywords;
+        this.useStream = stream;
+    }
+    
+    public DBLIS(String keywords, boolean stream, float latitude, 
+            float longtitude, float radius) {
+        this(keywords, stream);
+        this.geocode = "geocode:" + latitude + "," + longtitude + 
+                "," + radius + "km";
     }
     
     @Override
@@ -109,8 +118,13 @@ public class DBLIS implements Runnable {
         searched.addAll(Arrays.asList(searchParts));
         
         for (int s = 0; s < searches - 1; s++) {
-            System.out.println("\n\nSearch " + s + " - " + 
-                    searched.toString() + "\n");
+            if (Abort.getInstance().abort()) {
+                Abort.getInstance().setAbort(false);
+                return;
+            }
+            
+            System.out.println("\n\nSearch " + s + " - "
+                    + searched.toString() + "\n");
             printCommon(top);
 
             getTweetsMostCommonHashTag();
@@ -151,6 +165,10 @@ public class DBLIS implements Runnable {
             QueryResult result;
             
             for (int i = 0; i < blocks; i++) {
+                if (Abort.getInstance().abort()) {
+                    return;
+                }
+                
                 result = twitter.search(query);
                 
                 if (!tweets.containsKey(search)) {
@@ -182,6 +200,8 @@ public class DBLIS implements Runnable {
                 new BufferedWriter(new FileWriter(tweetsStorePath, append)));
         final PrintWriter usersPrinter = new PrintWriter(
                 new BufferedWriter(new FileWriter(usersStorePath, append)));
+        final TwitterStream twitterStream = 
+                new TwitterStreamFactory(getAuth()).getInstance();
         
         final StatusListener listener = new StatusListener() {
             @Override
@@ -189,6 +209,11 @@ public class DBLIS implements Runnable {
                 System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
                 tweetsPrinter.println(new TweetEntity(dataSeperator, status, search));
                 usersPrinter.println(new UserEntity(dataSeperator, status.getUser()));
+                
+                if (Abort.getInstance().abort()) {
+                    Abort.getInstance().setAbort(false);
+                    twitterStream.shutdown();
+                }
             }
 
             @Override
@@ -216,7 +241,6 @@ public class DBLIS implements Runnable {
                 ex.printStackTrace();
             }
         };
-        TwitterStream twitterStream = new TwitterStreamFactory(getAuth()).getInstance();
         twitterStream.addListener(listener);
         // sample() method internally creates a thread which manipulates 
         // TwitterStream and calls these adequate listener methods continuously.
@@ -439,7 +463,7 @@ public class DBLIS implements Runnable {
      * 
      * @return directory as String
      */
-    public final String getWorkingDirectory() {
+    private String getWorkingDirectory() {
         try {
             // get working directory as File
             String path = DBLIS.class.getProtectionDomain().getCodeSource()
