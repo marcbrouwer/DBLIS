@@ -29,6 +29,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
+import twitter4j.User;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -44,21 +45,21 @@ public class DBLIS implements Runnable {
     
     // Search block size
     private final long blocks15 = 900;
-    private final int hours = 2;
+    private final int hours = 4;
     private final int blocks = hours * 4;
     
     // Search settings (CAN BE CHANGED)
-    private String geocode = "geocode:51.444,5.491,100km";
-    private String search = "sport football";
-    private final long starttime = now - blocks * 900; //1429452000;
-    private boolean useStream = true;
+    private String geocode = "geocode:51.444,5.491,500km";
+    private String search = "tennis";
+    private final long starttime = 1430133677;//now - blocks * 900; //1429452000;
+    private boolean useStream = false;
     
     // Search setting for auto searching most commonly used hashtags or words
     private final int top = 5;
     private final int searches = 5;
     
     // Data maps and sets
-    private final Map<String, List<Status>> tweets;
+    private final Map<String, Set<Status>> tweets;
     private final Map<String, Integer> countHashtags;
     private final Map<String, Integer> countWords;
     private final Map<String, Integer> countLocation;
@@ -96,6 +97,10 @@ public class DBLIS implements Runnable {
                 "," + radius + "km";
     }
     
+    public static void main(String[] args) {
+        new DBLIS().run();
+    }
+    
     @Override
     public void run() {
         initWordsFilter();
@@ -112,9 +117,31 @@ public class DBLIS implements Runnable {
         }
         
         getTweets(search);
+        final ServerAccess sa = new ServerAccess();
+        tweets.entrySet().stream().forEach(keyword -> {
+            keyword.getValue().stream().forEach(status -> {
+                if (status.getRetweetedStatus() != null) {
+                    if (addTweet(sa, status.getRetweetedStatus(), keyword.getKey())) {
+                        if (!addUser(sa, status.getRetweetedStatus().getUser())) {
+                            System.out.println("User not saved: " + 
+                                    status.getRetweetedStatus().getUser());
+                        }
+                    } else {
+                        System.out.println("Tweet not saved: " + status.getRetweetedStatus());
+                    }
+                }
+                if (addTweet(sa, status, keyword.getKey())) {
+                    if (!addUser(sa, status.getUser())) {
+                        System.out.println("User not saved: " + status.getUser());
+                    }
+                } else {
+                    System.out.println("Tweet not saved: " + status);
+                }
+            });
+        });
         
         // Searches for most commonly used hashtags
-        final String[] searchParts = search.split(" ");
+        /*final String[] searchParts = search.split(" ");
         searched.addAll(Arrays.asList(searchParts));
         
         for (int s = 0; s < searches - 1; s++) {
@@ -135,7 +162,7 @@ public class DBLIS implements Runnable {
         printCommon(top);
         
         //scanLocations();
-        storeData();
+        storeData();*/
     }
     
     /** Gets configuration builder for authentication */
@@ -172,7 +199,7 @@ public class DBLIS implements Runnable {
                 result = twitter.search(query);
                 
                 if (!tweets.containsKey(search)) {
-                    tweets.put(search, new ArrayList<>());
+                    tweets.put(search, new HashSet());
                 }
                 tweets.get(search).addAll(result.getTweets());
                 
@@ -476,6 +503,16 @@ public class DBLIS implements Runnable {
         } catch (URISyntaxException ex) {
             return "./";
         }
+    }
+    
+    private boolean addTweet(ServerAccess sa, Status status, String search) {
+        final TweetEntity entity = new TweetEntity(dataSeperator, status, search);
+        return sa.addTweet(entity);
+    }
+    
+    private boolean addUser(ServerAccess sa, User user) {
+        final UserEntity entity = new UserEntity(dataSeperator, user);
+        return sa.addUser(entity);
     }
     
 }
