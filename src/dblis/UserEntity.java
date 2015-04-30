@@ -17,7 +17,7 @@ public class UserEntity {
     private final int friends;
     
     public UserEntity(String dataSeperator, User user) {
-        this(dataSeperator, user.getId(), user.getScreenName(), 
+        this(dataSeperator, user.getId(), user.getName(), 
                 user.getFollowersCount(), user.getFavouritesCount(),
                 user.getFriendsCount());
     }
