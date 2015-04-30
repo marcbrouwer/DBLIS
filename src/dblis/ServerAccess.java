@@ -12,6 +12,8 @@ import java.util.Map;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
+import twitter4j.JSONArray;
+import twitter4j.JSONException;
 import twitter4j.JSONObject;
 
 public class ServerAccess {
@@ -39,7 +41,7 @@ public class ServerAccess {
     }
 
     //Get the response form the server as an object
-    public Object getResponseObject(String method, Map<String, Object> params, Class c) {
+    private Object getResponseObject(String method, Map<String, Object> params) {
         try {
             //Create a HTTP Client
             HttpClient httpclient = new DefaultHttpClient();
@@ -73,8 +75,8 @@ public class ServerAccess {
         }
     }
     
-    public boolean addTweet(TweetEntity entity) {
-        Map<String, Object> params = new HashMap();
+    public final boolean addTweet(TweetEntity entity) {
+        final Map<String, Object> params = new HashMap();
         params.put("tweetid", "[" + entity.getID() + "]");
         params.put("retweetid", "[" + entity.getRetweetID() + "]");
         params.put("retweets", entity.getRetweets());
@@ -86,26 +88,49 @@ public class ServerAccess {
         params.put("userid", "[" + entity.getUserID() + "]");
         params.put("keywords", entity.getKeywords());
         
-        final Object obj = getResponseObject("addTweet", params, Object.class);
+        final Object obj = getResponseObject("addTweet", params);
         if (!obj.equals("true") && !obj.equals("false")) {
             System.out.println(obj);
         }
         return obj.equals("true");
     }
     
-    public boolean addUser(UserEntity entity) {
-        Map<String, Object> params = new HashMap();
+    public final boolean addUser(UserEntity entity) {
+        final Map<String, Object> params = new HashMap();
         params.put("userid", "[" + entity.getID() + "]");
         params.put("name", entity.getName());
         params.put("followers", entity.getFollowers());
         params.put("favourites", entity.getFavourites());
         params.put("friends", entity.getFriends());
         
-        final Object obj = getResponseObject("addUser", params, Object.class);
+        final Object obj = getResponseObject("addUser", params);
         if (!obj.equals("true") && !obj.equals("false")) {
             System.out.println(obj);
         }
         return obj.equals("true");
+    }
+    
+    public final JSONArray getSports() throws JSONException {
+        return new JSONArray(getResponseObject("getSports", null).toString());
+    }
+    
+    public final JSONArray getCommonSports(String countryCode, int top) 
+            throws JSONException {
+        final Map<String, Object> params = new HashMap();
+        params.put("countrycode", countryCode);
+        params.put("number", top);
+        return new JSONArray(
+                getResponseObject("getCommonSports", params).toString());
+    }
+    
+    public final JSONArray getPopularSportCountries(String sport, int top) 
+            throws JSONException {
+        final Map<String, Object> params = new HashMap();
+        params.put("sport", sport);
+        params.put("number", top);
+        final String response = 
+                getResponseObject("getPopularSportCountries", params).toString();
+        return new JSONArray(response);
     }
     
 }
