@@ -133,4 +133,8 @@ public class ServerAccess {
         return new JSONArray(response);
     }
     
+    public final JSONArray getGeolocations() throws JSONException {
+        return new JSONArray(getResponseObject("getGeolocations", null).toString());
+    }
+    
 }
