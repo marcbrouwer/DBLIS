@@ -152,6 +152,7 @@ public class DBLIS implements Runnable {
         }
         toSearch.remove(null);
         
+        // Gets data from database (will be exported to excel in a later stage)
         final Map<String, JSONArray> commonInCountry = new HashMap();
         toSearch.keySet().stream().forEach(ccode -> {
             commonInCountry.put(ccode, getCommonSports(sa, ccode, 5));
@@ -169,6 +170,7 @@ public class DBLIS implements Runnable {
         
         System.out.println(commonSportCountry);
         
+        // Continue searching
         String latitude, longtitude, radius;
         for (int i = 0; i < geolocations.length(); i++) {
             try {
@@ -181,7 +183,7 @@ public class DBLIS implements Runnable {
                 toSearch.entrySet().stream()
                         .filter(entry -> entry.getKey().equals(cc) 
                                 || entry.getKey().equals("GB"))
-                        .filter(entry -> entry.getKey().equals("ES"))
+                        //.filter(entry -> entry.getKey().equals("ES"))
                         .forEach(entry -> {
                             entry.getValue()
                             .forEach(sport -> getTweets(sport, geo));
