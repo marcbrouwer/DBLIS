@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
+import twitter4j.FilterQuery;
 import twitter4j.HashtagEntity;
 import twitter4j.JSONArray;
 import twitter4j.JSONException;
@@ -114,7 +115,7 @@ public class DBLIS implements Runnable {
         
         if (useStream) {
             try {
-                twitterStream(search, false);
+                twitterStream(sa, search, false);
             } catch (IOException ex) {
                 System.out.println("Twitter Stream error - " + ex);
             }
@@ -124,8 +125,11 @@ public class DBLIS implements Runnable {
         JSONArray sports = getSports(sa);
         JSONArray geolocations = getGeolocations(sa);
         
+        // debug JSONArray's
         JSONArray mostCommon = getCommonSports(sa, "NL", 5);
         JSONArray popular = getPopularSportCountries(sa, "tennis", 5);
+        JSONArray mostCommonSports = getMostCommonSports(sa, "NL");
+        JSONArray mostCommonCountries = getMostCommonCountries(sa, "football", 5);
         
         JSONObject indexObj;
         Iterator iter;
@@ -295,24 +299,27 @@ public class DBLIS implements Runnable {
     /**
      * Runs a twitter stream, continously retrieving tweets
      * 
+     * @param sa ServerAccess
      * @param search keyword(s) to search
      * @param append determine whether to append file or start empty
      * @throws IOException on IO error
      */
-    private void twitterStream(String search, boolean append) throws IOException {
-        final PrintWriter tweetsPrinter = new PrintWriter(
+    private void twitterStream(ServerAccess sa, String search, boolean append) throws IOException {
+        /*final PrintWriter tweetsPrinter = new PrintWriter(
                 new BufferedWriter(new FileWriter(tweetsStorePath, append)));
         final PrintWriter usersPrinter = new PrintWriter(
-                new BufferedWriter(new FileWriter(usersStorePath, append)));
+                new BufferedWriter(new FileWriter(usersStorePath, append)));*/
         final TwitterStream twitterStream = 
                 new TwitterStreamFactory(getAuth()).getInstance();
         
         final StatusListener listener = new StatusListener() {
             @Override
             public void onStatus(Status status) {
-                System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
-                tweetsPrinter.println(new TweetEntity(dataSeperator, status, search));
-                usersPrinter.println(new UserEntity(dataSeperator, status.getUser()));
+                //System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
+                //tweetsPrinter.println(new TweetEntity(dataSeperator, status, search));
+                //usersPrinter.println(new UserEntity(dataSeperator, status.getUser()));
+                sa.addTweet(new TweetEntity(dataSeperator, status, search));
+                sa.addUser(new UserEntity(dataSeperator, status.getUser()));
                 
                 if (Abort.getInstance().abort()) {
                     Abort.getInstance().setAbort(false);
@@ -346,9 +353,14 @@ public class DBLIS implements Runnable {
             }
         };
         twitterStream.addListener(listener);
-        // sample() method internally creates a thread which manipulates 
-        // TwitterStream and calls these adequate listener methods continuously.
+        FilterQuery filterquery = new FilterQuery();
+        //filterquery.count(500);
+        //String[] searchwords = {"voetbal", "tennis", "basketbal"};
+        //filterquery.track(searchwords);
+        filterquery.track(new String[]{search});
+        filterquery.language(new String[]{"nl", "de", "en", "fr", "es"});
         twitterStream.sample();
+        twitterStream.filter(filterquery);
     }
     
     /** Gets the most commonly used hashtag for which is not yet searched */
@@ -609,6 +621,7 @@ public class DBLIS implements Runnable {
         return new JSONArray();
     }
     
+    @Deprecated
     private JSONArray getCommonSports(ServerAccess sa, String countryCode, int top) {
         try {
             return sa.getCommonSports(countryCode, top);
@@ -618,6 +631,7 @@ public class DBLIS implements Runnable {
         return new JSONArray();
     }
     
+    @Deprecated
     private JSONArray getPopularSportCountries(ServerAccess sa, String sport, int top) {
         try {
             return sa.getPopularSportCountries(sport, top);
@@ -632,6 +646,25 @@ public class DBLIS implements Runnable {
             return sa.getGeolocations();
         } catch (Exception ex) {
             System.out.println("DBLIS - getGeolocations - " + ex);
+        }
+        return new JSONArray();
+    }
+    
+    private JSONArray getMostCommonSports(ServerAccess sa, String countryCode) {
+        try {
+            return sa.getMostCommonSports(countryCode);
+        } catch (Exception ex) {
+            System.out.println("DBLIS - getMostCommonSports - " + ex);
+        }
+        return new JSONArray();
+    }
+    
+    private JSONArray getMostCommonCountries(ServerAccess sa, 
+            String countryCode, int top) {
+        try {
+            return sa.getMostCommonCountries(countryCode, top);
+        } catch (Exception ex) {
+            System.out.println("DBLIS - getMostCommonCountries - " + ex);
         }
         return new JSONArray();
     }

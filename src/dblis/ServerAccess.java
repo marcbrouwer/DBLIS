@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.entity.StringEntity;
@@ -114,6 +117,7 @@ public class ServerAccess {
         return new JSONArray(getResponseObject("getSports", null).toString());
     }
     
+    @Deprecated
     public final JSONArray getCommonSports(String countryCode, int top) 
             throws JSONException {
         final Map<String, Object> params = new HashMap();
@@ -123,6 +127,7 @@ public class ServerAccess {
                 getResponseObject("getCommonSports", params).toString());
     }
     
+    @Deprecated
     public final JSONArray getPopularSportCountries(String sport, int top) 
             throws JSONException {
         final Map<String, Object> params = new HashMap();
@@ -135,6 +140,25 @@ public class ServerAccess {
     
     public final JSONArray getGeolocations() throws JSONException {
         return new JSONArray(getResponseObject("getGeolocations", null).toString());
+    }
+    
+    public final JSONArray getMostCommonSports(String countryCode) 
+            throws JSONException {
+        final Map<String, Object> params = new HashMap();
+        params.put("countrycode", countryCode);
+        final String response =
+                getResponseObject("getMostCommonSports", params).toString();
+        return new JSONArray(response);
+    }
+    
+    public final JSONArray getMostCommonCountries(String sport, int top) 
+            throws JSONException {
+        final Map<String, Object> params = new HashMap();
+        params.put("sport", sport);
+        params.put("number", top);
+        final String response = 
+                getResponseObject("getMostCommonCountries", params).toString();
+        return new JSONArray(response);
     }
     
 }
