@@ -1,8 +1,6 @@
 package dblis;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
@@ -57,7 +55,7 @@ public class DBLIS implements Runnable {
     private String geocode = "geocode:51.444,5.491,500km";
     private String search = "cricket";
     private final long starttime = 1430133677;//now - blocks * 900; //1429452000;
-    private boolean useStream = false;
+    private boolean useStream = true;
     
     // Search setting for auto searching most commonly used hashtags or words
     private final int top = 5;
@@ -113,68 +111,33 @@ public class DBLIS implements Runnable {
         
         System.out.println("Start time: " + (new Date(starttime * 1000)) + "\n");
         
+        final List<String> sports = getSports(sa);
+        final List<String> sportsGB = getSportsGB(sa);
+        final JSONArray geolocations = getGeolocations(sa);
+        final List<String> geoList = getGeolocationsList(sa);
+        
         if (useStream) {
-            try {
-                twitterStream(sa, search, false);
-            } catch (IOException ex) {
-                System.out.println("Twitter Stream error - " + ex);
-            }
+            int max = 100;
+            geoList.stream().forEach(loc -> {
+                sportsGB.stream().forEach(sport -> {
+                    try {
+                        twitterStream(sa, sport, loc, max);
+                    } catch (IOException ex) {
+                        System.out.println("Twitter Stream error - " + ex);
+                    }
+                });
+            });
             return;
         }
-        
-        JSONArray sports = getSports(sa);
-        JSONArray geolocations = getGeolocations(sa);
         
         // debug JSONArray's
         JSONArray mostCommon = getCommonSports(sa, "NL", 5);
         JSONArray popular = getPopularSportCountries(sa, "tennis", 5);
         JSONArray mostCommonSports = getMostCommonSports(sa, "NL");
         JSONArray mostCommonCountries = getMostCommonCountries(sa, "football", 5);
+        JSONArray alternatives = getAlternatives(sa, "tennis");
         
         JSONObject indexObj;
-        Iterator iter;
-        String code;
-        final Map<String, Set<String>> toSearch = new HashMap();
-        for (int i = 0; i < sports.length(); i++) {
-            try {
-                indexObj = sports.getJSONObject(i);
-                iter = indexObj.keys();
-                while (iter.hasNext()) {
-                    /*final String next = iter.next().toString();
-                    if (next.equals("NL")) {
-                        toSearch.add(indexObj.getString(next));
-                    }*/
-                    code = iter.next().toString();
-                    if (!toSearch.containsKey(code)) {
-                        toSearch.put(code, new HashSet());
-                    }
-                    toSearch.get(code).add(indexObj.getString(code));
-                }
-            } catch (JSONException ex) {
-                System.out.println("DBLIS - run - search sport - " + ex);
-            }
-        }
-        toSearch.remove(null);
-        
-        // Gets data from database (will be exported to excel in a later stage)
-        final Map<String, JSONArray> commonInCountry = new HashMap();
-        toSearch.keySet().stream().forEach(ccode -> {
-            commonInCountry.put(ccode, getCommonSports(sa, ccode, 5));
-        });
-        
-        System.out.println(commonInCountry);
-        
-        final Map<String, JSONArray> commonSportCountry = new HashMap();
-        toSearch.entrySet().stream().forEach(entry -> {
-            entry.getValue().stream().forEach(sport -> {
-                commonSportCountry.put(sport, 
-                        getPopularSportCountries(sa, sport, 5));
-            });
-        });
-        
-        System.out.println(commonSportCountry);
-        
-        // Continue searching
         String latitude, longtitude, radius;
         for (int i = 0; i < geolocations.length(); i++) {
             try {
@@ -184,14 +147,7 @@ public class DBLIS implements Runnable {
                 longtitude = indexObj.getString("longtitude");
                 radius = indexObj.getString("radius");
                 final String geo = toGeocode(latitude, longtitude, radius);
-                toSearch.entrySet().stream()
-                        .filter(entry -> entry.getKey().equals(cc) 
-                                || entry.getKey().equals("GB"))
-                        //.filter(entry -> entry.getKey().equals("ES"))
-                        .forEach(entry -> {
-                            entry.getValue()
-                            .forEach(sport -> getTweets(sport, geo));
-                        });
+                sports.stream().forEach(sport -> getTweets(sport, geo));
             } catch (JSONException ex) {
                 System.out.println("DBLIS - run - search geo - " + ex);
             }
@@ -301,27 +257,22 @@ public class DBLIS implements Runnable {
      * 
      * @param sa ServerAccess
      * @param search keyword(s) to search
-     * @param append determine whether to append file or start empty
      * @throws IOException on IO error
      */
-    private void twitterStream(ServerAccess sa, String search, boolean append) throws IOException {
-        /*final PrintWriter tweetsPrinter = new PrintWriter(
-                new BufferedWriter(new FileWriter(tweetsStorePath, append)));
-        final PrintWriter usersPrinter = new PrintWriter(
-                new BufferedWriter(new FileWriter(usersStorePath, append)));*/
+    private void twitterStream(ServerAccess sa, String search, String geocode, 
+            int max) throws IOException {
         final TwitterStream twitterStream = 
                 new TwitterStreamFactory(getAuth()).getInstance();
+        final Count count = new Count(max);
         
         final StatusListener listener = new StatusListener() {
             @Override
             public void onStatus(Status status) {
-                //System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
-                //tweetsPrinter.println(new TweetEntity(dataSeperator, status, search));
-                //usersPrinter.println(new UserEntity(dataSeperator, status.getUser()));
+                count.increment();
                 sa.addTweet(new TweetEntity(dataSeperator, status, search));
                 sa.addUser(new UserEntity(dataSeperator, status.getUser()));
                 
-                if (Abort.getInstance().abort()) {
+                if (Abort.getInstance().abort() || count.isMax()) {
                     Abort.getInstance().setAbort(false);
                     twitterStream.shutdown();
                 }
@@ -357,10 +308,15 @@ public class DBLIS implements Runnable {
         //filterquery.count(500);
         //String[] searchwords = {"voetbal", "tennis", "basketbal"};
         //filterquery.track(searchwords);
-        filterquery.track(new String[]{search});
+        final String[] alts = getAlternativesArray(sa, search);
+        final String[] altsGeo = new String[alts.length];
+        for (int i = 0; i < alts.length; i++) {
+            altsGeo[i] = alts[i] + " " + geocode;
+        }
+        filterquery.track(altsGeo);
         filterquery.language(new String[]{"nl", "de", "en", "fr", "es"});
-        twitterStream.sample();
         twitterStream.filter(filterquery);
+        twitterStream.sample();
     }
     
     /** Gets the most commonly used hashtag for which is not yet searched */
@@ -612,13 +568,30 @@ public class DBLIS implements Runnable {
         return sa.addUser(entity);
     }
     
-    private JSONArray getSports(ServerAccess sa) {
+    private List<String> getSports(ServerAccess sa) {
+        final List<String> list = new ArrayList<>();
         try {
-            return sa.getSports();
+            final JSONArray json = sa.getSports();
+            for (int i = 0; i < json.length(); i++) {
+                list.add(json.getJSONObject(i).getString("Sport"));
+            }
         } catch (Exception ex) {
             System.out.println("DBLIS - getSports - " + ex);
         }
-        return new JSONArray();
+        return list;
+    }
+    
+    private List<String> getSportsGB(ServerAccess sa) {
+        final List<String> list = new ArrayList<>();
+        try {
+            final JSONArray json = sa.getSportsGB();
+            for (int i = 0; i < json.length(); i++) {
+                list.add(json.getJSONObject(i).getString("Sport"));
+            }
+        } catch (Exception ex) {
+            System.out.println("DBLIS - getSports - " + ex);
+        }
+        return list;
     }
     
     @Deprecated
@@ -639,6 +612,27 @@ public class DBLIS implements Runnable {
             System.out.println("DBLIS - getPopularSportCountries - " + ex);
         }
         return new JSONArray();
+    }
+    
+    private List<String> getGeolocationsList(ServerAccess sa) {
+        final JSONArray json = getGeolocations(sa);
+        final List<String> list = new ArrayList<>();
+        
+        JSONObject obj;
+        String geo;
+        for (int i = 0; i < json.length(); i++) {
+            try {
+                obj = json.getJSONObject(i);
+                geo = toGeocode(obj.getString("latitude"), 
+                        obj.getString("longtitude"), 
+                        obj.getString("radius"));
+                list.add(geo);
+            } catch (Exception ex) {
+                System.out.println("DBLIS - getAlternativesArray - " + ex);
+            }
+        }
+        
+        return list;
     }
     
     private JSONArray getGeolocations(ServerAccess sa) {
@@ -669,4 +663,47 @@ public class DBLIS implements Runnable {
         return new JSONArray();
     }
     
+    private JSONArray getAlternatives(ServerAccess sa, String sport) {
+        try {
+            return sa.getAlternatives(sport);
+        } catch (Exception ex) {
+            System.out.println("DBLIS - getAlternatives - " + ex);
+        }
+        return new JSONArray();
+    }
+    
+    private String[] getAlternativesArray(ServerAccess sa, String sport) {
+        final JSONArray json = getAlternatives(sa, sport);
+        final List<String> list = new ArrayList<>();
+        
+        for (int i = 0; i < json.length(); i++) {
+            try {
+                list.add(json.getJSONObject(i).getString(sport));
+            } catch (Exception ex) {
+                System.out.println("DBLIS - getAlternativesArray - " + ex);
+            }
+        }
+        
+        return list.toArray(new String[list.size()]);
+    }
+    
+    private class Count {
+        
+        private final int max;
+        private int count;
+        
+        Count(int max) {
+            this.max = max;
+            this.count = 0;
+        }
+        
+        synchronized void increment() {
+            count++;
+        }
+        
+        synchronized boolean isMax() {
+            return count >= max;
+        }
+        
+    }
 }
