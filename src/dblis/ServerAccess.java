@@ -170,4 +170,8 @@ public class ServerAccess {
         return new JSONArray(response);
     }
     
+    public final JSONArray getCountryCodes() throws JSONException {
+        return new JSONArray(getResponseObject("getCountryCodes", null).toString());
+    }
+    
 }

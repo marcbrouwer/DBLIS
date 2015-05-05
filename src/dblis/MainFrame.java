@@ -79,13 +79,10 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        latitudeField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0.###"))));
         latitudeField.setEnabled(false);
 
-        longtitudeField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0.###"))));
         longtitudeField.setEnabled(false);
 
-        radiusField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
         radiusField.setEnabled(false);
 
         jLabel6.setText("Single search is done in the last 2 hours unless changed in source.");
