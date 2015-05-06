@@ -56,7 +56,7 @@ public class DBLIS implements Runnable {
     // Search settings (CAN BE CHANGED)
     private String geocode = "geocode:51.444,5.491,500km";
     private String search = "cricket";
-    private final long starttime = 1430133677;//now - blocks * 900; //1429452000;
+    private final long starttime = 1430841600;//now - blocks * 900; //1429452000;
     private boolean useStream = false;
     
     // Search setting for auto searching most commonly used hashtags or words
@@ -137,16 +137,16 @@ public class DBLIS implements Runnable {
         JSONArray mostCommon = getCommonSports(sa, "NL", 5);
         JSONArray popular = getPopularSportCountries(sa, "tennis", 5);
         JSONArray mostCommonSports = getMostCommonSports(sa, "NL");
-        JSONArray mostCommonCountries = getMostCommonCountries(sa, "football", 5);
+        JSONArray mostCommonCountries = getMostCommonCountries(sa, "football", sportsGB.size());
         JSONArray alternatives = getAlternatives(sa, "tennis");
         
         // EXCEL OUTPUT
-        /*final Map<String, JSONArray> commonSports = new HashMap();
+        final Map<String, JSONArray> commonSports = new HashMap();
         countryCodes.stream().forEach(code -> {
             commonSports.put(code, getMostCommonSports(sa, code));
         });
         
-        Map<String, List<Object[]>> sorted = sortPopularity(commonSports, sportsGB);
+        Map<String, List<ChartData>> sorted = sortPopularity(commonSports, sportsGB);
         Object[][] popExcel = popularityToExcelFormat(sorted, sportsGB, countryCodes);
         File popularFile = new File(getWorkingDirectory() + "popular.xls");
         //Excel.writeToExcel(popularFile, popExcel);
@@ -156,13 +156,21 @@ public class DBLIS implements Runnable {
             
         }
         
-        final List<ChartData> chartdata = new ArrayList<>();
-        sorted.get("NL").stream().forEach(obj -> {
-            chartdata.add(new ChartData((String) obj[0], (int) obj[1]));
-        });
-        Chart3D pie = new Chart3D("NL", chartdata, "Pie");
+        final List<ChartData> chartdata = sorted.get("NL");
+        /*Chart3D pie = new Chart3D("NL", chartdata, "Pie");
+        pie.view();*/
+        
+        /*BarChartSimpleData.setCountryCode("NL");
+        BarChartSimpleData.setChartData(chartdata);
+        BarChartSimple bar = new BarChartSimple();
+        bar.view();*/
+        
+        SportData.getInstance().setCountryCode("NL");
+        SportData.getInstance().setChartData(sorted);
+        PieChartFX pie = new PieChartFX();
         pie.view();
-        return;*/
+        
+        return;
         
         // SEARCHING
         
@@ -619,23 +627,23 @@ public class DBLIS implements Runnable {
      * @param map input map
      * @return sorted output map
      */
-    private Map<String, List<Object[]>> sortPopularity(
+    private Map<String, List<ChartData>> sortPopularity(
             Map<String, JSONArray> map, List<String> sportsGB) {
-        final Map<String, List<Object[]>> rtn = new HashMap();
-        final Comparator comp = new Comparator<Object[]>() {
+        final Map<String, List<ChartData>> rtn = new HashMap();
+        final Comparator comp = new Comparator<ChartData>() {
             @Override
-            public int compare(Object[] o1, Object[] o2) {
-                return ((Integer) o2[1]).compareTo((Integer) o1[1]);
+            public int compare(ChartData o1, ChartData o2) {
+                return ((Integer) o2.getValue()).compareTo((Integer) o1.getValue());
             }
         };
         
         map.entrySet().stream().forEach(entry -> {
             try {
-                final List<Object[]> list = new ArrayList<>();
+                final List<ChartData> list = new ArrayList<>();
                 final JSONObject json = entry.getValue().getJSONObject(0);
                 sportsGB.stream().forEach(sport -> {
                     try {
-                        list.add(new Object[]{sport, json.getInt(sport)});
+                        list.add(new ChartData(sport, json.getInt(sport)));
                     } catch (JSONException ex) {
                     }
                 });
@@ -648,20 +656,20 @@ public class DBLIS implements Runnable {
         return rtn;
     }
     
-    private Object[][] popularityToExcelFormat(Map<String, List<Object[]>> map,
+    private Object[][] popularityToExcelFormat(Map<String, List<ChartData>> map,
             List<String> sportsGB, List<String> countryCodes) {
         final Object[][] data = new Object[(sportsGB.size() + 1) * countryCodes.size()]
                 [3];
         
         int row = 0;
         int col = 0;
-        List<Object[]> list;
+        List<ChartData> list;
         for (String code : countryCodes) {
             data[row][col] = code;
             list = map.get(code);
             for (int i = 0; i < list.size(); i++) {
-                data[row][1] = list.get(i)[0];
-                data[row][2] = list.get(i)[1];
+                data[row][1] = list.get(i).getName();
+                data[row][2] = list.get(i).getValue();
                 row++;
             }
             row++;

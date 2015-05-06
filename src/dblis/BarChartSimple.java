@@ -1,5 +1,7 @@
 package dblis;
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
@@ -16,20 +18,24 @@ public class BarChartSimple extends Application {
         "Magenta", "Olive", "Red", "Sienna", "Wheat"
     };
     
+    public final void view() {
+        launch();
+    }
+    
     @Override
     public void start(Stage stage) {
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         final BarChart<String, Number> bc = 
                 new BarChart<String, Number>(xAxis, yAxis);
-        bc.setTitle("Summary");
+        bc.setTitle(SportData.getInstance().getCountryCode());
         xAxis.setLabel("Sport");
         xAxis.setTickLabelRotation(0);
         yAxis.setLabel("Popularity");
 
         XYChart.Series series1 = new XYChart.Series();
         
-        series1.setName("NL");
+        series1.setName(SportData.getInstance().getCountryCode());
         series1.getData().add(new XYChart.Data("football", 2));
         series1.getData().add(new XYChart.Data("tennis", 20));
         series1.getData().add(new XYChart.Data("formula 1", 10));
@@ -59,7 +65,4 @@ public class BarChartSimple extends Application {
         stage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
