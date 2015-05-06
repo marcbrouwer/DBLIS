@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.jfree.ui.RefineryUtilities;
 import twitter4j.FilterQuery;
 import twitter4j.HashtagEntity;
 import twitter4j.JSONArray;
@@ -148,7 +149,20 @@ public class DBLIS implements Runnable {
         Map<String, List<Object[]>> sorted = sortPopularity(commonSports, sportsGB);
         Object[][] popExcel = popularityToExcelFormat(sorted, sportsGB, countryCodes);
         File popularFile = new File(getWorkingDirectory() + "popular.xls");
-        Excel.getInstance().writeToExcel(popularFile, popExcel);
+        //Excel.writeToExcel(popularFile, popExcel);
+        try {
+            Excel.pieChart(popularFile, popExcel);
+        } catch (IOException ex) {
+            
+        }
+        
+        final List<ChartData> chartdata = new ArrayList<>();
+        sorted.get("NL").stream().forEach(obj -> {
+            chartdata.add(new ChartData((String) obj[0], (int) obj[1]));
+        });
+        Chart3D pie = new Chart3D("NL", chartdata, "Bar");
+        pie.view();
+        return;
         
         // SEARCHING
         
@@ -636,7 +650,26 @@ public class DBLIS implements Runnable {
     
     private Object[][] popularityToExcelFormat(Map<String, List<Object[]>> map,
             List<String> sportsGB, List<String> countryCodes) {
-        final Object[][] data = new Object[sportsGB.size() + 1]
+        final Object[][] data = new Object[(sportsGB.size() + 1) * countryCodes.size()]
+                [3];
+        
+        int row = 0;
+        int col = 0;
+        List<Object[]> list;
+        for (String code : countryCodes) {
+            data[row][col] = code;
+            list = map.get(code);
+            for (int i = 0; i < list.size(); i++) {
+                data[row][1] = list.get(i)[0];
+                data[row][2] = list.get(i)[1];
+                row++;
+            }
+            row++;
+        }
+        
+        return data;
+        
+        /*final Object[][] data = new Object[sportsGB.size() + 1]
                 [countryCodes.size() * 3];
         
         int row = 0;
@@ -652,7 +685,7 @@ public class DBLIS implements Runnable {
             col += 3;
         }
         
-        return data;
+        return data;*/
     }
     
     private String toGeocode(float latitude, float longtitude, int radius) {
