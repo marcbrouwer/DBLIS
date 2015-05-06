@@ -17,17 +17,14 @@ public class PieChartSimple extends Application {
         stage.setWidth(500);
         stage.setHeight(500);
  
-        final NumberAxis xAxis = new NumberAxis();
-        final CategoryAxis yAxis = new CategoryAxis();
-        
-        ObservableList<BarChart.Data> pieChartData =
+        ObservableList<PieChart.Data> pieChartData =
                 FXCollections.observableArrayList(
-                new BarChart.Data("Grapefruit", 13),
-                new BarChart.Data("Oranges", 25),
-                new BarChart.Data("Plums", 10),
-                new BarChart.Data("Pears", 22),
-                new BarChart.Data("Apples", 30));
-        final BarChart chart = new BarChart(xAxis, yAxis, pieChartData);
+                new PieChart.Data("Grapefruit", 13),
+                new PieChart.Data("Oranges", 25),
+                new PieChart.Data("Plums", 10),
+                new PieChart.Data("Pears", 22),
+                new PieChart.Data("Apples", 30));
+        final PieChart chart = new PieChart(pieChartData);
         chart.setTitle("Imported Fruits");
 
         ((Group) scene.getRoot()).getChildren().add(chart);

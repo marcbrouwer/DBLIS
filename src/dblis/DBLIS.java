@@ -141,7 +141,7 @@ public class DBLIS implements Runnable {
         JSONArray alternatives = getAlternatives(sa, "tennis");
         
         // EXCEL OUTPUT
-        final Map<String, JSONArray> commonSports = new HashMap();
+        /*final Map<String, JSONArray> commonSports = new HashMap();
         countryCodes.stream().forEach(code -> {
             commonSports.put(code, getMostCommonSports(sa, code));
         });
@@ -160,9 +160,9 @@ public class DBLIS implements Runnable {
         sorted.get("NL").stream().forEach(obj -> {
             chartdata.add(new ChartData((String) obj[0], (int) obj[1]));
         });
-        Chart3D pie = new Chart3D("NL", chartdata, "Bar");
+        Chart3D pie = new Chart3D("NL", chartdata, "Pie");
         pie.view();
-        return;
+        return;*/
         
         // SEARCHING
         
