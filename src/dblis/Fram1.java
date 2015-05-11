@@ -57,7 +57,7 @@ public class Fram1 extends javax.swing.JFrame {
         queryList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Popular sport(s) in country(ies)", "Country(ies) where sport(s) are popular", "Influence of a sport event" }));
         queryList.setToolTipText("<Query>");
 
-        jLabel1.setText("please select a query type");
+        jLabel1.setText("please select a query.");
         parametersPanelHolder.setViewportView(jLabel1);
 
         pieChartButton.setIcon(new javax.swing.ImageIcon("E:\\Study\\TUe\\Year 2\\Q4\\DBL information system\\DBLIS\\chart_pie_32x32.png")); // NOI18N

@@ -113,7 +113,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="jLabel1">
               <Properties>
-                <Property name="text" type="java.lang.String" value="please select a query type"/>
+                <Property name="text" type="java.lang.String" value="please select a query."/>
               </Properties>
             </Component>
           </SubComponents>
