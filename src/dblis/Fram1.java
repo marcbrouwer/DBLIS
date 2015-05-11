@@ -60,28 +60,28 @@ public class Fram1 extends javax.swing.JFrame {
         jLabel1.setText("please select a query.");
         parametersPanelHolder.setViewportView(jLabel1);
 
-        pieChartButton.setIcon(new javax.swing.ImageIcon("E:\\Study\\TUe\\Year 2\\Q4\\DBL information system\\DBLIS\\chart_pie_32x32.png")); // NOI18N
+        pieChartButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/chart_pie_32x32.png"))); // NOI18N
         pieChartButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pieChartButtonActionPerformed(evt);
             }
         });
 
-        lineGraphButton.setIcon(new javax.swing.ImageIcon("E:\\Study\\TUe\\Year 2\\Q4\\DBL information system\\DBLIS\\Data-Line-Chart-icon_32x32.png")); // NOI18N
+        lineGraphButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Data-Line-Chart-icon_32x32.png"))); // NOI18N
         lineGraphButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lineGraphButtonActionPerformed(evt);
             }
         });
 
-        listGraphButton.setIcon(new javax.swing.ImageIcon("E:\\Study\\TUe\\Year 2\\Q4\\DBL information system\\DBLIS\\grid_layout_snap_small_stock-512_32x32.png")); // NOI18N
+        listGraphButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/grid_layout_snap_small_stock-512_32x32.png"))); // NOI18N
         listGraphButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 listGraphButtonActionPerformed(evt);
             }
         });
 
-        histogramButton.setIcon(new javax.swing.ImageIcon("E:\\Study\\TUe\\Year 2\\Q4\\DBL information system\\DBLIS\\bar_chart-512_32x32.png")); // NOI18N
+        histogramButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/bar_chart-512_32x32.png"))); // NOI18N
         histogramButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 histogramButtonActionPerformed(evt);
