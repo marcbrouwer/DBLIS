@@ -1,5 +1,6 @@
 package dblis;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,19 +36,74 @@ public class SportData {
     // Variables
     
     private static String countryCode;
-    private static Map<String, List<ChartData>> chartdata;
+    
+    /** countryCode => [{sport, popularity}] */
+    private static Map<String, List<ChartData>> retweetCounts = new HashMap();
+    
+    /** countryCode => [{sport, popularity}] */
+    private static Map<String, List<ChartData>> favCounts = new HashMap();
     
     // Methods
+    
+    public final void addRetweetCount(String country, List<ChartData> list) {
+        addChartDataCountry(retweetCounts, country, list);
+    }
+    
+    public final void addRetweetCount(String country, ChartData sport) {
+        addChartDataSport(retweetCounts, country, sport);
+    }
+    
+    public final void addFavCount(String country, List<ChartData> list) {
+        addChartDataCountry(favCounts, country, list);
+    }
+    
+    public final void addFavCount(String country, ChartData sport) {
+        addChartDataSport(favCounts, country, sport);
+    }
+    
+    private void addChartDataCountry(Map<String, List<ChartData>> chartdata,
+            String country, List<ChartData> list) {
+        list.stream().forEach(elem -> addChartDataSport(chartdata, country, elem));
+    }
+    
+    private void addChartDataSport(Map<String, List<ChartData>> chartdata, 
+            String country, ChartData sport) {
+        if (!chartdata.containsKey(country)) {
+            chartdata.put(country, new ArrayList<>());
+        }
+        chartdata.get(country).add(sport);
+    }
     
     public final String getCountryCode() {
         return countryCode;
     }
     
-    public final Map<String, List<ChartData>> getChartData() {
-        return chartdata;
+    public final Map<String, List<ChartData>> getRetweetCountPopularity() {
+        return retweetCounts;
     }
     
-    public final Map<String, Integer> getSportsByPopularity() {
+    public final Map<String, List<ChartData>> getFavouriteCountPopularity() {
+        return favCounts;
+    }
+    
+    public final Map<String, Double> getSportPopRetweets() {
+        return getSportsByPopularity(retweetCounts);
+    }
+    
+    public final Map<String, Double> getCountryPopRetweets(String sport) {
+        return getPopularityInCountries(retweetCounts, sport);
+    }
+    
+    public final Map<String, Double> getSportPopFavourites() {
+        return getSportsByPopularity(favCounts);
+    }
+    
+    public final Map<String, Double> getCountryPopFavourites(String sport) {
+        return getPopularityInCountries(favCounts, sport);
+    }
+    
+    private Map<String, Double> getSportsByPopularity(
+            Map<String, List<ChartData>> chartdata) {
         final Map<String, Integer> pop = new HashMap();
         
         chartdata.entrySet().stream().forEach(entry -> {
@@ -59,10 +115,11 @@ public class SportData {
             });
         });
         
-        return pop;
+        return getAsPercentage(pop);
     }
     
-    public final Map<String, Integer> getPopularityInCountries(String sport) {
+    private Map<String, Double> getPopularityInCountries(
+            Map<String, List<ChartData>> chartdata, String sport) {
         final Map<String, Integer> pop = new HashMap();
         
         chartdata.entrySet().stream().forEach(entry -> {
@@ -73,7 +130,18 @@ public class SportData {
                     getPopularityOfSport(entry.getValue(), sport));
         });
         
-        return pop;
+        return getAsPercentage(pop);
+    }
+    
+    public final Map<String, Double> getAsPercentage(Map<String, Integer> map) {
+        final Map<String, Double> perc = new HashMap();
+        final double total = map.values().stream().mapToInt(v -> v).sum();
+        
+        map.entrySet().stream().forEach(entry -> {
+            perc.put(entry.getKey(), entry.getValue() * 100.0 / total);
+        });
+        
+        return perc;
     }
     
     private int getPopularityOfSport(List<ChartData> list, String sport) {
@@ -93,8 +161,12 @@ public class SportData {
         SportData.countryCode = countryCode;
     }
     
-    public final void setChartData(Map<String, List<ChartData>> chartdata) {
-        SportData.chartdata = chartdata;
+    public final void setRetweetCounts(Map<String, List<ChartData>> chartdata) {
+        SportData.retweetCounts = chartdata;
+    }
+    
+    public final void setFavouriteCounts(Map<String, List<ChartData>> chartdata) {
+        SportData.favCounts = chartdata;
     }
     
 }

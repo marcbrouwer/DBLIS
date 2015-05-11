@@ -1,6 +1,8 @@
 package dblis;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
@@ -11,13 +13,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
-import org.jfree.ui.RefineryUtilities;
+import javafx.embed.swing.JFXPanel;
+import javax.swing.JFrame;
 import twitter4j.FilterQuery;
 import twitter4j.HashtagEntity;
 import twitter4j.JSONArray;
@@ -56,7 +59,7 @@ public class DBLIS implements Runnable {
     // Search settings (CAN BE CHANGED)
     private String geocode = "geocode:51.444,5.491,500km";
     private String search = "cricket";
-    private final long starttime = 1430841600;//now - blocks * 900; //1429452000;
+    private final long starttime = 1431010800;//now - blocks * 900; //1429452000;
     private boolean useStream = false;
     
     // Search setting for auto searching most commonly used hashtags or words
@@ -79,9 +82,12 @@ public class DBLIS implements Runnable {
     // Number of tweets loaded
     private int numberOfTweets = 0;
     
+    // Debug search
+    private final List<Boolean> firstSearch = new ArrayList<>();
+    
     /** Constructor */
     public DBLIS() {
-        this.tweets = new HashMap();
+        this.tweets = new ConcurrentHashMap();
         this.countHashtags = new HashMap();
         this.countWords = new HashMap();
         this.countLocation = new HashMap();
@@ -156,8 +162,8 @@ public class DBLIS implements Runnable {
             
         }
         
-        final List<ChartData> chartdata = sorted.get("NL");
-        /*Chart3D pie = new Chart3D("NL", chartdata, "Pie");
+        /*final List<ChartData> chartdata = sorted.get("NL");
+        Chart3D pie = new Chart3D("NL", chartdata, "Pie");
         pie.view();*/
         
         /*BarChartSimpleData.setCountryCode("NL");
@@ -165,57 +171,15 @@ public class DBLIS implements Runnable {
         BarChartSimple bar = new BarChartSimple();
         bar.view();*/
         
-        SportData.getInstance().setCountryCode("NL");
-        SportData.getInstance().setChartData(sorted);
+        /*fillSportData();
         PieChartFX pie = new PieChartFX();
         pie.view();
         
-        return;
+        return;*/
         
         // SEARCHING
         
-        // for each location
-        geoList.stream().forEach(geo -> {
-            // for each sport
-            sportsGB.stream().forEach(sport -> {
-                final String[] alts = getAlternativesArray(sa, sport);
-
-                // for each alternative word
-                for (String altSport : alts) {
-
-                    // getTweets and wait if limit reached
-                    long resetTime = 0;
-                    long curTime = 0;
-                    long wait = 0;
-                    while (resetTime >= curTime) {
-                        resetTime = getTweets(altSport, geo);
-                        curTime = new Date().getTime();
-                        try {
-                            if (curTime <= resetTime) {
-                                storeRest(sa);
-
-                                wait = resetTime - curTime;
-                                System.out.println("Sleeping "
-                                        + (wait / 1000)
-                                        + "s for " + altSport);
-                                Thread.sleep(wait + 1000);
-                            }
-                        } catch (InterruptedException ex) {
-                            System.out.println("Error sleeping - " + ex);
-                        }
-                    }
-                    
-                    if (resetTime == -1) {
-                        storeRest(sa);
-                        return;
-                    }
-
-                }
-
-            });
-        });
-
-        storeRest(sa);
+        search(sa, geoList, sportsGB);
         
         //toSearch.stream().forEach(sport -> getTweets(sport, geocode));
         //getTweets(search);
@@ -245,14 +209,122 @@ public class DBLIS implements Runnable {
         storeData();*/
     }
     
+    private void search(ServerAccess sa, List<String> geoList, List<String> sportsGB) {
+        final String firstGeo1 = "geocode:-34.929,138.601,25km";
+        final String firstSport1 = "football";
+        final String firstAlt1 = "pogba";
+        firstSearch.add(true);
+        final Runnable r1 = () -> {
+            for (int i = 0; i < (int) Math.floor(geoList.size() / 2); i++) {
+                searchSports(1, geoList.get(i), firstGeo1, firstSport1, firstAlt1,
+                        sportsGB, sa, getAuth());
+            }
+        };
+        
+        final String firstGeo2 = "geocode:-34.929,138.601,25km";
+        final String firstSport2 = "football";
+        final String firstAlt2 = "pogba";
+        firstSearch.add(false);
+        final Runnable r2 = () -> {
+            for (int i = (int) Math.floor(geoList.size() / 2); i < geoList.size(); i++) {
+                searchSports(2, geoList.get(i), firstGeo2, firstSport2, firstAlt2,
+                        sportsGB, sa, getAuth2());
+            }
+        };
+        
+        final Thread t1 = new Thread(r1);
+        final Thread t2 = new Thread(r2);
+        t1.start();
+        t2.start();
+        
+        try {
+            t1.join();
+        } catch (InterruptedException ex) {
+        }
+        try {
+            t2.join();
+        } catch (InterruptedException ex) {
+        }
+        
+        storeRest(sa);
+    }
+    
+    private boolean searchSports(int n, final String geo, final String firstGeo, 
+            final String firstSport, final String firstAlt, 
+            final List<String> sportsGB, final ServerAccess sa, 
+            final Configuration auth) {
+        
+        sportsGB.stream().forEach(sport -> {
+            final String[] alts = getAlternativesArray(sa, sport);
+
+            // for each alternative word
+            for (String altSport : alts) {
+
+                final String loc = geo;
+                if (firstSearch.get(n - 1)) {
+                    if (loc.equals(firstGeo)
+                            && sport.equals(firstSport)
+                            && altSport.equals(firstAlt)) {
+                        firstSearch.set(n - 1, false);
+                    } else {
+                        continue;
+                    }
+                }
+
+                // getTweets and wait if limit reached
+                long resetTime = 0;
+                long curTime = 0;
+                long wait = 0;
+                while (resetTime >= curTime) {
+                    resetTime = getTweets(altSport, geo, auth);
+                    curTime = new Date().getTime();
+                    try {
+                        if (curTime <= resetTime) {
+                            storeRest(sa);
+
+                            wait = resetTime - curTime;
+                            System.out.println("Sleeping "
+                                    + (wait / 1000)
+                                    + "s for n: " + n
+                                    + ", " + geo
+                                    + ", " + sport
+                                    + ", " + altSport);
+                            Thread.sleep(wait + 1000);
+                        }
+                    } catch (InterruptedException ex) {
+                        System.out.println("Error sleeping - " + ex);
+                    }
+                }
+
+                if (resetTime == -1) {
+                    storeRest(sa);
+                    return;
+                }
+
+            }
+
+        });
+        
+        return true;
+    }
+    
     /** Gets configuration builder for authentication */
     private Configuration getAuth() {
         final ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true);
         cb.setOAuthConsumerKey("n2g9XOjAr9p44yJwFjXUbeUa2");
         cb.setOAuthConsumerSecret("57FHkBBptp17yBGl1v853lldZO9Kh4osJnDQqQEcXd4d9C3xFA");
         cb.setOAuthAccessToken("113906448-2fx9njfJgzQrGdnRaGchI9GlZTzLMXrayEzFk2ju");
         cb.setOAuthAccessTokenSecret("FJOqMt7dtBp1yuW2VnQDfzksa7IS5h3IxxsJ1ixBGI1ny");
+        
+        return cb.build();
+    }
+    
+    private Configuration getAuth2() {
+        final ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setOAuthConsumerKey("fiQ7TIyf4mUHl8STmT6m9YVTQ");
+        cb.setOAuthConsumerSecret("vpuJv3q1Z3PMuZfZoZu9BIF8nm6sK0jRcQfKpaCQyWZIJnHLcw");
+        cb.setOAuthAccessToken("79107187-siXbdmIMXXcalZ043Pa7yfHXvUGXRnThoUB6p6EIg");
+        cb.setOAuthAccessTokenSecret("8X4Yo8dOigSsuqD8udwoc1WmhRfoDmUoEpyIRbR4SwEEm");
         
         return cb.build();
     }
@@ -262,8 +334,8 @@ public class DBLIS implements Runnable {
      * 
      * @param search keyword to search
      */
-    private long getTweets(String search, String geocode) {
-        TwitterFactory tf = new TwitterFactory(getAuth());
+    private long getTweets(String search, String geocode, Configuration auth) {
+        TwitterFactory tf = new TwitterFactory(auth);
         Twitter twitter = tf.getInstance();
         
         try {
@@ -271,17 +343,19 @@ public class DBLIS implements Runnable {
             query.setSinceId(starttime);
             QueryResult result;
             
-            if (!tweets.containsKey(search)) {
-                tweets.put(search, new HashSet());
-            }
-            
             for (int i = 0; i < blocks; i++) {
                 if (Abort.getInstance().abort()) {
                     return -1;
                 }
                 
                 result = twitter.search(query);
-                tweets.get(search).addAll(result.getTweets());
+                
+                synchronized (this) {
+                    if (!tweets.containsKey(search)) {
+                        tweets.put(search, new HashSet());
+                    }
+                    tweets.get(search).addAll(result.getTweets());
+                }
                 
                 //updateCommon(result.getTweets());
                 //searched.add(search.toLowerCase());
@@ -371,7 +445,7 @@ public class DBLIS implements Runnable {
         list.stream()
                 .filter(entry -> !searched.contains(entry.getKey().toLowerCase()))
                 .limit(1)
-                .forEach(entry -> getTweets(entry.getKey(), geocode));
+                .forEach(entry -> getTweets(entry.getKey(), geocode, getAuth()));
     }
     
     /**
@@ -515,28 +589,6 @@ public class DBLIS implements Runnable {
         wordsFilter.addAll(Arrays.asList(filter));
     }
     
-    /** Scans through all tweets to check if a location is set (Geo or Place) */
-    private void scanLocations() {
-        final List<Status> withLocation = new ArrayList<>();
-        tweets.entrySet().stream().forEach(entry -> {
-            entry.getValue().stream().forEach(status -> {
-                if (status.getGeoLocation() != null || status.getPlace() != null) {
-                    withLocation.add(status);
-                }
-            });
-        });
-        
-        System.out.println("\n\nTweets with location " + withLocation.size() + ":");
-        withLocation.stream().forEach(status -> {
-            if (status.getGeoLocation() != null) {
-                System.out.println("Geo: " + status.getGeoLocation());
-            }
-            if (status.getPlace() != null) {
-                System.out.println("Place: " + status.getPlace());
-            }
-        });
-    }
-    
     /** 
      * Stores data to files 
      * 
@@ -658,8 +710,8 @@ public class DBLIS implements Runnable {
     
     private Object[][] popularityToExcelFormat(Map<String, List<ChartData>> map,
             List<String> sportsGB, List<String> countryCodes) {
-        final Object[][] data = new Object[(sportsGB.size() + 1) * countryCodes.size()]
-                [3];
+        final Object[][] data = 
+                new Object[(sportsGB.size() + 1) * countryCodes.size()][3];
         
         int row = 0;
         int col = 0;
@@ -676,24 +728,6 @@ public class DBLIS implements Runnable {
         }
         
         return data;
-        
-        /*final Object[][] data = new Object[sportsGB.size() + 1]
-                [countryCodes.size() * 3];
-        
-        int row = 0;
-        int col = 0;
-        List<Object[]> list;
-        for (String code : countryCodes) {
-            data[row][col] = code;
-            list = map.get(code);
-            for (int i = 0; i < list.size(); i++) {
-                data[row + i + 1][col] = list.get(i)[0];
-                data[row + i + 1][col + 1] = list.get(i)[1];
-            }
-            col += 3;
-        }
-        
-        return data;*/
     }
     
     private String toGeocode(float latitude, float longtitude, int radius) {
@@ -824,7 +858,7 @@ public class DBLIS implements Runnable {
         
         for (int i = 0; i < json.length(); i++) {
             try {
-                list.add(json.getJSONObject(i).getString(sport));
+                list.add(json.getJSONObject(i).getString("sport"));
             } catch (Exception ex) {
                 System.out.println("DBLIS - getAlternativesArray - " + ex);
             }
@@ -875,4 +909,64 @@ public class DBLIS implements Runnable {
         }
         
     }
+    
+    private void convertToDbCsv(int column, int id) {
+        final File file = new File("D:/Documents/2IOC0/data.csv");
+        
+        final List<String[]> list = new ArrayList<>();
+        try {
+            try (BufferedReader bufRdr = new BufferedReader(new FileReader(file))) {
+                String line;
+                String[] row;
+                while ((line = bufRdr.readLine()) != null) {
+                    row = new String[6];
+                    for (int i = 0; i < row.length; i++) {
+                        if (i == 0) {
+                            row[i] = String.valueOf(id);
+                        } else if (i == column) {
+                            row[i] = new String(line.getBytes(), "UTF-8");
+                        } else {
+                            row[i] = "";
+                        }
+                    }
+                    list.add(row);
+                    id++;
+                }
+            }
+            try (PrintWriter writer = new PrintWriter(file)) {
+                list.stream().forEach(row -> {
+                    String line = row[0];
+                    for (int i = 1; i < row.length; i++) {
+                        line += "," + row[i];
+                    }
+                    writer.println(line);
+                });
+            }
+        } catch (IOException ex) {
+            System.out.println("DBLIS - convertToDbCsv() - error converting " + ex);
+        }
+    }
+    
+    private void fillSportData() {
+        SportData.getInstance().setCountryCode("NL");
+        final ServerAccess sa = new ServerAccess();
+        final List<String> countries = getCountryCodes(sa);
+        final List<String> sports = getSportsGB(sa);
+        
+        countries.stream().forEach(country -> {
+            sports.stream().forEach(sport -> {
+                try {
+                    SportData.getInstance().addRetweetCount(country, 
+                            new ChartData(sport, 
+                                    sa.getRelatedTweetsCountryCount(
+                                            country, sport)
+                            )
+                    );
+                } catch (JSONException ex) {
+                    System.out.println("fillSportData - " + ex);
+                }
+            });
+        });
+    }
+    
 }

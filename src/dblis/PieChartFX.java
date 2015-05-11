@@ -5,15 +5,11 @@ import java.util.List;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class PieChartFX extends Application {
@@ -23,8 +19,8 @@ public class PieChartFX extends Application {
         primaryStage.setScene(new Scene(root));
         //String drilldownCss = PieChart.class.getResource("DrilldownChart.css").toExternalForm();
  
-        final Map<String, Integer> sportPop = 
-                SportData.getInstance().getSportsByPopularity();
+        final Map<String, Double> sportPop = 
+                SportData.getInstance().getSportPopRetweets();
         
         final List<PieChart.Data> list = new ArrayList<>();
         
@@ -48,8 +44,8 @@ public class PieChartFX extends Application {
         data.getNode().setOnMouseClicked(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent t) {
                 final List<PieChart.Data> list = new ArrayList<>();
-                final Map<String, Integer> cPop = 
-                        SportData.getInstance().getPopularityInCountries(sport);
+                final Map<String, Double> cPop = 
+                        SportData.getInstance().getCountryPopRetweets(sport);
                 cPop.entrySet().stream().forEach(country -> {
                     list.add(new PieChart.Data(country.getKey(), country.getValue()));
                 });
@@ -67,4 +63,5 @@ public class PieChartFX extends Application {
     public final void view() {
         launch();
     }
+    
 }
