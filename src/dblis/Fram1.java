@@ -19,7 +19,7 @@ public class Fram1 extends javax.swing.JFrame {
     /**
      * Creates new form Fram1
      */
-    Map<Integer, JScrollPane> parameterPanels; 
+    Map<Integer, QueryParameters> parameterPanels; 
     public Fram1() {
         initComponents();
         initParameterPanes();
