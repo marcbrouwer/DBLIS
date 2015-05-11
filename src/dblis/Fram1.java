@@ -27,7 +27,7 @@ public class Fram1 extends javax.swing.JFrame {
 
     public void initParameterPanes(){
         parameterPanels = new HashMap<>();
-        for( int i = 0; i < 1000; i++){
+        for( int i = 0; i < 10; i++){
             //add JScrollPane to parameterPanels
         }
     }
