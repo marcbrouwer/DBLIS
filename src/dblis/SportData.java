@@ -45,10 +45,14 @@ public class SportData {
     /** countryCode => [{sport, popularity}] */
     private static final Map<String, List<ChartData>> favCounts = new HashMap();
     
+    /** countryCode => area (# geo or radius) */
     private static final Map<String, Integer> areas = new HashMap();
     
     // Initialization
     
+    /**
+     * Initializes SportData
+     */
     public void init() {
         SportData.getInstance().setCountryCode("GB");
         final ServerAccess sa = new ServerAccess();
@@ -118,6 +122,13 @@ public class SportData {
         return perc;
     }
     
+    /**
+     * Gets the popularity for a country depending on the search area
+     * 
+     * @param country country code
+     * @param popularity popularity
+     * @return popularity depending on search area
+     */
     private double getPopularityInArea(String country, int popularity) {
         if (!areas.containsKey(country)) {
             return 0;
@@ -196,22 +207,52 @@ public class SportData {
     
     // Public Methods
     
+    /**
+     * Adds an area for a given country
+     * 
+     * @param country country code
+     * @param area area
+     */
     public final void addArea(String country, int area) {
         areas.put(country, area);
     }
     
+    /**
+     * Adds favourite counts for a given country
+     * 
+     * @param country country code
+     * @param list list of sports with favourite counts
+     */
     public final void addFavCount(String country, List<ChartData> list) {
         addChartDataCountry(favCounts, country, list);
     }
     
+    /**
+     * Adds favourite count for a given country and sport
+     * 
+     * @param country country code
+     * @param sport sport with favourite count
+     */
     public final void addFavCount(String country, ChartData sport) {
         addChartDataSport(favCounts, country, sport);
     }
     
+    /**
+     * Adds retweet counts for a given country
+     * 
+     * @param country country code
+     * @param list list of sports with retweet counts
+     */
     public final void addRetweetCount(String country, List<ChartData> list) {
         addChartDataCountry(retweetCounts, country, list);
     }
     
+    /**
+     * Adds retweet count for a given country and sport
+     * 
+     * @param country country code
+     * @param sport sport with retweet count
+     */
     public final void addRetweetCount(String country, ChartData sport) {
         addChartDataSport(retweetCounts, country, sport);
     }
@@ -225,10 +266,24 @@ public class SportData {
         return countryCode;
     }
     
+    /** 
+     * For some sport, get popularity (as percentage) of that sport in all 
+     * countries using favourite counts
+     * 
+     * @param sport sport
+     * @return map with country =&gt; popularity
+     */
     public final Map<String, Double> getCountryPopFavourites(String sport) {
         return getPopularityInCountries(favCounts, sport);
     }
     
+    /** 
+     * For some sport, get popularity (as percentage) of that sport in all 
+     * countries using retweet counts
+     * 
+     * @param sport sport
+     * @return map with country =&gt; popularity
+     */
     public final Map<String, Double> getCountryPopRetweets(String sport) {
         return getPopularityInCountries(retweetCounts, sport);
     }
@@ -251,10 +306,22 @@ public class SportData {
         return retweetCounts;
     }
     
+    /**
+     * Gets combined popularity (as percentage) of sport for all countries 
+     * using favourite counts
+     * 
+     * @return map with country =&gt; popularity
+     */
     public final Map<String, Double> getSportPopFavourites() {
         return getSportsByPopularity(favCounts);
     }
     
+    /**
+     * Gets combined popularity (as percentage) of sport for all countries 
+     * using retweet counts
+     * 
+     * @return map with country =&gt; popularity
+     */
     public final Map<String, Double> getSportPopRetweets() {
         return getSportsByPopularity(retweetCounts);
     }
