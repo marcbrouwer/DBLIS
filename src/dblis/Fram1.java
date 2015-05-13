@@ -9,6 +9,8 @@ package dblis;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerListModel;
 
 /**
  *
@@ -27,9 +29,8 @@ public class Fram1 extends javax.swing.JFrame {
 
     public void initParameterPanes(){
         parameterPanels = new HashMap<>();
-        for( int i = 0; i < 10; i++){
-            //add JScrollPane to parameterPanels
-        }
+        parameterPanels.put(1, new QueryParameters(Sport_CountryPanel,true, true, true, true));
+        
     }
     
     /**
@@ -41,10 +42,14 @@ public class Fram1 extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        scrollPane1 = new java.awt.ScrollPane();
         visualizePanel = new javax.swing.JPanel();
         queryList = new javax.swing.JComboBox();
         parametersPanelHolder = new javax.swing.JScrollPane();
-        jLabel1 = new javax.swing.JLabel();
+        Sport_CountryPanel = new javax.swing.JPanel();
+        countryListCombBox = new javax.swing.JComboBox();
+        topNSpinner = new javax.swing.JSpinner();
+        topNLabel = new javax.swing.JLabel();
         pieChartButton = new javax.swing.JButton();
         lineGraphButton = new javax.swing.JButton();
         listGraphButton = new javax.swing.JButton();
@@ -57,8 +62,40 @@ public class Fram1 extends javax.swing.JFrame {
         queryList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Popular sport(s) in country(ies)", "Country(ies) where sport(s) are popular", "Influence of a sport event" }));
         queryList.setToolTipText("<Query>");
 
-        jLabel1.setText("please select a query.");
-        parametersPanelHolder.setViewportView(jLabel1);
+        countryListCombBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Germany", "Netherlands", "France", "United Kindom" }));
+
+        ((JSpinner.DefaultEditor)topNSpinner.getEditor()).getTextField().setEditable(false);
+        topNSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 5, 1));
+
+        topNLabel.setText("Top ");
+
+        javax.swing.GroupLayout Sport_CountryPanelLayout = new javax.swing.GroupLayout(Sport_CountryPanel);
+        Sport_CountryPanel.setLayout(Sport_CountryPanelLayout);
+        Sport_CountryPanelLayout.setHorizontalGroup(
+            Sport_CountryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Sport_CountryPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(Sport_CountryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, Sport_CountryPanelLayout.createSequentialGroup()
+                        .addComponent(topNLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(topNSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(countryListCombBox, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(145, Short.MAX_VALUE))
+        );
+        Sport_CountryPanelLayout.setVerticalGroup(
+            Sport_CountryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Sport_CountryPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(countryListCombBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(Sport_CountryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(topNSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(topNLabel))
+                .addContainerGap(106, Short.MAX_VALUE))
+        );
+
+        parametersPanelHolder.setViewportView(Sport_CountryPanel);
 
         pieChartButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/chart_pie_32x32.png"))); // NOI18N
         pieChartButton.addActionListener(new java.awt.event.ActionListener() {
@@ -93,52 +130,49 @@ public class Fram1 extends javax.swing.JFrame {
         visualizePanelLayout.setHorizontalGroup(
             visualizePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(visualizePanelLayout.createSequentialGroup()
-                .addGap(2, 2, 2)
+                .addContainerGap()
                 .addGroup(visualizePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(parametersPanelHolder)
+                    .addComponent(queryList, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(parametersPanelHolder, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(visualizePanelLayout.createSequentialGroup()
-                        .addGroup(visualizePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(queryList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, visualizePanelLayout.createSequentialGroup()
-                                .addComponent(pieChartButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lineGraphButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(listGraphButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(histogramButton)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(pieChartButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lineGraphButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(listGraphButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(histogramButton)))
                 .addContainerGap())
         );
         visualizePanelLayout.setVerticalGroup(
             visualizePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(visualizePanelLayout.createSequentialGroup()
                 .addComponent(queryList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(parametersPanelHolder, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                 .addGroup(visualizePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pieChartButton, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                    .addComponent(lineGraphButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(listGraphButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(histogramButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(pieChartButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lineGraphButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(listGraphButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(histogramButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(visualizePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(visualizePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -196,13 +230,17 @@ public class Fram1 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel Sport_CountryPanel;
+    private javax.swing.JComboBox countryListCombBox;
     private javax.swing.JButton histogramButton;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JButton lineGraphButton;
     private javax.swing.JButton listGraphButton;
     private javax.swing.JScrollPane parametersPanelHolder;
     private javax.swing.JButton pieChartButton;
     private javax.swing.JComboBox queryList;
+    private java.awt.ScrollPane scrollPane1;
+    private javax.swing.JLabel topNLabel;
+    private javax.swing.JSpinner topNSpinner;
     private javax.swing.JPanel visualizePanel;
     // End of variables declaration//GEN-END:variables
 }

@@ -6,7 +6,7 @@
 
 package dblis;
 
-import javax.swing.JScrollPane;
+import javax.swing.JPanel;
 
 /**
  *
@@ -14,12 +14,12 @@ import javax.swing.JScrollPane;
  */
 public class QueryParameters {
     
-    private final JScrollPane thisPane ;
+    private final JPanel thisPane ;
     private final boolean pieChartEnabled ;
     private final boolean lineGraphEnabled;
     private final boolean listGraphEnabled;
     private final boolean histogramEnabled;
-    public QueryParameters(JScrollPane pane, boolean pieChartEnabled, boolean lineGraphEnabled, boolean listGraphEnabled, boolean histogramEnabled){
+    public QueryParameters(JPanel pane, boolean pieChartEnabled, boolean lineGraphEnabled, boolean listGraphEnabled, boolean histogramEnabled){
         thisPane = pane;
         this.pieChartEnabled = pieChartEnabled;
         this.lineGraphEnabled = lineGraphEnabled;
@@ -30,7 +30,7 @@ public class QueryParameters {
     /**
      * @return the thisPane
      */
-    public JScrollPane getThisPane() {
+    public JPanel getThisPane() {
         return thisPane;
     }
 
