@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -18,9 +20,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
-import javafx.embed.swing.JFXPanel;
-import javax.swing.JFrame;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import twitter4j.FilterQuery;
 import twitter4j.HashtagEntity;
 import twitter4j.JSONArray;
@@ -53,7 +59,7 @@ public class DBLIS implements Runnable {
     
     // Search block size
     private final long blocks15 = 900;
-    private final int hours = 4;
+    private final int hours = 1;
     private final int blocks = hours * 4;
     
     // Search settings (CAN BE CHANGED)
@@ -119,10 +125,10 @@ public class DBLIS implements Runnable {
         
         System.out.println("Start time: " + (new Date(starttime * 1000)) + "\n");
         
-        final List<String> countryCodes = getCountryCodes(sa);
-        final List<String> sports = getSports(sa);
-        final List<String> sportsGB = getSportsGB(sa);
-        final JSONArray geolocations = getGeolocations(sa);
+        //final List<String> countryCodes = sa.getCountryCodes();
+        final List<String> sportsGB = sa.getSportsGB();
+        //final List<String> sports = getSports(sa);
+        //final JSONArray geolocations = getGeolocations(sa);
         final List<String> geoList = getGeolocationsList(sa);
         
         if (useStream) {
@@ -140,27 +146,14 @@ public class DBLIS implements Runnable {
         }
         
         // debug JSONArray's
-        JSONArray mostCommon = getCommonSports(sa, "NL", 5);
+        /*JSONArray mostCommon = getCommonSports(sa, "NL", 5);
         JSONArray popular = getPopularSportCountries(sa, "tennis", 5);
         JSONArray mostCommonSports = getMostCommonSports(sa, "NL");
         JSONArray mostCommonCountries = getMostCommonCountries(sa, "football", sportsGB.size());
         JSONArray alternatives = getAlternatives(sa, "tennis");
-        
+        */
         // EXCEL OUTPUT
-        final Map<String, JSONArray> commonSports = new HashMap();
-        countryCodes.stream().forEach(code -> {
-            commonSports.put(code, getMostCommonSports(sa, code));
-        });
-        
-        Map<String, List<ChartData>> sorted = sortPopularity(commonSports, sportsGB);
-        Object[][] popExcel = popularityToExcelFormat(sorted, sportsGB, countryCodes);
-        File popularFile = new File(getWorkingDirectory() + "popular.xls");
-        //Excel.writeToExcel(popularFile, popExcel);
-        try {
-            Excel.pieChart(popularFile, popExcel);
-        } catch (IOException ex) {
-            
-        }
+        //toExcel(sa, countryCodes, sportsGB);
         
         /*final List<ChartData> chartdata = sorted.get("NL");
         Chart3D pie = new Chart3D("NL", chartdata, "Pie");
@@ -171,15 +164,15 @@ public class DBLIS implements Runnable {
         BarChartSimple bar = new BarChartSimple();
         bar.view();*/
         
-        /*fillSportData();
+        SportData.getInstance().init();
         PieChartFX pie = new PieChartFX();
-        pie.view();
+        pie.run();
         
-        return;*/
+        return;
         
         // SEARCHING
         
-        search(sa, geoList, sportsGB);
+        //search(sa, geoList, sportsGB);
         
         //toSearch.stream().forEach(sport -> getTweets(sport, geocode));
         //getTweets(search);
@@ -209,10 +202,28 @@ public class DBLIS implements Runnable {
         storeData();*/
     }
     
+    private void toExcel(ServerAccess sa, List<String> countryCodes, 
+            List<String> sportsGB) {
+        final Map<String, JSONArray> commonSports = new HashMap();
+        countryCodes.stream().forEach(code -> {
+            commonSports.put(code, getMostCommonSports(sa, code));
+        });
+        
+        Map<String, List<ChartData>> sorted = sortPopularity(commonSports, sportsGB);
+        Object[][] popExcel = popularityToExcelFormat(sorted, sportsGB, countryCodes);
+        File popularFile = new File(getWorkingDirectory() + "popular.xls");
+        //Excel.writeToExcel(popularFile, popExcel);
+        try {
+            Excel.pieChart(popularFile, popExcel);
+        } catch (IOException ex) {
+            
+        }
+    }
+    
     private void search(ServerAccess sa, List<String> geoList, List<String> sportsGB) {
-        final String firstGeo1 = "geocode:-34.929,138.601,25km";
+        final String firstGeo1 = "geocode:52.3667,5.21667,10km";
         final String firstSport1 = "football";
-        final String firstAlt1 = "pogba";
+        final String firstAlt1 = "eredivisie";
         firstSearch.add(true);
         final Runnable r1 = () -> {
             for (int i = 0; i < (int) Math.floor(geoList.size() / 2); i++) {
@@ -221,10 +232,10 @@ public class DBLIS implements Runnable {
             }
         };
         
-        final String firstGeo2 = "geocode:-34.929,138.601,25km";
+        final String firstGeo2 = "geocode:48.3,14.28,10km";
         final String firstSport2 = "football";
-        final String firstAlt2 = "pogba";
-        firstSearch.add(false);
+        final String firstAlt2 = "eredivisie";
+        firstSearch.add(true);
         final Runnable r2 = () -> {
             for (int i = (int) Math.floor(geoList.size() / 2); i < geoList.size(); i++) {
                 searchSports(2, geoList.get(i), firstGeo2, firstSport2, firstAlt2,
@@ -753,20 +764,7 @@ public class DBLIS implements Runnable {
         try {
             final JSONArray json = sa.getSports();
             for (int i = 0; i < json.length(); i++) {
-                list.add(json.getJSONObject(i).getString("Sport"));
-            }
-        } catch (Exception ex) {
-            System.out.println("DBLIS - getSports - " + ex);
-        }
-        return list;
-    }
-    
-    private List<String> getSportsGB(ServerAccess sa) {
-        final List<String> list = new ArrayList<>();
-        try {
-            final JSONArray json = sa.getSportsGB();
-            for (int i = 0; i < json.length(); i++) {
-                list.add(json.getJSONObject(i).getString("Sport"));
+                list.add(json.getJSONObject(i).getString("sport"));
             }
         } catch (Exception ex) {
             System.out.println("DBLIS - getSports - " + ex);
@@ -867,29 +865,6 @@ public class DBLIS implements Runnable {
         return list.toArray(new String[list.size()]);
     }
     
-    private List<String> getCountryCodes(ServerAccess sa) {
-        final List<String> list = new ArrayList<>();
-        
-        try {
-            final JSONArray json = sa.getCountryCodes();
-            String code;
-            
-            for (int i = 0; i < json.length(); i++) {
-                try {
-                    code = json.getJSONObject(i).getString("countryCode");
-                    list.add(code);
-                } catch (Exception ex) {
-                    System.out.println("DBLIS - getAlternativesArray - " + ex);
-                }
-            }
-
-        } catch (Exception ex) {
-            System.out.println("DBLIS - getCountryCodes - " + ex);
-        }
-        
-        return list;
-    }
-    
     private class Count {
         
         private final int max;
@@ -945,28 +920,6 @@ public class DBLIS implements Runnable {
         } catch (IOException ex) {
             System.out.println("DBLIS - convertToDbCsv() - error converting " + ex);
         }
-    }
-    
-    private void fillSportData() {
-        SportData.getInstance().setCountryCode("NL");
-        final ServerAccess sa = new ServerAccess();
-        final List<String> countries = getCountryCodes(sa);
-        final List<String> sports = getSportsGB(sa);
-        
-        countries.stream().forEach(country -> {
-            sports.stream().forEach(sport -> {
-                try {
-                    SportData.getInstance().addRetweetCount(country, 
-                            new ChartData(sport, 
-                                    sa.getRelatedTweetsCountryCount(
-                                            country, sport)
-                            )
-                    );
-                } catch (JSONException ex) {
-                    System.out.println("fillSportData - " + ex);
-                }
-            });
-        });
     }
     
 }

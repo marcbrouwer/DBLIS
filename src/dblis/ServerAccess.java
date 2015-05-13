@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.entity.StringEntity;
@@ -114,8 +116,18 @@ public class ServerAccess {
         return new JSONArray(getResponseObject("getSports", null).toString());
     }
     
-    public final JSONArray getSportsGB() throws JSONException {
-        return new JSONArray(getResponseObject("getSportsGB", null).toString());
+    public final List<String> getSportsGB() {
+        final List<String> list = new ArrayList<>();
+        try {
+            final JSONArray json = 
+                    new JSONArray(getResponseObject("getSportsGB", null).toString());
+            for (int i = 0; i < json.length(); i++) {
+                list.add(json.getJSONObject(i).getString("sport"));
+            }
+        } catch (Exception ex) {
+            System.out.println("DBLIS - getSports - " + ex);
+        }
+        return list;
     }
     
     @Deprecated
@@ -170,8 +182,28 @@ public class ServerAccess {
         return new JSONArray(response);
     }
     
-    public final JSONArray getCountryCodes() throws JSONException {
-        return new JSONArray(getResponseObject("getCountryCodes", null).toString());
+    public final List<String> getCountryCodes() {
+        final List<String> list = new ArrayList<>();
+        
+        try {
+            final JSONArray json = 
+                    new JSONArray(getResponseObject("getCountryCodes", null).toString());
+            String code;
+            
+            for (int i = 0; i < json.length(); i++) {
+                try {
+                    code = json.getJSONObject(i).getString("countryCode");
+                    list.add(code);
+                } catch (Exception ex) {
+                    System.out.println("getCountryCodes - " + ex);
+                }
+            }
+
+        } catch (Exception ex) {
+            System.out.println("getCountryCodes - " + ex);
+        }
+        
+        return list;
     }
     
     public final int getRelatedTweetsCountryCount(String country, String sport) throws JSONException {
@@ -185,6 +217,22 @@ public class ServerAccess {
             return 0;
         }
         return json.getJSONObject(0).getInt("sum");
+    }
+    
+    public final int getArea(String country) {
+        try {
+            final Map<String, Object> params = new HashMap();
+            params.put("countrycode", country);
+            final JSONArray json
+                    = new JSONArray(getResponseObject("getArea", params).toString());
+            if (json.getJSONObject(0).isNull("area")) {
+                return 0;
+            }
+            return json.getJSONObject(0).getInt("area");
+        } catch (JSONException ex) {
+            //System.out.println("getArea - " + ex);
+            return 0;
+        }
     }
     
 }

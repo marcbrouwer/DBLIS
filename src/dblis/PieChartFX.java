@@ -12,7 +12,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-public class PieChartFX extends Application {
+public class PieChartFX extends Application implements Runnable {
     
     private void init(Stage primaryStage) {
         Group root = new Group();
@@ -60,7 +60,8 @@ public class PieChartFX extends Application {
         primaryStage.show();
     }
     
-    public final void view() {
+    @Override
+    public void run() {
         launch();
     }
     
