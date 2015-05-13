@@ -8,6 +8,7 @@ package dblis;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
@@ -22,6 +23,7 @@ public class Fram1 extends javax.swing.JFrame {
      * Creates new form Fram1
      */
     Map<Integer, QueryParameters> parameterPanels; 
+    QueryParameters PP;
     public Fram1() {
         initComponents();
         initParameterPanes();
@@ -29,8 +31,10 @@ public class Fram1 extends javax.swing.JFrame {
 
     public void initParameterPanes(){
         parameterPanels = new HashMap<>();
-        parameterPanels.put(1, new QueryParameters(Sport_CountryPanel,true, true, true, true));
-        
+        parameterPanels.put(0, new QueryParameters(emptyPanel,true, false, true, true));
+        parameterPanels.put(1, new QueryParameters(Sport_CountryPanel,true,true,false,true));
+        parameterPanels.put(2, new QueryParameters(Country_SportPanel,true,true,true,false));
+        parameterPanels.put(3, new QueryParameters(EventPanel, false, true, true, true));
     }
     
     /**
@@ -42,32 +46,34 @@ public class Fram1 extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        scrollPane1 = new java.awt.ScrollPane();
+        Sport_CountryPanel = new javax.swing.JPanel();
+        countryListSport_Country = new javax.swing.JComboBox();
+        topNSpinnerSport_Country = new javax.swing.JSpinner();
+        topNLabelSport_Country = new javax.swing.JLabel();
+        Country_SportPanel = new javax.swing.JPanel();
+        sportListCountry_Sport = new javax.swing.JComboBox();
+        topNSpinnerCountry_Sport = new javax.swing.JSpinner();
+        topNLabelCountry_Sport = new javax.swing.JLabel();
+        EventPanel = new javax.swing.JPanel();
+        countryListEventPanel = new javax.swing.JComboBox();
+        SportListEventPanel = new javax.swing.JComboBox();
+        eventListEventPanel = new javax.swing.JComboBox();
         visualizePanel = new javax.swing.JPanel();
         queryList = new javax.swing.JComboBox();
         parametersPanelHolder = new javax.swing.JScrollPane();
-        Sport_CountryPanel = new javax.swing.JPanel();
-        countryListCombBox = new javax.swing.JComboBox();
-        topNSpinner = new javax.swing.JSpinner();
-        topNLabel = new javax.swing.JLabel();
+        emptyPanel = new javax.swing.JPanel();
+        labelEmptyPanel = new javax.swing.JLabel();
         pieChartButton = new javax.swing.JButton();
         lineGraphButton = new javax.swing.JButton();
         listGraphButton = new javax.swing.JButton();
         histogramButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        countryListSport_Country.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Germany", "Netherlands", "France", "United Kindom" }));
 
-        visualizePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Visualize"));
+        ((JSpinner.DefaultEditor)topNSpinnerSport_Country.getEditor()).getTextField().setEditable(false);
+        topNSpinnerSport_Country.setModel(new javax.swing.SpinnerNumberModel(1, 1, 5, 1));
 
-        queryList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Popular sport(s) in country(ies)", "Country(ies) where sport(s) are popular", "Influence of a sport event" }));
-        queryList.setToolTipText("<Query>");
-
-        countryListCombBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Germany", "Netherlands", "France", "United Kindom" }));
-
-        ((JSpinner.DefaultEditor)topNSpinner.getEditor()).getTextField().setEditable(false);
-        topNSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 5, 1));
-
-        topNLabel.setText("Top ");
+        topNLabelSport_Country.setText("Top ");
 
         javax.swing.GroupLayout Sport_CountryPanelLayout = new javax.swing.GroupLayout(Sport_CountryPanel);
         Sport_CountryPanel.setLayout(Sport_CountryPanelLayout);
@@ -76,26 +82,129 @@ public class Fram1 extends javax.swing.JFrame {
             .addGroup(Sport_CountryPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(Sport_CountryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, Sport_CountryPanelLayout.createSequentialGroup()
-                        .addComponent(topNLabel)
+                    .addGroup(Sport_CountryPanelLayout.createSequentialGroup()
+                        .addComponent(topNLabelSport_Country)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(topNSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(countryListCombBox, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(145, Short.MAX_VALUE))
+                        .addComponent(topNSpinnerSport_Country, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(countryListSport_Country, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(199, Short.MAX_VALUE))
         );
         Sport_CountryPanelLayout.setVerticalGroup(
             Sport_CountryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(Sport_CountryPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(countryListCombBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(countryListSport_Country, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(Sport_CountryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(topNSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(topNLabel))
+                    .addComponent(topNLabelSport_Country)
+                    .addComponent(topNSpinnerSport_Country, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(106, Short.MAX_VALUE))
         );
 
-        parametersPanelHolder.setViewportView(Sport_CountryPanel);
+        sportListCountry_Sport.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Football", "Basketball", "Hockey", "Flying" }));
+        sportListCountry_Sport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sportListCountry_SportActionPerformed(evt);
+            }
+        });
+
+        ((JSpinner.DefaultEditor)topNSpinnerSport_Country.getEditor()).getTextField().setEditable(false);
+        topNSpinnerCountry_Sport.setModel(new javax.swing.SpinnerNumberModel(1, 1, 5, 1));
+
+        topNLabelCountry_Sport.setText("Top ");
+
+        javax.swing.GroupLayout Country_SportPanelLayout = new javax.swing.GroupLayout(Country_SportPanel);
+        Country_SportPanel.setLayout(Country_SportPanelLayout);
+        Country_SportPanelLayout.setHorizontalGroup(
+            Country_SportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Country_SportPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(Country_SportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(Country_SportPanelLayout.createSequentialGroup()
+                        .addComponent(topNLabelCountry_Sport)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(topNSpinnerCountry_Sport, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sportListCountry_Sport, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(145, Short.MAX_VALUE))
+        );
+        Country_SportPanelLayout.setVerticalGroup(
+            Country_SportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Country_SportPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(sportListCountry_Sport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(Country_SportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(topNLabelCountry_Sport)
+                    .addComponent(topNSpinnerCountry_Sport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(106, Short.MAX_VALUE))
+        );
+
+        countryListEventPanel.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Germany", "Netherlands", "France", "United Kindom" }));
+
+        SportListEventPanel.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Football", "Basketball", "Hockey", "Flying" }));
+
+        eventListEventPanel.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Flying Champion League" }));
+
+        javax.swing.GroupLayout EventPanelLayout = new javax.swing.GroupLayout(EventPanel);
+        EventPanel.setLayout(EventPanelLayout);
+        EventPanelLayout.setHorizontalGroup(
+            EventPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(EventPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(EventPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(EventPanelLayout.createSequentialGroup()
+                        .addComponent(eventListEventPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(145, Short.MAX_VALUE))
+                    .addGroup(EventPanelLayout.createSequentialGroup()
+                        .addComponent(countryListEventPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(SportListEventPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(41, 41, 41))))
+        );
+        EventPanelLayout.setVerticalGroup(
+            EventPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(EventPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(EventPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(countryListEventPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(SportListEventPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(eventListEventPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(95, Short.MAX_VALUE))
+        );
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        visualizePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Visualize"));
+
+        queryList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "< Select a query > ", "Popular sport(s) in country(ies)", "Country(ies) where sport(s) are popular", "Influence of a sport event" }));
+        queryList.setToolTipText("<Query>");
+        queryList.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                querySelectedHandler(evt);
+            }
+        });
+
+        labelEmptyPanel.setText("Please select a query first");
+
+        javax.swing.GroupLayout emptyPanelLayout = new javax.swing.GroupLayout(emptyPanel);
+        emptyPanel.setLayout(emptyPanelLayout);
+        emptyPanelLayout.setHorizontalGroup(
+            emptyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(emptyPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelEmptyPanel)
+                .addContainerGap(207, Short.MAX_VALUE))
+        );
+        emptyPanelLayout.setVerticalGroup(
+            emptyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(emptyPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelEmptyPanel)
+                .addContainerGap(81, Short.MAX_VALUE))
+        );
+
+        parametersPanelHolder.setViewportView(emptyPanel);
 
         pieChartButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/chart_pie_32x32.png"))); // NOI18N
         pieChartButton.addActionListener(new java.awt.event.ActionListener() {
@@ -180,6 +289,7 @@ public class Fram1 extends javax.swing.JFrame {
 
     private void pieChartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pieChartButtonActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_pieChartButtonActionPerformed
 
     private void lineGraphButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lineGraphButtonActionPerformed
@@ -193,6 +303,22 @@ public class Fram1 extends javax.swing.JFrame {
     private void histogramButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_histogramButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_histogramButtonActionPerformed
+
+    private void querySelectedHandler(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_querySelectedHandler
+        // TODO add your handling code here:
+        int index = queryList.getSelectedIndex();
+        PP = parameterPanels.get(index);
+        parametersPanelHolder.setViewportView(PP.getThisPane());
+        histogramButton.setEnabled(PP.isHistogramEnabled());
+        lineGraphButton.setEnabled(PP.isLineGraphEnabled());
+        pieChartButton.setEnabled(PP.isPieChartEnabled());
+        listGraphButton.setEnabled(PP.isListGraphEnabled());
+        
+    }//GEN-LAST:event_querySelectedHandler
+
+    private void sportListCountry_SportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportListCountry_SportActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sportListCountry_SportActionPerformed
 
     /**
      * @param args the command line arguments
@@ -230,17 +356,26 @@ public class Fram1 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel Country_SportPanel;
+    private javax.swing.JPanel EventPanel;
+    private javax.swing.JComboBox SportListEventPanel;
     private javax.swing.JPanel Sport_CountryPanel;
-    private javax.swing.JComboBox countryListCombBox;
+    private javax.swing.JComboBox countryListEventPanel;
+    private javax.swing.JComboBox countryListSport_Country;
+    private javax.swing.JPanel emptyPanel;
+    private javax.swing.JComboBox eventListEventPanel;
     private javax.swing.JButton histogramButton;
+    private javax.swing.JLabel labelEmptyPanel;
     private javax.swing.JButton lineGraphButton;
     private javax.swing.JButton listGraphButton;
     private javax.swing.JScrollPane parametersPanelHolder;
     private javax.swing.JButton pieChartButton;
     private javax.swing.JComboBox queryList;
-    private java.awt.ScrollPane scrollPane1;
-    private javax.swing.JLabel topNLabel;
-    private javax.swing.JSpinner topNSpinner;
+    private javax.swing.JComboBox sportListCountry_Sport;
+    private javax.swing.JLabel topNLabelCountry_Sport;
+    private javax.swing.JLabel topNLabelSport_Country;
+    private javax.swing.JSpinner topNSpinnerCountry_Sport;
+    private javax.swing.JSpinner topNSpinnerSport_Country;
     private javax.swing.JPanel visualizePanel;
     // End of variables declaration//GEN-END:variables
 }
