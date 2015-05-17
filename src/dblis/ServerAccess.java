@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -59,14 +60,15 @@ public class ServerAccess {
             //JSONObject holder = getJsonObjectFromMap(params);
 
             //passes the results to a string builder/entity
-            StringEntity se = new StringEntity(holder.toString());
-
+            StringEntity se = new StringEntity(holder.toString(), Charset.forName("UTF-8"));
+            
             //sets the post request as the resulting string
             httppost.setEntity(se);
+            
             //sets a request header so the page receving the request
             //will know what to do with it
             httppost.setHeader("Accept", "application/json");
-            httppost.setHeader("Content-type", "application/json");
+            httppost.setHeader("Content-type", "application/json; charset=utf-8");
 
             //Handles what is returned from the page 
             ResponseHandler responseHandler = new BasicResponseHandler();
@@ -233,6 +235,43 @@ public class ServerAccess {
             //System.out.println("getArea - " + ex);
             return 0;
         }
+    }
+    
+    public final List<ChartData> getKeywordsPopularityRetweetCount(String country, String sport) {
+        final List<ChartData> list = new ArrayList<>();
+        
+        try {
+            final Map<String, Object> params = new HashMap();
+            params.put("sport", sport);
+            params.put("countrycode", country);
+            final String response = getResponseObject(
+                    "getKeywordsPopularityRetweetCount", params)
+                    .toString();
+            final JSONArray json = new JSONArray(response);
+            
+            JSONObject obj;
+            String keywords;
+            int sum;
+            for (int i = 0; i < json.length(); i++) {
+                try {
+                    obj = json.getJSONObject(i);
+                    keywords = obj.getString("keywords");
+                    if (obj.isNull("sum")) {
+                        sum = 0;
+                    } else {
+                        sum = obj.getInt("sum");
+                    }
+                    list.add(new ChartData(keywords, sum));
+                } catch (Exception ex) {
+                    System.out.println("getCountryCodes - " + ex);
+                }
+            }
+
+        } catch (Exception ex) {
+            System.out.println("getCountryCodes - " + ex);
+        }
+        
+        return list;
     }
     
 }

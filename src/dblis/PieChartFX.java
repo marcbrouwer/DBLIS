@@ -45,7 +45,8 @@ public class PieChartFX extends Application implements Runnable {
             public void handle(MouseEvent t) {
                 final List<PieChart.Data> list = new ArrayList<>();
                 final Map<String, Double> cPop = 
-                        SportData.getInstance().getCountryPopRetweets(sport);
+                        SportData.getInstance().getKeywordCountRT("NL", sport);
+                        //SportData.getInstance().getCountryPopRetweets(sport);
                 cPop.entrySet().stream().forEach(country -> {
                     list.add(new PieChart.Data(country.getKey(), country.getValue()));
                 });

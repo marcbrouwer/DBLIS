@@ -1,6 +1,7 @@
 package dblis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,11 @@ public class SportData {
     /** countryCode => [{sport, popularity}] */
     private static final Map<String, List<ChartData>> favCounts = new HashMap();
     
+    /** countryCode => [sport => [{keyword, popularity}] ]*/
+    private static final Map<String, Map<String, List<ChartData>>> keywordsCountRT = new HashMap();
+    
     /** countryCode => area (# geo or radius) */
+    @Deprecated
     private static final Map<String, Integer> areas = new HashMap();
     
     // Initialization
@@ -54,21 +59,24 @@ public class SportData {
      * Initializes SportData
      */
     public void init() {
-        SportData.getInstance().setCountryCode("GB");
+        SportData.getInstance().setCountryCode("NL");
         final ServerAccess sa = new ServerAccess();
         final List<String> countries = sa.getCountryCodes();
-        final List<String> sports = sa.getSportsGB();
+        final List<String> sports = 
+                Arrays.asList("football", "hockey", "cycling", "tennis", "skating");//sa.getSportsGB();
         
         countries.stream().forEach(country -> {
             SportData.getInstance().addArea(country, sa.getArea(country));
             sports.stream().forEach(sport -> {
                 try {
-                    SportData.getInstance().addRetweetCount(country, 
+                    addRetweetCount(country, 
                             new ChartData(sport, 
                                     sa.getRelatedTweetsCountryCount(
                                             country, sport)
                             )
                     );
+                    addKeywordsCountRT(country, sport, 
+                            sa.getKeywordsPopularityRetweetCount(country, sport));
                 } catch (JSONException ex) {
                     System.out.println("init - " + ex);
                 }
@@ -129,6 +137,7 @@ public class SportData {
      * @param popularity popularity
      * @return popularity depending on search area
      */
+    @Deprecated
     private double getPopularityInArea(String country, int popularity) {
         if (!areas.containsKey(country)) {
             return 0;
@@ -179,7 +188,7 @@ public class SportData {
             }
         }
         
-        return getPopularityInArea(country, pop);
+        return pop;
     }
     
     /**
@@ -197,8 +206,7 @@ public class SportData {
                 if (!pop.containsKey(sport.getName())) {
                     pop.put(sport.getName(), 0.0);
                 }
-                pop.put(sport.getName(), pop.get(sport.getName()) + 
-                        getPopularityInArea(entry.getKey(), sport.getValue()));
+                pop.put(sport.getName(), pop.get(sport.getName()) + sport.getValue());
             });
         });
         
@@ -213,6 +221,7 @@ public class SportData {
      * @param country country code
      * @param area area
      */
+    @Deprecated
     public final void addArea(String country, int area) {
         areas.put(country, area);
     }
@@ -255,6 +264,14 @@ public class SportData {
      */
     public final void addRetweetCount(String country, ChartData sport) {
         addChartDataSport(retweetCounts, country, sport);
+    }
+    
+    public final void addKeywordsCountRT(String country, String sport, 
+            List<ChartData> chartdata) {
+        if (!keywordsCountRT.containsKey(country)) {
+            keywordsCountRT.put(country, new HashMap());
+        }
+        keywordsCountRT.get(country).put(sport, chartdata);
     }
     
     /**
@@ -304,6 +321,15 @@ public class SportData {
      */
     public final Map<String, List<ChartData>> getRetweetCountPopularity() {
         return retweetCounts;
+    }
+    
+    public final Map<String, Double> getKeywordCountRT(String country, String sport) {
+        final Map<String, Double> pop = new HashMap();
+        
+        keywordsCountRT.get(country).get(sport).stream()
+                .forEach(data -> pop.put(data.getName(), (double) data.getValue()));
+        
+        return getAsPercentage(pop);
     }
     
     /**

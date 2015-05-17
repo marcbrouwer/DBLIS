@@ -1,5 +1,6 @@
 package dblis;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import twitter4j.Place;
 import twitter4j.Status;
@@ -22,13 +23,17 @@ public class TweetEntity {
     private long userID;
     private String keywords;
     
-    public TweetEntity(String dataSeperator, Status status, String keywords) {
+    public TweetEntity(String dataSeperator, Status status, String keywords) 
+            throws UnsupportedEncodingException {
         this(dataSeperator, status, status.getPlace(), 
                 status.getRetweetedStatus(), keywords);
+        if (status.getLang().equals("nl")) {
+            countryCode = "NL";
+        }
     }
     
     private TweetEntity(String dataSeperator, Status status, Place place, 
-            Status retweet, String keywords) {
+            Status retweet, String keywords) throws UnsupportedEncodingException {
         String countrycode = "";
         if (place != null) {
             countrycode = place.getCountryCode();
@@ -46,12 +51,15 @@ public class TweetEntity {
         this.retweetid = retweetStatusID;
         this.retweets = status.getRetweetCount();
         this.favourites = status.getFavoriteCount();
-        this.text = formatText(status.getText());
+        this.text = new String(formatText(status.getText()).getBytes(), "UTF-8");
         this.creationTime = status.getCreatedAt().getTime();
         this.countryCode = countrycode;
         this.language = lang;
         this.userID = status.getUser().getId();
         this.keywords = keywords;
+        if (status.getLang().equals("nl")) {
+            countryCode = "NL";
+        }
     }
     
     public TweetEntity(String dataSeperator, long id, long retweetid, int retweets, 
@@ -68,6 +76,9 @@ public class TweetEntity {
         this.language = language;
         this.userID = userId;
         this.keywords = keywords;
+        if (language.equals("nl")) {
+            countryCode = "NL";
+        }
     }
     
     private String formatText(String text) {

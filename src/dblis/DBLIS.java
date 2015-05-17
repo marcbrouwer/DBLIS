@@ -4,9 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,18 +19,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import twitter4j.FilterQuery;
 import twitter4j.HashtagEntity;
+import twitter4j.IDs;
 import twitter4j.JSONArray;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
+import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.StallWarning;
@@ -91,6 +86,10 @@ public class DBLIS implements Runnable {
     // Debug search
     private final List<Boolean> firstSearch = new ArrayList<>();
     
+    // Time search
+    private long searchTime1 = starttime;
+    private long searchTime2 = starttime;
+    
     /** Constructor */
     public DBLIS() {
         this.tweets = new ConcurrentHashMap();
@@ -123,18 +122,18 @@ public class DBLIS implements Runnable {
         final ServerAccess sa = new ServerAccess();
         initWordsFilter();
         
-        System.out.println("Start time: " + (new Date(starttime * 1000)) + "\n");
+        //System.out.println("Start time: " + (new Date(starttime * 1000)) + "\n");
         
         //final List<String> countryCodes = sa.getCountryCodes();
-        final List<String> sportsGB = sa.getSportsGB();
-        //final List<String> sports = getSports(sa);
+        //final List<String> sportsGB = sa.getSportsGB();
+        final List<String> sports = getSports(sa);
         //final JSONArray geolocations = getGeolocations(sa);
-        final List<String> geoList = getGeolocationsList(sa);
+        final double[][] geos = getGeolocationsArray(sa);
         
-        if (useStream) {
+        /*if (useStream) {
             int max = 100;
             geoList.stream().forEach(loc -> {
-                sportsGB.stream().forEach(sport -> {
+                sports.stream().forEach(sport -> {
                     try {
                         twitterStream(sa, sport, loc, max);
                     } catch (IOException ex) {
@@ -143,7 +142,7 @@ public class DBLIS implements Runnable {
                 });
             });
             return;
-        }
+        }*/
         
         // debug JSONArray's
         /*JSONArray mostCommon = getCommonSports(sa, "NL", 5);
@@ -164,15 +163,17 @@ public class DBLIS implements Runnable {
         BarChartSimple bar = new BarChartSimple();
         bar.view();*/
         
-        SportData.getInstance().init();
+        /*SportData.getInstance().init();
         PieChartFX pie = new PieChartFX();
         pie.run();
         
-        return;
+        return;*/
         
         // SEARCHING
         
-        //search(sa, geoList, sportsGB);
+        //userSearch(sa, getAuth2(), "FCBarcelona");
+        //twitterStream2(sa, sports);
+        timeSearch(sa, geos, sports);
         
         //toSearch.stream().forEach(sport -> getTweets(sport, geocode));
         //getTweets(search);
@@ -220,10 +221,363 @@ public class DBLIS implements Runnable {
         }
     }
     
+    private void userSearch(ServerAccess sa, Configuration auth, String user) {
+        Twitter twitter = new TwitterFactory(auth).getInstance();
+
+        int pageno = 1;
+        Set<Status> statuses = new HashSet();
+
+        while (true) {
+            try {
+                int size = statuses.size();
+                Paging page = new Paging(pageno++, 100);
+                statuses.addAll(twitter.getUserTimeline(user, page));
+                if (statuses.size() == size) {
+                    break;
+                }
+            } catch (TwitterException te) {
+                try {
+                    System.out.println("\nTimeline, Retry at: "
+                            + (new Date(te.getRateLimitStatus()
+                                    .getResetTimeInSeconds() * 1000L)));
+                    Thread.sleep((te.getRateLimitStatus().getSecondsUntilReset() + 1) * 1000L);
+                } catch (Exception ex) {
+                }
+            }
+        }
+        
+        pageno = 1;
+        IDs ids;
+        User u;
+        Set<Long> userIDs = new HashSet();
+        for (Status t : statuses) {
+            while (true) {
+                try {
+                    ids = twitter.getRetweeterIds(t.getId(), 100, pageno++);
+                    for (long id : ids.getIDs()) {
+                        while (true) {
+                            try {
+                                u = twitter.showUser(id);
+                                if (u.getLang().equals("nl")) {
+                                    userIDs.add(id);
+                                }
+                                break;
+                            } catch (TwitterException te) {
+                                if (!te.exceededRateLimitation()) {
+                                    break;
+                                }
+                                try {
+                                    System.out.println("\nStatuses user, Retry at: "
+                                            + (new Date(te.getRateLimitStatus()
+                                                    .getResetTimeInSeconds() * 1000L)));
+                                    Thread.sleep((te.getRateLimitStatus().getSecondsUntilReset() + 1) * 1000L);
+                                } catch (Exception ex) {
+                                }
+                            }
+                        }
+                    }
+                    break;
+                } catch (TwitterException te) {
+                    if (!te.exceededRateLimitation()) {
+                        break;
+                    }
+                    try {
+                        System.out.println("\nStatuses, Retry at: "
+                            + (new Date(te.getRateLimitStatus()
+                                    .getResetTimeInSeconds() * 1000L)));
+                        Thread.sleep((te.getRateLimitStatus().getSecondsUntilReset() + 1) * 1000L);
+                    } catch (Exception ex) {
+                    }
+                }
+            }
+        }
+        
+        pageno = 1;
+        final Map<Long, Set<Status>> userTweets = new HashMap();
+
+        for (long userid : userIDs) {
+            statuses = new HashSet();
+            
+            while (true) {
+                try {
+                    int size = statuses.size();
+                    Paging page = new Paging(pageno++, 100);
+                    statuses.addAll(twitter.getUserTimeline(user, page));
+                    if (statuses.size() == size) {
+                        break;
+                    }
+                } catch (TwitterException te) {
+                    try {
+                        System.out.println("\nLang Users, Retry at: "
+                            + (new Date(te.getRateLimitStatus()
+                                    .getResetTimeInSeconds() * 1000L))); 
+                       Thread.sleep((te.getRateLimitStatus().getSecondsUntilReset() + 1) * 1000L);
+                    } catch (Exception ex) {
+                    }
+                }
+            }
+            
+            statuses.stream().forEach(status -> {
+                if (status.getText().contains(user)) {
+                    if (!userTweets.containsKey(userid)) {
+                        userTweets.put(userid, new HashSet());
+                    }
+                    userTweets.get(userid).add(status);
+                }
+            });
+        }
+        
+        synchronized (this) {
+            if (!tweets.containsKey(user)) {
+                tweets.put(user, new HashSet());
+            }
+            tweets.get(user).addAll(statuses);
+        }
+        
+        storeRest(sa);
+        
+        System.out.println(user + ": " + statuses.size());
+    }
+    
+    private void timeSearch(ServerAccess sa, double[][] geos, List<String> sports) {
+        final long starttime = 1399986000; //13-5-2014 15:00:00
+        final long endtime = 1431522000; //13-5-2015 15:00:00
+        final long hourdif = 3600;
+        final long daydif = 86400;
+        final long weekdif = 7*daydif;
+        
+        final String firstGeo1 = "geocode:52.0813,4.76814,40km";
+        final String firstSport1 = "alberto contador";
+        final List<String> sports1 = new ArrayList<>();
+        boolean start1 = true;
+        for (int i = 0; i < (int) Math.floor(sports.size() / 2); i++) {
+            if (sports.get(i).equals("depay")) {
+                start1 = true;
+            }
+            if (start1) {
+                sports1.add(sports.get(i));
+            }
+        }
+        searchTime1 = starttime;
+        firstSearch.add(false);
+        final Runnable r1 = () -> {
+            //while (searchTime1 <= endtime) {
+                //for (int i = 0; i < (int) Math.floor(geos.length / 2); i++) {
+                    timeSearchSports(searchTime1, 1, geos[0], firstGeo1, 
+                            firstSport1, sports1, sa, getAuth2());
+                //}
+            //    searchTime1 += weekdif;
+            //}
+        };
+        
+        final String firstGeo2 = "geocode:50.8899,5.87614,15km";
+        final String firstSport2 = "alberto contador";
+        final List<String> sports2 = new ArrayList<>();
+        boolean start2 = true;
+        for (int i = (int) Math.floor(sports.size() / 2); i < sports.size(); i++) {
+            if (sports.get(i).equals("")) {
+                start2 = true;
+            }
+            if (start2) {
+                sports2.add(sports.get(i));
+            }
+        }
+        searchTime2 = starttime;
+        firstSearch.add(false);
+        final Runnable r2 = () -> {
+            //while (searchTime2 <= endtime) {
+                //for (int i = (int) Math.floor(geos.length / 2); i < geos.length; i++) {
+                    timeSearchSports(searchTime2, 2, geos[0], firstGeo2, 
+                            firstSport2, sports2, sa, getAuth());
+                //}
+            //    searchTime2 += weekdif;
+            //}
+        };
+        
+        final Thread t1 = new Thread(r1);
+        final Thread t2 = new Thread(r2);
+        t1.start();
+        t2.start();
+        
+        try {
+            t1.join();
+        } catch (InterruptedException ex) {
+        }
+        try {
+            t2.join();
+        } catch (InterruptedException ex) {
+        }
+        
+        storeRest(sa);
+    }
+    
+    private boolean timeSearchSports(long searchTime, int n, final double[] geo, 
+            final String firstGeo, final String firstSport, 
+            final List<String> sports, final ServerAccess sa, 
+            final Configuration auth) {
+        
+        for (String sport : sports) {
+                /*final String loc = geo;
+                if (firstSearch.get(n - 1)) {
+                    if (loc.equals(firstGeo) && sport.equals(firstSport)) {
+                        firstSearch.set(n - 1, false);
+                    } else {
+                        continue;
+                    }
+                }*/
+
+                // getTweets and wait if limit reached
+                long resetTime = 0;
+                long curTime = 0;
+                long wait = 0;
+                RetryQuery rq = new RetryQuery(-2, null);
+                while (resetTime >= curTime 
+                        || rq.getRetry() == -2 || rq.getQuery() != null) {
+                    rq = timeTweets(n, rq.getQuery(), sport, geo, auth);
+                    resetTime = rq.getRetry();
+                    curTime = new Date().getTime();
+                    try {
+                        if (curTime <= resetTime) {
+                            storeRest(sa);
+
+                            wait = resetTime - curTime;
+                            System.out.println("Sleeping "
+                                    + (wait / 1000)
+                                    + "s for n: " + n
+                                    + ", " + searchTime
+                                    + ", " + Arrays.toString(geo)
+                                    + ", " + sport);
+                            Thread.sleep(wait + 1000);
+                        }
+                    } catch (InterruptedException ex) {
+                        System.out.println("Error sleeping - " + ex);
+                    }
+                }
+
+                if (resetTime == -1) {
+                    storeRest(sa);
+                    return true;
+                }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Gets tweets for a given keyword and globally set time frame
+     */
+    private RetryQuery timeTweets(int n, Query lastQuery, String search, double[] geocode, 
+            Configuration auth) {
+        TwitterFactory tf = new TwitterFactory(auth);
+        Twitter twitter = tf.getInstance();
+        Query query = new Query(search);
+        /*query.setGeoCode(new twitter4j.GeoLocation(geocode[0], geocode[1]), 
+         geocode[2], Query.Unit.km);*/
+        query.setLang("nl");
+        query.count(1000);
+        
+        if (lastQuery != null) {
+            query = lastQuery;
+        }
+        
+        QueryResult result;
+        
+        if (Abort.getInstance().abort()) {
+            return new RetryQuery(-1, query);
+        }
+
+        try {
+            result = twitter.search(query);
+            while (result.nextQuery() != null) {
+                synchronized (this) {
+                    if (!tweets.containsKey(search)) {
+                        tweets.put(search, new HashSet());
+                    }
+                    tweets.get(search).addAll(result.getTweets());
+                }
+                query = result.nextQuery();
+                result = twitter.search(query);
+            }
+
+            synchronized (this) {
+                if (!tweets.containsKey(search)) {
+                    tweets.put(search, new HashSet());
+                }
+                tweets.get(search).addAll(result.getTweets());
+            }
+
+        } catch (TwitterException te) {
+            System.out.println("Failed to search tweets: " + te);
+            System.out.println("\nRetry at n = " + n + ": " + 
+                    (new Date(te.getRateLimitStatus()
+                            .getResetTimeInSeconds() * 1000L)));
+            return new RetryQuery(
+                    te.getRateLimitStatus().getResetTimeInSeconds() * 1000L,
+                    query);
+        }
+        return new RetryQuery(0, null);
+    }
+    
+    private void twitterStream2(ServerAccess sa, List<String> sports) {
+        final TwitterStream twitterStream = 
+                new TwitterStreamFactory(getAuth()).getInstance();
+        
+        final StatusListener listener = new StatusListener() {
+            @Override
+            public void onStatus(Status status) {
+                try {
+                    sa.addTweet(new TweetEntity(dataSeperator, status, search));
+                } catch (UnsupportedEncodingException ex) {
+                }
+                try {
+                    sa.addUser(new UserEntity(dataSeperator, status.getUser()));
+                } catch (UnsupportedEncodingException ex) {
+                }
+                
+                if (Abort.getInstance().abort()) {
+                    Abort.getInstance().setAbort(false);
+                    twitterStream.shutdown();
+                }
+            }
+
+            @Override
+            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+                //System.out.println("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
+            }
+
+            @Override
+            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+                //System.out.println("Got track limitation notice:" + numberOfLimitedStatuses);
+            }
+
+            @Override
+            public void onScrubGeo(long userId, long upToStatusId) {
+                //System.out.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
+            }
+
+            @Override
+            public void onStallWarning(StallWarning warning) {
+                //System.out.println("Got stall warning:" + warning);
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                ex.printStackTrace();
+            }
+        };
+        twitterStream.addListener(listener);
+        FilterQuery filterquery = new FilterQuery();
+        filterquery.count(5000);
+        filterquery.locations(getGeolocationsArray(sa));
+        filterquery.track(sports.toArray(new String[sports.size()]));
+        twitterStream.filter(filterquery);
+        twitterStream.sample();
+    }
+    
     private void search(ServerAccess sa, List<String> geoList, List<String> sportsGB) {
-        final String firstGeo1 = "geocode:52.3667,5.21667,10km";
+        final String firstGeo1 = "geocode:53,6.56667,5km";
         final String firstSport1 = "football";
-        final String firstAlt1 = "eredivisie";
+        final String firstAlt1 = "football";
         firstSearch.add(true);
         final Runnable r1 = () -> {
             for (int i = 0; i < (int) Math.floor(geoList.size() / 2); i++) {
@@ -232,9 +586,9 @@ public class DBLIS implements Runnable {
             }
         };
         
-        final String firstGeo2 = "geocode:48.3,14.28,10km";
+        final String firstGeo2 = "geocode:47.05,8.3,5km";
         final String firstSport2 = "football";
-        final String firstAlt2 = "eredivisie";
+        final String firstAlt2 = "weltmeisterschaft";
         firstSearch.add(true);
         final Runnable r2 = () -> {
             for (int i = (int) Math.floor(geoList.size() / 2); i < geoList.size(); i++) {
@@ -377,7 +731,7 @@ public class DBLIS implements Runnable {
             System.out.println("\nRetry at: " + 
                     (new Date(te.getRateLimitStatus()
                             .getResetTimeInSeconds() * 1000L)));
-            return te.getRateLimitStatus().getResetTimeInSeconds() * 1000L;
+            return te.getRateLimitStatus().getSecondsUntilReset() * 1000L;
         }
         return 0;
     }
@@ -399,8 +753,14 @@ public class DBLIS implements Runnable {
             @Override
             public void onStatus(Status status) {
                 count.increment();
-                sa.addTweet(new TweetEntity(dataSeperator, status, search));
-                sa.addUser(new UserEntity(dataSeperator, status.getUser()));
+                try {
+                    sa.addTweet(new TweetEntity(dataSeperator, status, search));
+                } catch (UnsupportedEncodingException ex) {
+                }
+                try {
+                    sa.addUser(new UserEntity(dataSeperator, status.getUser()));
+                } catch (UnsupportedEncodingException ex) {
+                }
                 
                 if (Abort.getInstance().abort() || count.isMax()) {
                     Abort.getInstance().setAbort(false);
@@ -444,7 +804,6 @@ public class DBLIS implements Runnable {
             altsGeo[i] = alts[i] + " " + geocode;
         }
         filterquery.track(altsGeo);
-        filterquery.language(new String[]{"nl", "de", "en", "fr", "es"});
         twitterStream.filter(filterquery);
         twitterStream.sample();
     }
@@ -614,11 +973,15 @@ public class DBLIS implements Runnable {
         tweets.entrySet().stream().forEach(entry -> {
             entry.getValue().stream().forEach(
                     status -> {
-                        tweetEntities.add(
-                                new TweetEntity(dataSeperator, status,
-                                        entry.getKey()));
-                        userEntities.add(
-                                new UserEntity(dataSeperator, status.getUser()));
+                        try {
+                            tweetEntities.add(
+                                    new TweetEntity(dataSeperator, status,
+                                            entry.getKey()));
+                            userEntities.add(
+                                    new UserEntity(dataSeperator, status.getUser()));
+                        } catch (UnsupportedEncodingException ex) {
+                            
+                        }
                     });
         });
 
@@ -638,7 +1001,7 @@ public class DBLIS implements Runnable {
         }
     }
     
-    private void storeRest(ServerAccess sa) {
+    private synchronized void storeRest(ServerAccess sa) {
         tweets.entrySet().stream().forEach(keyword -> {
             keyword.getValue().stream().forEach(status -> {
                 if (status.getRetweetedStatus() != null) {
@@ -750,13 +1113,21 @@ public class DBLIS implements Runnable {
     }
     
     private boolean addTweet(ServerAccess sa, Status status, String search) {
-        final TweetEntity entity = new TweetEntity(dataSeperator, status, search);
-        return sa.addTweet(entity);
+        try {
+            final TweetEntity entity = new TweetEntity(dataSeperator, status, search);
+            return sa.addTweet(entity);
+        } catch (Exception ex) {
+            return false;
+        }
     }
     
     private boolean addUser(ServerAccess sa, User user) {
-        final UserEntity entity = new UserEntity(dataSeperator, user);
-        return sa.addUser(entity);
+        try {
+            final UserEntity entity = new UserEntity(dataSeperator, user);
+            return sa.addUser(entity);
+        } catch (Exception ex) {
+            return false;
+        }
     }
     
     private List<String> getSports(ServerAccess sa) {
@@ -806,11 +1177,32 @@ public class DBLIS implements Runnable {
                         obj.getString("radius"));
                 list.add(geo);
             } catch (Exception ex) {
-                System.out.println("DBLIS - getAlternativesArray - " + ex);
+                System.out.println("DBLIS - getGeolocationsList - " + ex);
             }
         }
         
         return list;
+    }
+    
+    private double[][] getGeolocationsArray(ServerAccess sa) {
+        final JSONArray json = getGeolocations(sa);
+        final double[][] array = new double[json.length()][3];
+        
+        JSONObject obj;
+        for (int i = 0; i < json.length(); i++) {
+            try {
+                obj = json.getJSONObject(i);
+                array[i] = new double[]{
+                    Double.parseDouble(obj.getString("latitude")),
+                    Double.parseDouble(obj.getString("longtitude")),
+                    Double.parseDouble(obj.getString("radius"))
+                };
+            } catch (JSONException | NumberFormatException ex) {
+                System.out.println("DBLIS - getGeolocationsArray - " + ex);
+            }
+        }
+        
+        return array;
     }
     
     private JSONArray getGeolocations(ServerAccess sa) {
@@ -881,6 +1273,32 @@ public class DBLIS implements Runnable {
         
         synchronized boolean isMax() {
             return count >= max;
+        }
+        
+    }
+    
+    private class RetryQuery {
+        
+        private final long retry;
+        private final Query query;
+        
+        public RetryQuery(long retry, Query query) {
+            this.retry = retry;
+            this.query = query;
+        }
+
+        /**
+         * @return the retry
+         */
+        public long getRetry() {
+            return retry;
+        }
+
+        /**
+         * @return the query
+         */
+        public Query getQuery() {
+            return query;
         }
         
     }

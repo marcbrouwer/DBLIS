@@ -1,5 +1,6 @@
 package dblis;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import twitter4j.User;
 
@@ -16,17 +17,17 @@ public class UserEntity {
     private final int favourites;
     private final int friends;
     
-    public UserEntity(String dataSeperator, User user) {
+    public UserEntity(String dataSeperator, User user) throws UnsupportedEncodingException {
         this(dataSeperator, user.getId(), user.getName(), 
                 user.getFollowersCount(), user.getFavouritesCount(),
                 user.getFriendsCount());
     }
     
     public UserEntity(String dataSeperator, long id, String name, 
-            int followers, int favourites, int friends) {
+            int followers, int favourites, int friends) throws UnsupportedEncodingException {
         this.dataSeperator = dataSeperator;
         this.id = id;
-        this.name = formatText(name);
+        this.name = new String(formatText(name).getBytes(), "UTF-8");
         this.followers = followers;
         this.favourites = favourites;
         this.friends = friends;
