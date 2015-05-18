@@ -7,8 +7,12 @@ package gui;
 
 import java.util.LinkedList;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javax.swing.JFrame;
@@ -18,33 +22,21 @@ import javax.swing.JFrame;
  * @author s124392
  */
 public class MainFrame extends JFrame {
-    FXTextPanel textPanel;
-    FXTextPanel2 text2Panel;
+    JFXPanel textPanel;
 
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
-        textPanel = new FXTextPanel();
-        text2Panel = new FXTextPanel2();
-        textPanel.draw();
-        text2Panel.draw();
-        drawTextPanel();
-    }
-    
-    private void drawTextPanel() {
-        jPanel1.removeAll();
+        textPanel = new JFXPanel();
         jPanel1.add(textPanel);
-        //textPanel.draw();
-        repaint();
-    }
-    
-    private void drawAltPanel() {
-        jPanel1.removeAll();
-        jPanel1.add(text2Panel);
-        //text2Panel.draw();
-        repaint();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                drawSceneWelcome();
+            }
+       });
     }
 
     /**
@@ -62,7 +54,7 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 0, 0));
-        jPanel1.setLayout(new java.awt.GridLayout());
+        jPanel1.setLayout(new java.awt.GridLayout(1, 0));
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jComboBox1.addItemListener(new java.awt.event.ItemListener() {
@@ -81,7 +73,7 @@ public class MainFrame extends JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 324, Short.MAX_VALUE)))
+                        .addGap(0, 593, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -90,7 +82,7 @@ public class MainFrame extends JFrame {
                 .addGap(7, 7, 7)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -98,7 +90,7 @@ public class MainFrame extends JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
-        drawAltPanel();
+        drawSceneGoodbye();
     }//GEN-LAST:event_jComboBox1ItemStateChanged
 
     /**
@@ -135,40 +127,33 @@ public class MainFrame extends JFrame {
             }
         });
     }
+    
+    private void drawSceneWelcome() {
+        Group root = new Group();
+        Scene scene = new Scene(root);
+        Text  text  =  new  Text();
+            text.setX(40);
+            text.setY(100);
+            text.setFont(new Font(25));
+            text.setText("Welcome JavaFX!");
+            root.getChildren().add(text);
+            textPanel.setScene(scene);
+    }
+    
+    private void drawSceneGoodbye() {
+        Group root = new Group();
+        Scene scene = new Scene(root);
+        Text  text  =  new  Text();
+            text.setX(40);
+            text.setY(100);
+            text.setFont(new Font(25));
+            text.setText("Goodbye JavaFX!");
+            root.getChildren().add(text);
+            textPanel.setScene(scene);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
-
-
-    private class FXTextPanel extends FXPanel {
-
-        @Override
-        protected List<Node> getElements() {
-            List<Node> result = new LinkedList<>();
-            Text  text  =  new  Text();
-            text.setX(40);
-            text.setY(100);
-            text.setFont(new Font(25));
-            text.setText("Welcome JavaFX!");
-            result.add(text);
-            return result;
-        }
-    }
-    
-    private class FXTextPanel2 extends FXPanel {
-
-        @Override
-        protected List<Node> getElements() {
-            List<Node> result = new LinkedList<>();
-            Text  text  =  new  Text();
-            text.setX(40);
-            text.setY(100);
-            text.setFont(new Font(25));
-            text.setText("Goodbye JavaFX!");
-            result.add(text);
-            return result;
-        }
-    }
 }
