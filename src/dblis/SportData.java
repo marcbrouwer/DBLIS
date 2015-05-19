@@ -3,8 +3,10 @@ package dblis;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import twitter4j.JSONException;
 
 /**
@@ -16,7 +18,7 @@ public class SportData {
     // Instance declaration 
     
     /**
-     * BarChartSimpleData instance
+     * SportData instance
      */
     private static final SportData instance = new SportData();
 
@@ -27,9 +29,9 @@ public class SportData {
     }
 
     /**
-     * Gets the BarChartSimpleData instance
+     * Gets the SportData instance
      *
-     * @return BarChartSimpleData instance
+     * @return SportData instance
      */
     public synchronized static final SportData getInstance() {
         return instance;
@@ -49,6 +51,9 @@ public class SportData {
     /** countryCode => [sport => [{keyword, popularity}] ]*/
     private static final Map<String, Map<String, List<ChartData>>> keywordsCountRT = new HashMap();
     
+    /** countryCode => [sport => [{keyword, popularity}] ]*/
+    private static final Map<String, Map<String, List<ChartData>>> keywordsCountFav = new HashMap();
+    
     /** countryCode => area (# geo or radius) */
     @Deprecated
     private static final Map<String, Integer> areas = new HashMap();
@@ -59,29 +64,56 @@ public class SportData {
      * Initializes SportData
      */
     public void init() {
+        System.out.println("SportData - init - start");
+        
         SportData.getInstance().setCountryCode("NL");
         final ServerAccess sa = new ServerAccess();
-        final List<String> countries = sa.getCountryCodes();
+        //final List<String> countries = sa.getCountryCodes();
         final List<String> sports = 
                 Arrays.asList("football", "hockey", "cycling", "tennis", "skating");//sa.getSportsGB();
         
-        countries.stream().forEach(country -> {
-            SportData.getInstance().addArea(country, sa.getArea(country));
+        /*System.out.println("SportData - init - getRTCount");
+        final List<ChartData> sportRTpop = 
+                sa.getRelatedTweetsCountAll(sports, "retweets");
+        
+        System.out.println("SportData - init - getFavCount");
+        final List<ChartData> sportFavpop = 
+                sa.getRelatedTweetsCountAll(sports, "favourites");*/
+        
+        //countries.stream().forEach(country -> {
+        String country = "NL";
+            //SportData.getInstance().addArea(country, sa.getArea(country));
             sports.stream().forEach(sport -> {
+                //addRetweetCount(country, sportRTpop);
+                //addRetweetCount(country, sportFavpop);
                 try {
+                    System.out.println("SportData - init - get for sport: " + sport);
                     addRetweetCount(country, 
                             new ChartData(sport, 
                                     sa.getRelatedTweetsCountryCount(
-                                            country, sport)
+                                            country, sport, "retweets")
                             )
                     );
+                    addFavCount(country, 
+                            new ChartData(sport, 
+                                    sa.getRelatedTweetsCountryCount(
+                                            country, sport, "favourites")
+                            )
+                    );
+                    //System.out.println("SportData - init - getKeyCountRT - " + sport);
                     addKeywordsCountRT(country, sport, 
-                            sa.getKeywordsPopularityRetweetCount(country, sport));
+                            sa.getKeywordsPopularityCount(country, sport, "retweets"));
+                    
+                    //System.out.println("SportData - init - getKeyCountFav - " + sport);
+                    addKeywordsCountFav(country, sport, 
+                            sa.getKeywordsPopularityCount(country, sport, "favourites"));
                 } catch (JSONException ex) {
                     System.out.println("init - " + ex);
                 }
             });
-        });
+        //});
+            
+        System.out.println("SportData - init - done");
     }
     
     // Private Methods
@@ -274,6 +306,14 @@ public class SportData {
         keywordsCountRT.get(country).put(sport, chartdata);
     }
     
+    public final void addKeywordsCountFav(String country, String sport, 
+            List<ChartData> chartdata) {
+        if (!keywordsCountFav.containsKey(country)) {
+            keywordsCountFav.put(country, new HashMap());
+        }
+        keywordsCountFav.get(country).put(sport, chartdata);
+    }
+    
     /**
      * Gets country code
      * 
@@ -332,6 +372,15 @@ public class SportData {
         return getAsPercentage(pop);
     }
     
+    public final Map<String, Double> getKeywordCountFav(String country, String sport) {
+        final Map<String, Double> pop = new HashMap();
+        
+        keywordsCountFav.get(country).get(sport).stream()
+                .forEach(data -> pop.put(data.getName(), (double) data.getValue()));
+        
+        return getAsPercentage(pop);
+    }
+    
     /**
      * Gets combined popularity (as percentage) of sport for all countries 
      * using favourite counts
@@ -350,6 +399,37 @@ public class SportData {
      */
     public final Map<String, Double> getSportPopRetweets() {
         return getSportsByPopularity(retweetCounts);
+    }
+    
+    public final Map<String, Double> getSportPop() {
+        final Map<String, List<ChartData>> counts = new HashMap();
+        counts.putAll(retweetCounts);
+        
+        favCounts.entrySet().forEach(country -> {
+            if (!counts.containsKey(country.getKey())) {
+                counts.put(country.getKey(), new ArrayList<>());
+            }
+            
+            final Set<String> existing = new HashSet();
+            counts.get(country.getKey()).stream()
+                    .forEach(sport -> existing.add(sport.getName()));
+            
+            country.getValue().stream().forEach(sport -> {
+                if (existing.contains(sport.getName())) {
+                    counts.get(country.getKey()).stream()
+                            .filter(data -> data.getName().equals(sport.getName()))
+                            .forEach(exist -> {
+                                if (exist.getName().equals(sport.getName())) {
+                                    exist.addValue(sport.getValue());
+                                }
+                            });
+                } else {
+                    counts.get(country.getKey()).add(sport);
+                }
+            });
+        });
+        
+        return getSportsByPopularity(counts);
     }
     
     /**

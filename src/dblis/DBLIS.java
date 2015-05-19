@@ -171,6 +171,7 @@ public class DBLIS implements Runnable {
         
         // SEARCHING
         
+        runStoreThread(sports);
         //userSearch(sa, getAuth2(), "FCBarcelona");
         //twitterStream2(sa, sports);
         timeSearch(sa, geos, sports);
@@ -334,9 +335,48 @@ public class DBLIS implements Runnable {
             tweets.get(user).addAll(statuses);
         }
         
-        storeRest(sa);
+        storeRest();
         
         System.out.println(user + ": " + statuses.size());
+    }
+    
+    private void runStoreThread(List<String> sports) {
+        DBStore.getInstance().setSports(sports);
+        final Runnable r = () -> {
+            final ServerAccess sa = new ServerAccess();
+            while (true) {
+                if (DBStore.getInstance().isEmpty()) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                    }
+                } else {
+                    final String sport = DBStore.getInstance().getSport();
+                    final Status status = DBStore.getInstance().getElem(sport);
+                    if (status != null) {
+                        if (status.getRetweetedStatus() != null) {
+                            if (addTweet(sa, status.getRetweetedStatus(), sport)) {
+                                if (!addUser(sa, status.getRetweetedStatus().getUser())) {
+                                    System.out.println("User not saved: "
+                                            + status.getRetweetedStatus().getUser());
+                                }
+                            } else {
+                                System.out.println("Tweet not saved: " + status.getRetweetedStatus());
+                            }
+                        }
+                        if (addTweet(sa, status, sport)) {
+                            if (!addUser(sa, status.getUser())) {
+                                System.out.println("User not saved: " + status.getUser());
+                            }
+                        } else {
+                            System.out.println("Tweet not saved: " + status);
+                        }
+                    }
+                }
+            }
+        };
+        final Thread t = new Thread(r);
+        t.start();
     }
     
     private void timeSearch(ServerAccess sa, double[][] geos, List<String> sports) {
@@ -358,13 +398,14 @@ public class DBLIS implements Runnable {
                 sports1.add(sports.get(i));
             }
         }
+        Collections.reverse(sports1);
         searchTime1 = starttime;
         firstSearch.add(false);
         final Runnable r1 = () -> {
             //while (searchTime1 <= endtime) {
                 //for (int i = 0; i < (int) Math.floor(geos.length / 2); i++) {
                     timeSearchSports(searchTime1, 1, geos[0], firstGeo1, 
-                            firstSport1, sports1, sa, getAuth2());
+                            firstSport1, sports1, sa, getAuth());
                 //}
             //    searchTime1 += weekdif;
             //}
@@ -382,13 +423,14 @@ public class DBLIS implements Runnable {
                 sports2.add(sports.get(i));
             }
         }
+        Collections.reverse(sports2);
         searchTime2 = starttime;
         firstSearch.add(false);
         final Runnable r2 = () -> {
             //while (searchTime2 <= endtime) {
                 //for (int i = (int) Math.floor(geos.length / 2); i < geos.length; i++) {
                     timeSearchSports(searchTime2, 2, geos[0], firstGeo2, 
-                            firstSport2, sports2, sa, getAuth());
+                            firstSport2, sports2, sa, getAuth2());
                 //}
             //    searchTime2 += weekdif;
             //}
@@ -408,7 +450,7 @@ public class DBLIS implements Runnable {
         } catch (InterruptedException ex) {
         }
         
-        storeRest(sa);
+        storeRest();
     }
     
     private boolean timeSearchSports(long searchTime, int n, final double[] geo, 
@@ -437,9 +479,8 @@ public class DBLIS implements Runnable {
                     resetTime = rq.getRetry();
                     curTime = new Date().getTime();
                     try {
+                        storeRest();
                         if (curTime <= resetTime) {
-                            storeRest(sa);
-
                             wait = resetTime - curTime;
                             System.out.println("Sleeping "
                                     + (wait / 1000)
@@ -455,7 +496,7 @@ public class DBLIS implements Runnable {
                 }
 
                 if (resetTime == -1) {
-                    storeRest(sa);
+                    storeRest();
                     return true;
                 }
         }
@@ -611,7 +652,7 @@ public class DBLIS implements Runnable {
         } catch (InterruptedException ex) {
         }
         
-        storeRest(sa);
+        storeRest();
     }
     
     private boolean searchSports(int n, final String geo, final String firstGeo, 
@@ -645,7 +686,7 @@ public class DBLIS implements Runnable {
                     curTime = new Date().getTime();
                     try {
                         if (curTime <= resetTime) {
-                            storeRest(sa);
+                            storeRest();
 
                             wait = resetTime - curTime;
                             System.out.println("Sleeping "
@@ -662,7 +703,7 @@ public class DBLIS implements Runnable {
                 }
 
                 if (resetTime == -1) {
-                    storeRest(sa);
+                    storeRest();
                     return;
                 }
 
@@ -1001,29 +1042,11 @@ public class DBLIS implements Runnable {
         }
     }
     
-    private synchronized void storeRest(ServerAccess sa) {
-        tweets.entrySet().stream().forEach(keyword -> {
-            keyword.getValue().stream().forEach(status -> {
-                if (status.getRetweetedStatus() != null) {
-                    if (addTweet(sa, status.getRetweetedStatus(), keyword.getKey())) {
-                        if (!addUser(sa, status.getRetweetedStatus().getUser())) {
-                            System.out.println("User not saved: " + 
-                                    status.getRetweetedStatus().getUser());
-                        }
-                    } else {
-                        System.out.println("Tweet not saved: " + status.getRetweetedStatus());
-                    }
-                }
-                if (addTweet(sa, status, keyword.getKey())) {
-                    if (!addUser(sa, status.getUser())) {
-                        System.out.println("User not saved: " + status.getUser());
-                    }
-                } else {
-                    System.out.println("Tweet not saved: " + status);
-                }
-            });
-        });
-        tweets.clear();
+    private void storeRest() {
+        synchronized (this) {
+            DBStore.getInstance().addData(tweets);
+            tweets.clear();
+        }
     }
     
     /**

@@ -7,7 +7,7 @@ package dblis;
 public class ChartData {
     
     private final String name;
-    private final int value;
+    private int value;
     
     public ChartData(String name, int value) {
         this.name = name;
@@ -20,6 +20,10 @@ public class ChartData {
     
     public final int getValue() {
         return value;
+    }
+    
+    public final void addValue(int value) {
+        this.value += value;
     }
     
 }

@@ -43,40 +43,48 @@ public class ServerAccess {
         return sb.toString();
     }
 
-    //Get the response form the server as an object
     private Object getResponseObject(String method, Map<String, Object> params) {
-        try {
-            //Create a HTTP Client
-            HttpClient httpclient = new DefaultHttpClient();
+        return getResponseObject(1, 3, method, params);
+    }
+    
+    //Get the response form the server as an object
+    private Object getResponseObject(int t, int max, String method, Map<String, Object> params) {
+        while (t <= max) {
+            try {
+                //Create a HTTP Client
+                HttpClient httpclient = new DefaultHttpClient();
+                
+                //Create and object to Post values to the server
+                //The url is specified in the Constants class to increase modifiability
+                HttpPost httppost = new HttpPost("http://www.externalhost.nl/ws/"
+                        + "dblis/webservice.php?method=" + method);
 
-            //Create and object to Post values to the server
-            //The url is specified in the Constants class to increase modifiability
-            HttpPost httppost = new HttpPost("http://www.externalhost.nl/ws/"
-                    + "dblis/webservice.php?method=" + method);
-            
-            JSONObject holder = new JSONObject(params);
-            
-            //convert parameters into JSON object
-            //JSONObject holder = getJsonObjectFromMap(params);
+                JSONObject holder = new JSONObject(params);
 
-            //passes the results to a string builder/entity
-            StringEntity se = new StringEntity(holder.toString(), Charset.forName("UTF-8"));
-            
-            //sets the post request as the resulting string
-            httppost.setEntity(se);
-            
-            //sets a request header so the page receving the request
-            //will know what to do with it
-            httppost.setHeader("Accept", "application/json");
-            httppost.setHeader("Content-type", "application/json; charset=utf-8");
+                //convert parameters into JSON object
+                //JSONObject holder = getJsonObjectFromMap(params);
 
-            //Handles what is returned from the page 
-            ResponseHandler responseHandler = new BasicResponseHandler();
-            return httpclient.execute(httppost, responseHandler);
-        } catch (Exception e) {
-            System.out.println("PHP Client - Error in http connection " +e.toString());
-            return null;
+                //passes the results to a string builder/entity
+                StringEntity se = new StringEntity(holder.toString(), Charset.forName("UTF-8"));
+
+                //sets the post request as the resulting string
+                httppost.setEntity(se);
+
+                //sets a request header so the page receving the request
+                //will know what to do with it
+                httppost.setHeader("Accept", "application/json");
+                httppost.setHeader("Content-type", "application/json; charset=utf-8");
+
+                //Handles what is returned from the page 
+                ResponseHandler responseHandler = new BasicResponseHandler();
+                return httpclient.execute(httppost, responseHandler);
+            } catch (Exception e) {
+                System.out.println("PHP Client - Error in http connection "
+                        + "(" + t + "/" + max + ") " + e.toString());
+                return getResponseObject(t + 1, max, method, params);
+            }
         }
+        return null;
     }
     
     public final boolean addTweet(TweetEntity entity) {
@@ -208,10 +216,12 @@ public class ServerAccess {
         return list;
     }
     
-    public final int getRelatedTweetsCountryCount(String country, String sport) throws JSONException {
+    public final int getRelatedTweetsCountryCount(String country, String sport, 
+            String type) throws JSONException {
         final Map<String, Object> params = new HashMap();
         params.put("countrycode", country);
         params.put("sport", sport);
+        params.put("type", type);
         final String response = 
                 getResponseObject("getRelatedTweetsCountryCount", params).toString();
         final JSONArray json = new JSONArray(response);
@@ -237,15 +247,17 @@ public class ServerAccess {
         }
     }
     
-    public final List<ChartData> getKeywordsPopularityRetweetCount(String country, String sport) {
+    public final List<ChartData> getKeywordsPopularityCount(String country, 
+            String sport, String type) {
         final List<ChartData> list = new ArrayList<>();
         
         try {
             final Map<String, Object> params = new HashMap();
             params.put("sport", sport);
             params.put("countrycode", country);
+            params.put("type", type);
             final String response = getResponseObject(
-                    "getKeywordsPopularityRetweetCount", params)
+                    "getKeywordsPopularityCount", params)
                     .toString();
             final JSONArray json = new JSONArray(response);
             
@@ -263,12 +275,60 @@ public class ServerAccess {
                     }
                     list.add(new ChartData(keywords, sum));
                 } catch (Exception ex) {
-                    System.out.println("getCountryCodes - " + ex);
+                    System.out.println("getKeywordsPopularityCount - " + ex);
                 }
             }
 
         } catch (Exception ex) {
-            System.out.println("getCountryCodes - " + ex);
+            System.out.println("getKeywordsPopularityCount - " + ex);
+        }
+        
+        return list;
+    }
+    
+    public final List<ChartData> getRelatedTweetsCountAll(List<String> sports, 
+            String type) {
+        return getRelatedTweetsCountAll(1, 3, sports, type);
+    }
+    
+    public final List<ChartData> getRelatedTweetsCountAll(int t, int max,
+            List<String> sports, String type) {
+        final List<ChartData> list = new ArrayList<>();
+        
+        String response = "";
+        final Map<String, Object> params = new HashMap();
+        params.put("type", type);
+        
+        while (t <= max) {
+            try {
+                response = getResponseObject(
+                        "getRelatedTweetsCountAll", params).toString();
+                final JSONArray json = new JSONArray(response);
+
+                JSONObject obj = json.getJSONObject(0);
+                int sum;
+                for (String sport : sports) {
+                    try {
+                        if (obj.isNull(sport)) {
+                            sum = 0;
+                        } else {
+                            sum = obj.getInt(sport);
+                        }
+                        list.add(new ChartData(sport, sum));
+                    } catch (Exception ex) {
+                        System.out.println("getRelatedTweetsCountAll - "
+                                + "(" + t + "/" + max + ") " + ex);
+                        return getRelatedTweetsCountAll(t + 1, max, sports, type);
+                    }
+                }
+
+            } catch (Exception ex) {
+                System.out.println("getRelatedTweetsCountAll - "
+                        + "(" + t + "/" + max + ") " + ex);
+                System.out.println("getRelatedTweetsCountAll - "
+                        + "(" + t + "/" + max + ") response: "+ response);
+                return getRelatedTweetsCountAll(t + 1, max, sports, type);
+            }
         }
         
         return list;

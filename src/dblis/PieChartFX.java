@@ -20,7 +20,7 @@ public class PieChartFX extends Application implements Runnable {
         //String drilldownCss = PieChart.class.getResource("DrilldownChart.css").toExternalForm();
  
         final Map<String, Double> sportPop = 
-                SportData.getInstance().getSportPopRetweets();
+                SportData.getInstance().getSportPop();
         
         final List<PieChart.Data> list = new ArrayList<>();
         
