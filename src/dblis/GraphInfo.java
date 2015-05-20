@@ -32,12 +32,12 @@ public class GraphInfo {
             int timeinterval){
         this.startDate = startDate;
         this.endDate = endDate;
-        selectedSports = new boolean[5];
-        selectedSports[0] = football;
-        selectedSports[1] = hockey;
-        selectedSports[2] = cycling;
-        selectedSports[3] = tennis;
-        selectedSports[4] = skating;
+        this.selectedSports = new boolean[5];
+        this.selectedSports[0] = football;
+        this.selectedSports[1] = hockey;
+        this.selectedSports[2] = cycling;
+        this.selectedSports[3] = tennis;
+        this.selectedSports[4] = skating;
         this.timeInterval = timeinterval;
     }
     

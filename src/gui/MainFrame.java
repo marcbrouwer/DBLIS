@@ -90,12 +90,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        cyclingCheckBox.setText("Cyclying");
-        cyclingCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cyclingCheckBoxActionPerformed(evt);
-            }
-        });
+        cyclingCheckBox.setText("Cycling");
 
         tennisCheckBox.setText("Tennis");
 
@@ -400,10 +395,6 @@ public class MainFrame extends javax.swing.JFrame {
             cb.setSelected(!cb.isSelected());
         }
     }//GEN-LAST:event_sportsInverseSelectionBtnActionPerformed
-
-    private void cyclingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cyclingCheckBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cyclingCheckBoxActionPerformed
 
     private void showYearDataCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showYearDataCheckboxActionPerformed
         // TODO add your handling code here:

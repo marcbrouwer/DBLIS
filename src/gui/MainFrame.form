@@ -86,11 +86,8 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="cyclingCheckBox">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Cyclying"/>
+            <Property name="text" type="java.lang.String" value="Cycling"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cyclingCheckBoxActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JCheckBox" name="tennisCheckBox">
           <Properties>
