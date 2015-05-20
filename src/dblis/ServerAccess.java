@@ -247,10 +247,8 @@ public class ServerAccess {
         return json.getJSONObject(0).getInt("sum");
     }
     
-    public final List<ChartData> getRelatedTweetsCountryCountSingle(String country, 
+    public final ChartData getRelatedTweetsCountryCountSingle(String country, 
             String sport, String type, long starttime, long endtime) {
-        final List<ChartData> list = new ArrayList<>();
-        
         try {
             final Map<String, Object> params = new HashMap();
             params.put("sport", sport);
@@ -262,28 +260,20 @@ public class ServerAccess {
                     "getRelatedTweetsCountryCountSingle", params)
                     .toString();
             final JSONArray json = new JSONArray(response);
-            
-            JSONObject obj;
+           
             int sum;
-            for (int i = 0; i < json.length(); i++) {
-                try {
-                    obj = json.getJSONObject(i);
-                    if (obj.isNull("sum")) {
-                        sum = 0;
-                    } else {
-                        sum = obj.getInt("sum");
-                    }
-                    list.add(new ChartData(sport, sum));
-                } catch (Exception ex) {
-                    System.out.println("getRelatedTweetsCountryCountSingle - " + ex);
-                }
+            JSONObject obj = json.getJSONObject(0);
+            if (obj.isNull("sum")) {
+                sum = 0;
+            } else {
+                sum = obj.getInt("sum");
             }
-
+            return new ChartData(sport, sum);
         } catch (Exception ex) {
             System.out.println("getRelatedTweetsCountryCountSingle - " + ex);
         }
         
-        return list;
+        return null;
     }
     
     public final int getArea(String country) {

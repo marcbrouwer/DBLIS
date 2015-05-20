@@ -173,7 +173,19 @@ public class DBLIS implements Runnable {
         PlayOffsPieChart pie = new PlayOffsPieChart();
         pie.run();
         return;*/
-        
+        /*
+        SportData.getInstance().initPlayOff();
+        final Map<Date, Double> sportForDate = 
+                SportData.getInstance()
+                        .getSportsForDate(new Date(1430431200000L), new Date(), 
+                                "De Graafschap", 1);
+        final Map<Date, Double> sportForDateM = 
+                SportData.getInstance()
+                        .getSportsForDate(new Date(1430431200000L), new Date(), 
+                                "De Graafschap", 30);
+        final Double total = sportForDate.values().stream().mapToDouble(d -> d).sum();
+        final Double totalM = sportForDateM.values().stream().mapToDouble(d -> d).sum();
+        */
         // SEARCHING
         
         runStoreThread(sports);

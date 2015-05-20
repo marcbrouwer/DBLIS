@@ -2,11 +2,14 @@ package dblis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import twitter4j.JSONException;
 
 /**
@@ -182,6 +185,23 @@ public class SportData {
      */
     private Map<String, Double> getAsPercentage(Map<String, Double> map) {
         final Map<String, Double> perc = new HashMap();
+        final double total = map.values().stream().mapToDouble(v -> v).sum();
+        
+        map.entrySet().stream().forEach(entry -> {
+            perc.put(entry.getKey(), entry.getValue() * 100.0 / total);
+        });
+        
+        return perc;
+    }
+    
+    /**
+     * Gets popularity as percentage
+     * 
+     * @param map map with popularity
+     * @return map with popularity as percentage
+     */
+    private Map<Date, Double> getAsPercentageDate(Map<Date, Double> map) {
+        final Map<Date, Double> perc = new HashMap();
         final double total = map.values().stream().mapToDouble(v -> v).sum();
         
         map.entrySet().stream().forEach(entry -> {
@@ -531,8 +551,57 @@ public class SportData {
      *            <01-02-15, 50>
      *            <01-03-15, 25>
      */
-    //public final Map<Date, Double> getSportsForDate(Date startdate,
-    //        Date enddate, String sport, int timeinterval){
+    public final Map<Date, Double> getSportsForDate(Date startdate,
+            Date enddate, String sport, int timeinterval){
+        final Map<Date, Double> count = new HashMap();
+        final ServerAccess sa = new ServerAccess();
+        final long dayInMiliseconds = 86400000L;
+        final long starttime = startdate.getTime();
+        final long endtime = enddate.getTime();
         
-    //}
+        long timeS = starttime;
+        long timeE = starttime;
+        long timeM = 0;
+        
+        if (timeinterval == 30) {
+            timeM = getMonthTimeIncr(starttime);
+            timeE += timeM;
+        } else {
+            timeE += dayInMiliseconds * timeinterval;
+        }
+        
+        ChartData cd0;
+        ChartData cd1;
+        while (timeS < endtime) {
+            cd0 = sa.getRelatedTweetsCountryCountSingle(
+                    "NL", sport, "retweets", timeS, timeE);
+            cd1 = sa.getRelatedTweetsCountryCountSingle(
+                    "NL", sport, "favourites", timeS, timeE);
+            cd0.addValue(cd1.getValue());
+            count.put(new Date(timeS), (double) cd0.getValue());
+            
+            if (timeinterval == 30) {
+                timeM = getMonthTimeIncr(starttime);
+                timeS += timeE;
+                timeE += timeM;
+            } else {
+                timeS += dayInMiliseconds * timeinterval;
+                timeE += dayInMiliseconds * timeinterval;
+            }
+        }
+        
+        return count;
+    }
+    
+    private long getMonthTimeIncr(long starttime) {
+        Calendar calS = Calendar.getInstance();
+        calS.setTimeInMillis(starttime);
+        
+        Calendar calE = Calendar.getInstance();
+        calE.clear();
+        calE.set(calS.get(Calendar.YEAR), calS.get(Calendar.MONTH) + 1, 1, 0, 0, 0);
+        
+        return calE.getTimeInMillis() - starttime;
+    }
+    
 }
