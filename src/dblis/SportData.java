@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Date;
 import twitter4j.JSONException;
 
 /**
@@ -64,7 +63,7 @@ public class SportData {
     /**
      * Initializes SportData
      */
-    public void init() {
+    public final void init() {
         System.out.println("SportData - init - start");
         clear();
         
@@ -118,7 +117,11 @@ public class SportData {
         System.out.println("SportData - init - done");
     }
     
-    public void initPlayOff() {
+    public final void initPlayOff() {
+        initPlayOff(0, 0);
+    }
+    
+    public final void initPlayOff(long starttime, long endtime) {
         clear();
         final ServerAccess sa = new ServerAccess();
         final List<String> sports = Arrays.asList("FC Eindhoven", "FC Volendam", "VVV Venlo", 
@@ -126,10 +129,12 @@ public class SportData {
         final String country = "NL";
         
         sports.stream().forEach(sport -> {
-            addRetweetCount(country, 
-                    sa.getRelatedTweetsCountryCountSingle(country, sport, "retweets"));
-            addFavCount(country, 
-                    sa.getRelatedTweetsCountryCountSingle(country, sport, "favourites"));
+            addRetweetCount(country,
+                    sa.getRelatedTweetsCountryCountSingle(
+                            country, sport, "retweets", starttime, endtime));
+            addFavCount(country,
+                    sa.getRelatedTweetsCountryCountSingle(
+                            country, sport, "favourites", starttime, endtime));
         });
     }
     
@@ -510,6 +515,8 @@ public class SportData {
         SportData.countryCode = countryCode;
     }
     
+
+    
     /**
      * 
      * @param startdate = tweets should be within startdate and enddate
@@ -528,5 +535,4 @@ public class SportData {
     //        Date enddate, String sport, int timeinterval){
         
     //}
-    
 }
