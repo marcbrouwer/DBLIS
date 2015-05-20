@@ -85,6 +85,11 @@ public class NewMainFrame extends javax.swing.JFrame {
         });
 
         cyclingCheckBox.setText("Cyclying");
+        cyclingCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cyclingCheckBoxActionPerformed(evt);
+            }
+        });
 
         tennisCheckBox.setText("Tennis");
 
@@ -357,6 +362,10 @@ public class NewMainFrame extends javax.swing.JFrame {
             cb.setSelected(!cb.isSelected());
         }
     }//GEN-LAST:event_sportsInverseSelectionBtnActionPerformed
+
+    private void cyclingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cyclingCheckBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cyclingCheckBoxActionPerformed
 
     /**
      * @param args the command line arguments
