@@ -9,6 +9,8 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 /**
  *
@@ -16,19 +18,49 @@ import javafx.scene.Scene;
  */
 public class FXPanel extends JFXPanel {
     
-    public FXPanel() {
-        super();
-        init();
-    }
+    public FXPanel() {}
     
-    private void init() {
+    public void drawScene(int index) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                Group root = new Group();
-                Scene scene = new Scene(root);
-                setScene(scene);
+                Scene scene = null;
+                switch (index) {
+                case 0:
+                    scene = drawSceneWelcome();
+                    break;
+                case 1:
+                    scene = drawSceneGoodbye();
+                    break;
+                }
+                if (scene != null) {
+                    setScene(scene);
+                }
             }
-       });
+        });
     }
+    
+    private Scene drawSceneWelcome() {
+        Group root = new Group();
+        Scene scene = new Scene(root);
+        Text  text  =  new  Text();
+        text.setX(50);
+        text.setY(50);
+        text.setFont(new Font(15));
+        text.setText("Welcome JavaFX!");
+        root.getChildren().add(text);
+        return scene;
+    }
+    
+    private Scene drawSceneGoodbye() {
+        Group root = new Group();
+        Scene scene = new Scene(root);
+        Text  text  =  new  Text();
+        text.setX(50);
+        text.setY(50);
+        text.setFont(new Font(15));
+        text.setText("Goodbye JavaFX!");
+        root.getChildren().add(text);
+        return scene;
+    } 
 }
