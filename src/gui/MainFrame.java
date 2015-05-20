@@ -73,7 +73,7 @@ public class MainFrame extends javax.swing.JFrame {
         sportsChooseBtn = new javax.swing.JButton();
         showYearDataCheckbox = new javax.swing.JCheckBox();
         showBtn = new javax.swing.JButton();
-        lineChartBtn = new javax.swing.JButton();
+        lineChart = new javax.swing.JButton();
         histogramBtn = new javax.swing.JButton();
         pieChartBtn = new javax.swing.JButton();
         listBtn = new javax.swing.JButton();
@@ -232,8 +232,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         showBtn.setText("Show");
 
-        lineChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Data-Line-Chart-icon_32x32.png"))); // NOI18N
-        lineChartBtn.setToolTipText("");
+        lineChart.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Data-Line-Chart-icon_32x32.png"))); // NOI18N
+        lineChart.setToolTipText("");
 
         histogramBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/bar_chart-512_32x32.png"))); // NOI18N
         histogramBtn.setToolTipText("");
@@ -281,7 +281,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(parametersPanelLayout.createSequentialGroup()
                 .addGap(156, 156, 156)
-                .addComponent(lineChartBtn)
+                .addComponent(lineChart)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(histogramBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -318,7 +318,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(showBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lineChartBtn)
+                    .addComponent(lineChart)
                     .addComponent(histogramBtn)
                     .addComponent(pieChartBtn)
                     .addComponent(listBtn))
@@ -464,7 +464,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JCheckBox footballCheckBox;
     private javax.swing.JButton histogramBtn;
     private javax.swing.JCheckBox hockeyCheckBox;
-    private javax.swing.JButton lineChartBtn;
+    private javax.swing.JButton lineChart;
     private javax.swing.JButton listBtn;
     private javax.swing.JPanel parametersPanel;
     private javax.swing.JButton pieChartBtn;

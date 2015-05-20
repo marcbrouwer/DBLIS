@@ -246,7 +246,7 @@
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="156" max="-2" attributes="0"/>
-                  <Component id="lineChartBtn" min="-2" max="-2" attributes="0"/>
+                  <Component id="lineChart" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="histogramBtn" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -292,7 +292,7 @@
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="lineChartBtn" min="-2" max="-2" attributes="0"/>
+                      <Component id="lineChart" min="-2" max="-2" attributes="0"/>
                       <Component id="histogramBtn" min="-2" max="-2" attributes="0"/>
                       <Component id="pieChartBtn" min="-2" max="-2" attributes="0"/>
                       <Component id="listBtn" min="-2" max="-2" attributes="0"/>
@@ -380,7 +380,7 @@
             <Property name="text" type="java.lang.String" value="Show"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="lineChartBtn">
+        <Component class="javax.swing.JButton" name="lineChart">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/icons/Data-Line-Chart-icon_32x32.png"/>
