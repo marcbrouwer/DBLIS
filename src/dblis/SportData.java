@@ -484,10 +484,20 @@ public class SportData {
         });
         
         final Map<String, Double> combined = getSportsByPopularity(counts);
-        List<String> matches = Arrays.asList("De Graafschap - Go Ahead Eagels",
-                "FC Volendam - FC Eindhoven", "VVV Venlo - NAC Breda",
+        List<String> matches = Arrays.asList(
+                "De Graafschap - Go Ahead Eagles",
+                "FC Volendam - FC Eindhoven", 
+                "VVV Venlo - NAC Breda",
                 "FC Emmen - Roda JC");
-        return combined;
+        
+        final Map<String, Double> matchPop = new HashMap();
+        matches.stream().forEach(match -> {
+            final String[] teams = match.split(" - ");
+            final double pop = combined.get(teams[0]) + combined.get(teams[1]);
+            matchPop.put(match, pop);
+        });
+        
+        return matchPop;
     }
     
     /**
