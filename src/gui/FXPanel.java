@@ -35,8 +35,8 @@ public class FXPanel extends JFXPanel {
                     break;
                 }
                 if (scene != null) {
-                    System.out.println("Set");
                     setScene(scene);
+                    System.out.println("Set");
                 }
             }
         });
@@ -46,11 +46,12 @@ public class FXPanel extends JFXPanel {
         Group root = new Group();
         Scene scene = new Scene(root);
         Text  text  =  new  Text();
-        text.setX(40);
-        text.setY(100);
-        text.setFont(new Font(25));
+        text.setX(50);
+        text.setY(50);
+        text.setFont(new Font(15));
         text.setText("Welcome JavaFX!");
         root.getChildren().add(text);
+        System.out.println("Welcome");
         return scene;
     }
     
@@ -58,9 +59,9 @@ public class FXPanel extends JFXPanel {
         Group root = new Group();
         Scene scene = new Scene(root);
         Text  text  =  new  Text();
-        text.setX(40);
-        text.setY(100);
-        text.setFont(new Font(25));
+        text.setX(50);
+        text.setY(50);
+        text.setFont(new Font(15));
         text.setText("Goodbye JavaFX!");
         root.getChildren().add(text);
         return scene;
