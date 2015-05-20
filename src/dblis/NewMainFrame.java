@@ -29,10 +29,10 @@ public class NewMainFrame extends javax.swing.JFrame {
     public NewMainFrame() {
         initComponents();
         sportCheckboxes = new ArrayList<>();
-        sportCheckboxes.add(hockyCheckBox);
+        sportCheckboxes.add(hockeyCheckBox);
         sportCheckboxes.add(tennisCheckBox);
         sportCheckboxes.add(footballCheckBox);
-        sportCheckboxes.add(cyclyingCheckBox);
+        sportCheckboxes.add(cyclingCheckBox);
         sportCheckboxes.add(skatingCheckBox);
         fxPanel = new FXPanel();
         testPanel.add(fxPanel);
@@ -50,8 +50,8 @@ public class NewMainFrame extends javax.swing.JFrame {
 
         sportsDialog = new javax.swing.JDialog();
         footballCheckBox = new javax.swing.JCheckBox();
-        hockyCheckBox = new javax.swing.JCheckBox();
-        cyclyingCheckBox = new javax.swing.JCheckBox();
+        hockeyCheckBox = new javax.swing.JCheckBox();
+        cyclingCheckBox = new javax.swing.JCheckBox();
         tennisCheckBox = new javax.swing.JCheckBox();
         skatingCheckBox = new javax.swing.JCheckBox();
         sportsSelectAllBtn = new javax.swing.JButton();
@@ -77,14 +77,14 @@ public class NewMainFrame extends javax.swing.JFrame {
 
         footballCheckBox.setText("Football");
 
-        hockyCheckBox.setText("Hockey");
-        hockyCheckBox.addActionListener(new java.awt.event.ActionListener() {
+        hockeyCheckBox.setText("Hockey");
+        hockeyCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hockyCheckBoxActionPerformed(evt);
+                hockeyCheckBoxActionPerformed(evt);
             }
         });
 
-        cyclyingCheckBox.setText("Cyclying");
+        cyclingCheckBox.setText("Cyclying");
 
         tennisCheckBox.setText("Tennis");
 
@@ -135,9 +135,9 @@ public class NewMainFrame extends javax.swing.JFrame {
                     .addGroup(sportsDialogLayout.createSequentialGroup()
                         .addComponent(footballCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(hockyCheckBox)
+                        .addComponent(hockeyCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cyclyingCheckBox)
+                        .addComponent(cyclingCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tennisCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -162,8 +162,8 @@ public class NewMainFrame extends javax.swing.JFrame {
                 .addGap(24, 24, 24)
                 .addGroup(sportsDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(footballCheckBox)
-                    .addComponent(hockyCheckBox)
-                    .addComponent(cyclyingCheckBox)
+                    .addComponent(hockeyCheckBox)
+                    .addComponent(cyclingCheckBox)
                     .addComponent(tennisCheckBox)
                     .addComponent(skatingCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -312,9 +312,9 @@ public class NewMainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void hockyCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hockyCheckBoxActionPerformed
+    private void hockeyCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hockeyCheckBoxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_hockyCheckBoxActionPerformed
+    }//GEN-LAST:event_hockeyCheckBoxActionPerformed
 
     private void sportsChooseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsChooseBtnActionPerformed
         // TODO add your handling code here:
@@ -394,11 +394,11 @@ public class NewMainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox cyclyingCheckBox;
+    private javax.swing.JCheckBox cyclingCheckBox;
     private javax.swing.JLabel endTimeLabel;
     private com.lavantech.gui.comp.DateTimePicker endTimePicker;
     private javax.swing.JCheckBox footballCheckBox;
-    private javax.swing.JCheckBox hockyCheckBox;
+    private javax.swing.JCheckBox hockeyCheckBox;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JPanel parametersPanel;
     private javax.swing.JCheckBox skatingCheckBox;
