@@ -15,11 +15,6 @@ public class GraphInfo {
     private static Date startDate;
     private static Date endDate;
     private static boolean[] selectedSports;
-    private static boolean football;
-    private static boolean hockey;
-    private static boolean cycling;
-    private static boolean tennis;
-    private static boolean skating;
     private static int timeInterval;
     /* 
     @Param startDate, the starting date of the graph
