@@ -12,7 +12,7 @@ import javax.swing.JFrame;
  * @author s124392
  */
 public class MainFrame extends JFrame {
-    FXPanel fxPanel;
+    private FXPanel fxPanel;
     boolean welcome = false;
 
     /**

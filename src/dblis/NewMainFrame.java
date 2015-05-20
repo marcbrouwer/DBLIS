@@ -20,6 +20,7 @@ import javax.swing.JCheckBox;
  * @author Chen
  */
 public class NewMainFrame extends javax.swing.JFrame {
+    private FXPanel fxPanel;
 
     /**
      * Creates new form NewMainFrame
@@ -33,6 +34,9 @@ public class NewMainFrame extends javax.swing.JFrame {
         sportCheckboxes.add(footballCheckBox);
         sportCheckboxes.add(cyclyingCheckBox);
         sportCheckboxes.add(skatingCheckBox);
+        fxPanel = new FXPanel();
+        testPanel.add(fxPanel);
+        fxPanel.drawScene(0);
     }
 
     /**
@@ -67,8 +71,7 @@ public class NewMainFrame extends javax.swing.JFrame {
         yearLabel = new javax.swing.JLabel();
         sportsChooseBtn = new javax.swing.JButton();
         visualizationPanel = new javax.swing.JPanel();
-        button1 = new javax.swing.JButton();
-        timestamp = new javax.swing.JLabel();
+        testPanel = new javax.swing.JPanel();
 
         sportsDialog.setTitle("Select the sports to show");
 
@@ -260,36 +263,34 @@ public class NewMainFrame extends javax.swing.JFrame {
 
         visualizationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Visualization"));
 
-        button1.setText("dateToTimestamp");
-        button1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                button1ActionPerformed(evt);
-            }
-        });
+        testPanel.setBackground(new java.awt.Color(255, 0, 0));
 
-        timestamp.setText("jLabel1");
+        javax.swing.GroupLayout testPanelLayout = new javax.swing.GroupLayout(testPanel);
+        testPanel.setLayout(testPanelLayout);
+        testPanelLayout.setHorizontalGroup(
+            testPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 212, Short.MAX_VALUE)
+        );
+        testPanelLayout.setVerticalGroup(
+            testPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 196, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout visualizationPanelLayout = new javax.swing.GroupLayout(visualizationPanel);
         visualizationPanel.setLayout(visualizationPanelLayout);
         visualizationPanelLayout.setHorizontalGroup(
             visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(visualizationPanelLayout.createSequentialGroup()
-                .addGap(86, 86, 86)
-                .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, visualizationPanelLayout.createSequentialGroup()
-                        .addComponent(timestamp)
-                        .addGap(87, 87, 87))
-                    .addComponent(button1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(53, 53, 53)
+                .addComponent(testPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         visualizationPanelLayout.setVerticalGroup(
             visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(visualizationPanelLayout.createSequentialGroup()
-                .addGap(58, 58, 58)
-                .addComponent(timestamp)
-                .addGap(18, 18, 18)
-                .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(339, Short.MAX_VALUE))
+                .addGap(32, 32, 32)
+                .addComponent(testPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(234, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -310,19 +311,6 @@ public class NewMainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
-        // TODO add your handling code here:
-        Calendar startDate = startTimePicker.getCalendar();
-        Calendar endDate = endTimePicker.getCalendar();
-        long startTimestamp = startDate.getTime().getTime();
-        long endTimestamp = endDate.getTime().getTime();
-        long Diff = startTimestamp - endTimestamp;
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String startString = dateFormat.format(startDate.getTime()); 
-        String endString = dateFormat.format(endDate.getTime());
-        this.timestamp.setText("From" + startTimestamp + " to " + endTimestamp);
-    }//GEN-LAST:event_button1ActionPerformed
 
     private void hockyCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hockyCheckBoxActionPerformed
         // TODO add your handling code here:
@@ -406,7 +394,6 @@ public class NewMainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton button1;
     private javax.swing.JCheckBox cyclyingCheckBox;
     private javax.swing.JLabel endTimeLabel;
     private com.lavantech.gui.comp.DateTimePicker endTimePicker;
@@ -426,9 +413,9 @@ public class NewMainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel startTimeLabel;
     private com.lavantech.gui.comp.DateTimePicker startTimePicker;
     private javax.swing.JCheckBox tennisCheckBox;
+    private javax.swing.JPanel testPanel;
     private javax.swing.JComboBox timeIntervalCombo;
     private javax.swing.JLabel timeIntervalLabel;
-    private javax.swing.JLabel timestamp;
     private javax.swing.JPanel visualizationPanel;
     private javax.swing.JLabel yearLabel;
     // End of variables declaration//GEN-END:variables

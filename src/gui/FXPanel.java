@@ -21,6 +21,7 @@ public class FXPanel extends JFXPanel {
     public FXPanel() {}
     
     public void drawScene(int index) {
+        System.out.println("Draw");
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -34,6 +35,7 @@ public class FXPanel extends JFXPanel {
                     break;
                 }
                 if (scene != null) {
+                    System.out.println("Set");
                     setScene(scene);
                 }
             }
