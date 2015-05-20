@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 public class PlayOffsPieChart extends Application implements Runnable {
     
     private void init(Stage primaryStage) {
-        SportData.getInstance().initPlayOff();
         Group root = new Group();
         primaryStage.setScene(new Scene(root));
         

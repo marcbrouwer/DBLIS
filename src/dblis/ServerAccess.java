@@ -246,8 +246,9 @@ public class ServerAccess {
         }
         return json.getJSONObject(0).getInt("sum");
     }
+    
     public final List<ChartData> getRelatedTweetsCountryCountSingle(String country, 
-            String sport, String type) {
+            String sport, String type, long starttime, long endtime) {
         final List<ChartData> list = new ArrayList<>();
         
         try {
@@ -255,6 +256,8 @@ public class ServerAccess {
             params.put("sport", sport);
             params.put("countrycode", country);
             params.put("type", type);
+            params.put("starttime", starttime);
+            params.put("endtime", endtime);
             final String response = getResponseObject(
                     "getRelatedTweetsCountryCountSingle", params)
                     .toString();

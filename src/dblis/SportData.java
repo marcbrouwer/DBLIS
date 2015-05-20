@@ -63,7 +63,7 @@ public class SportData {
     /**
      * Initializes SportData
      */
-    public void init() {
+    public final void init() {
         System.out.println("SportData - init - start");
         clear();
         
@@ -117,7 +117,11 @@ public class SportData {
         System.out.println("SportData - init - done");
     }
     
-    public void initPlayOff() {
+    public final void initPlayOff() {
+        initPlayOff(0, 0);
+    }
+    
+    public final void initPlayOff(long starttime, long endtime) {
         clear();
         final ServerAccess sa = new ServerAccess();
         final List<String> sports = Arrays.asList("FC Eindhoven", "FC Volendam", "VVV Venlo", 
@@ -125,10 +129,12 @@ public class SportData {
         final String country = "NL";
         
         sports.stream().forEach(sport -> {
-            addRetweetCount(country, 
-                    sa.getRelatedTweetsCountryCountSingle(country, sport, "retweets"));
-            addFavCount(country, 
-                    sa.getRelatedTweetsCountryCountSingle(country, sport, "favourites"));
+            addRetweetCount(country,
+                    sa.getRelatedTweetsCountryCountSingle(
+                            country, sport, "retweets", starttime, endtime));
+            addFavCount(country,
+                    sa.getRelatedTweetsCountryCountSingle(
+                            country, sport, "favourites", starttime, endtime));
         });
     }
     
