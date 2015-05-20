@@ -27,18 +27,13 @@ public class GraphInfo {
     @Param timeinterval, the timerinterval in days
     */
     
-    public GraphInfo(Date startDate, Date endDate, boolean football, 
+    public GraphInfo(Date startdate, Date enddate, boolean football, 
             boolean hockey, boolean cycling, boolean tennis, boolean skating, 
             int timeinterval){
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.selectedSports = new boolean[5];
-        this.selectedSports[0] = football;
-        this.selectedSports[1] = hockey;
-        this.selectedSports[2] = cycling;
-        this.selectedSports[3] = tennis;
-        this.selectedSports[4] = skating;
-        this.timeInterval = timeinterval;
+        startDate = startdate;
+        endDate = enddate;
+        setSelectedSports(football, hockey, cycling, tennis, skating);
+        timeInterval = timeinterval;
     }
     
     public static Date getStartDate(){
@@ -54,11 +49,35 @@ public class GraphInfo {
     //2=cycling
     //3=tennis;
     //4=skating;
-    public static boolean[] selectedSports(){
+    public static boolean[] getSelectedSports(){
         return selectedSports;
     }
     
-    public static int timeinterval(){
+    public static int getTimeinterval(){
         return timeInterval;
     }
+    
+    public static void setStartDate(Date startdate){
+        startDate = startdate;
+    }
+    
+    public static void setEndDate(Date enddate){
+        endDate = enddate;
+    }
+    
+    public static void setSelectedSports(boolean football, 
+            boolean hockey, boolean cycling, boolean tennis, boolean skating){
+        selectedSports = new boolean[5];
+        selectedSports[0] = football;
+        selectedSports[1] = hockey;
+        selectedSports[2] = cycling;
+        selectedSports[3] = tennis;
+        selectedSports[4] = skating;
+    }
+    
+    public static void setTimeinterval(int timeinterval){
+        timeInterval = timeinterval;
+    }
 }
+            
+   

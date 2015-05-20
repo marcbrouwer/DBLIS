@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Date;
 import twitter4j.JSONException;
 
 /**
@@ -508,5 +509,24 @@ public class SportData {
     public final void setCountryCode(String countryCode) {
         SportData.countryCode = countryCode;
     }
+    
+    /**
+     * 
+     * @param startdate = tweets should be within startdate and enddate
+     * @param enddate = read startdate
+     * @param sport = which sport we are actually looking for at the moment
+     * @param timeinterval = How many days the interval is.
+     *                  Day =1 , week = 7, month = 30
+     *                  note: a month is not always 30 days..
+     * @return Map<Date, Double>. Date stands for the first day
+     *                  Double stands for the amount of tweets.
+     * @example : <01-01-15, 53>
+     *            <01-02-15, 50>
+     *            <01-03-15, 25>
+     */
+    //public final Map<Date, Double> getSportsForDate(Date startdate,
+    //        Date enddate, String sport, int timeinterval){
+        
+    //}
     
 }

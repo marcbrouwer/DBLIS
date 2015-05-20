@@ -6,12 +6,13 @@
 
 package gui;
 
+import dblis.GraphInfo;
 //import java.awt.Dimension;
 //import java.text.DateFormat;
 //import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 //import java.util.Calendar;
-//import java.util.Date;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JCheckBox;
 
@@ -36,7 +37,11 @@ public class MainFrame extends javax.swing.JFrame {
         sportCheckboxes.add(skatingCheckBox);
         fxPanel = new FXPanel();
         testPanel.add(fxPanel);
-        fxPanel.drawScene(0);
+        GraphInfo graphInfo = new GraphInfo(startTimePicker.getDate(),
+                endTimePicker.getDate(), footballCheckBox.isSelected(),
+            hockeyCheckBox.isSelected(), cyclingCheckBox.isSelected(),
+            tennisCheckBox.isSelected(), skatingCheckBox.isSelected(), 1);
+        fxPanel.drawScene(0, graphInfo);
     }
 
     /**
@@ -225,6 +230,11 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         showBtn.setText("Show");
+        showBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showBtnActionPerformed(evt);
+            }
+        });
 
         lineChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Data-Line-Chart-icon_32x32.png"))); // NOI18N
         lineChartBtn.setToolTipText("");
@@ -410,6 +420,26 @@ public class MainFrame extends javax.swing.JFrame {
         this.startTimePicker.setEnabled(!showYear);
         this.endTimePicker.setEnabled(!showYear);
     }//GEN-LAST:event_yearDataCheckboxChanged
+
+    // If the show button is pressed we update the graph
+    // 
+    private void showBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showBtnActionPerformed
+        System.out.println("Pressed");
+        int timeInterval = 0;
+        String selected = timeIntervalCombo.getSelectedItem().toString();
+        if(selected.equals("Month")){
+            timeInterval = 30;
+        } else if(selected.equals("Week")){
+            timeInterval = 7;
+        } else if(selected.equals("Day")){
+            timeInterval = 1;
+        }
+        GraphInfo graphInfo = new GraphInfo(startTimePicker.getDate(),
+                endTimePicker.getDate(), footballCheckBox.isSelected(),
+            hockeyCheckBox.isSelected(), cyclingCheckBox.isSelected(),
+            tennisCheckBox.isSelected(), skatingCheckBox.isSelected(), 1);
+        fxPanel.drawScene(2, graphInfo);
+    }//GEN-LAST:event_showBtnActionPerformed
 
     /**
      * @param args the command line arguments
