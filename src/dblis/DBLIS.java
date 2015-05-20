@@ -545,13 +545,6 @@ public class DBLIS implements Runnable {
         try {
             result = twitter.search(query);
             while (result.nextQuery() != null) {
-                while (!DBStore.getInstance().isEmpty()) {
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException ex) {
-                    }
-                }
-                
                 synchronized (this) {
                     if (!tweets.containsKey(search)) {
                         tweets.put(search, new HashSet());
