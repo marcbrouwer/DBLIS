@@ -267,10 +267,10 @@ public class NewMainFrame extends javax.swing.JFrame {
         );
 
         visualizationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Visualization"));
-        visualizationPanel.setLayout(new java.awt.GridLayout());
+        visualizationPanel.setLayout(new java.awt.GridLayout(1, 0));
 
-        testPanel.setBackground(new java.awt.Color(255, 0, 0));
-        testPanel.setLayout(new java.awt.GridLayout());
+        testPanel.setBackground(new java.awt.Color(255, 255, 255));
+        testPanel.setLayout(new java.awt.GridLayout(1, 0));
         visualizationPanel.add(testPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

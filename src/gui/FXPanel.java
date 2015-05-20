@@ -21,7 +21,6 @@ public class FXPanel extends JFXPanel {
     public FXPanel() {}
     
     public void drawScene(int index) {
-        System.out.println("Draw");
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -36,7 +35,6 @@ public class FXPanel extends JFXPanel {
                 }
                 if (scene != null) {
                     setScene(scene);
-                    System.out.println("Set");
                 }
             }
         });
@@ -51,7 +49,6 @@ public class FXPanel extends JFXPanel {
         text.setFont(new Font(15));
         text.setText("Welcome JavaFX!");
         root.getChildren().add(text);
-        System.out.println("Welcome");
         return scene;
     }
     
