@@ -455,6 +455,41 @@ public class SportData {
         return getSportsByPopularity(counts);
     }
     
+    public final Map<String, Double> getSportPopMatch() {
+        final Map<String, List<ChartData>> counts = new HashMap();
+        counts.putAll(retweetCounts);
+        
+        favCounts.entrySet().forEach(country -> {
+            if (!counts.containsKey(country.getKey())) {
+                counts.put(country.getKey(), new ArrayList<>());
+            }
+            
+            final Set<String> existing = new HashSet();
+            counts.get(country.getKey()).stream()
+                    .forEach(sport -> existing.add(sport.getName()));
+            
+            country.getValue().stream().forEach(sport -> {
+                if (existing.contains(sport.getName())) {
+                    counts.get(country.getKey()).stream()
+                            .filter(data -> data.getName().equals(sport.getName()))
+                            .forEach(exist -> {
+                                if (exist.getName().equals(sport.getName())) {
+                                    exist.addValue(sport.getValue());
+                                }
+                            });
+                } else {
+                    counts.get(country.getKey()).add(sport);
+                }
+            });
+        });
+        
+        final Map<String, Double> combined = getSportsByPopularity(counts);
+        List<String> matches = Arrays.asList("De Graafschap - Go Ahead Eagels",
+                "FC Volendam - FC Eindhoven", "VVV Venlo - NAC Breda",
+                "FC Emmen - Roda JC");
+        return combined;
+    }
+    
     /**
      * Sets country code
      * 
