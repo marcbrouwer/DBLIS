@@ -5,16 +5,6 @@
  */
 package gui;
 
-import java.util.LinkedList;
-import java.util.List;
-import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javax.swing.JFrame;
 
 /**
@@ -22,21 +12,17 @@ import javax.swing.JFrame;
  * @author s124392
  */
 public class MainFrame extends JFrame {
-    JFXPanel textPanel;
+    FXPanel fxPanel;
+    boolean welcome = false;
 
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
-        textPanel = new JFXPanel();
-        jPanel1.add(textPanel);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                drawSceneWelcome();
-            }
-       });
+        fxPanel = new FXPanel();
+        jPanel1.add(fxPanel);
+        fxPanel.drawScene(0);
     }
 
     /**
@@ -90,7 +76,15 @@ public class MainFrame extends JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
-        drawSceneGoodbye();
+        if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+            if (welcome) {
+            fxPanel.drawScene(0);
+            } else {
+                fxPanel.drawScene(1);
+            }
+            welcome = !welcome;
+            //System.out.println(welcome);
+        } 
     }//GEN-LAST:event_jComboBox1ItemStateChanged
 
     /**
@@ -126,30 +120,6 @@ public class MainFrame extends JFrame {
                 new MainFrame().setVisible(true);
             }
         });
-    }
-    
-    private void drawSceneWelcome() {
-        Group root = new Group();
-        Scene scene = new Scene(root);
-        Text  text  =  new  Text();
-            text.setX(40);
-            text.setY(100);
-            text.setFont(new Font(25));
-            text.setText("Welcome JavaFX!");
-            root.getChildren().add(text);
-            textPanel.setScene(scene);
-    }
-    
-    private void drawSceneGoodbye() {
-        Group root = new Group();
-        Scene scene = new Scene(root);
-        Text  text  =  new  Text();
-            text.setX(40);
-            text.setY(100);
-            text.setFont(new Font(25));
-            text.setText("Goodbye JavaFX!");
-            root.getChildren().add(text);
-            textPanel.setScene(scene);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
