@@ -65,6 +65,7 @@ public class SportData {
      */
     public void init() {
         System.out.println("SportData - init - start");
+        clear();
         
         SportData.getInstance().setCountryCode("NL");
         final ServerAccess sa = new ServerAccess();
@@ -116,7 +117,29 @@ public class SportData {
         System.out.println("SportData - init - done");
     }
     
+    public void initPlayOff() {
+        clear();
+        final ServerAccess sa = new ServerAccess();
+        final List<String> sports = Arrays.asList("FC Eindhoven", "FC Volendam", "VVV Venlo", 
+            "NAC Breda", "FC Emmen", "Roda JC", "Go Ahead Eagles", "De Graafschap");
+        final String country = "NL";
+        
+        sports.stream().forEach(sport -> {
+            addRetweetCount(country, 
+                    sa.getRelatedTweetsCountryCountSingle(country, sport, "retweets"));
+            addFavCount(country, 
+                    sa.getRelatedTweetsCountryCountSingle(country, sport, "favourites"));
+        });
+    }
+    
     // Private Methods
+    
+    private void clear() {
+        retweetCounts.clear();
+        favCounts.clear();
+        keywordsCountRT.clear();
+        keywordsCountFav.clear();
+    }
     
     /**
      * Adds list of popularity for some country to some map

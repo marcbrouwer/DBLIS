@@ -10,8 +10,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -122,6 +124,20 @@ public class ServerAccess {
         return obj.equals("true");
     }
     
+    public final Set<Long> getTweetsIDs() {
+        final Set<Long> set = new HashSet();
+        try {
+            final JSONArray json = 
+                    new JSONArray(getResponseObject("getTweetsIDs", null).toString());
+            for (int i = 0; i < json.length(); i++) {
+                set.add(json.getJSONObject(i).getLong("id"));
+            }
+        } catch (Exception ex) {
+            System.out.println("DBLIS - getTweetsIDs - " + ex);
+        }
+        return set;
+    }
+    
     public final JSONArray getSports() throws JSONException {
         return new JSONArray(getResponseObject("getSports", null).toString());
     }
@@ -229,6 +245,42 @@ public class ServerAccess {
             return 0;
         }
         return json.getJSONObject(0).getInt("sum");
+    }
+    public final List<ChartData> getRelatedTweetsCountryCountSingle(String country, 
+            String sport, String type) {
+        final List<ChartData> list = new ArrayList<>();
+        
+        try {
+            final Map<String, Object> params = new HashMap();
+            params.put("sport", sport);
+            params.put("countrycode", country);
+            params.put("type", type);
+            final String response = getResponseObject(
+                    "getRelatedTweetsCountryCountSingle", params)
+                    .toString();
+            final JSONArray json = new JSONArray(response);
+            
+            JSONObject obj;
+            int sum;
+            for (int i = 0; i < json.length(); i++) {
+                try {
+                    obj = json.getJSONObject(i);
+                    if (obj.isNull("sum")) {
+                        sum = 0;
+                    } else {
+                        sum = obj.getInt("sum");
+                    }
+                    list.add(new ChartData(sport, sum));
+                } catch (Exception ex) {
+                    System.out.println("getRelatedTweetsCountryCountSingle - " + ex);
+                }
+            }
+
+        } catch (Exception ex) {
+            System.out.println("getRelatedTweetsCountryCountSingle - " + ex);
+        }
+        
+        return list;
     }
     
     public final int getArea(String country) {

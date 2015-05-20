@@ -169,6 +169,10 @@ public class DBLIS implements Runnable {
         
         return;*/
         
+        /*PlayOffsPieChart pie = new PlayOffsPieChart();
+        pie.run();
+        return;*/
+        
         // SEARCHING
         
         runStoreThread(sports);
@@ -341,6 +345,7 @@ public class DBLIS implements Runnable {
     }
     
     private void runStoreThread(List<String> sports) {
+        DBStore.getInstance().initIDs();
         DBStore.getInstance().setSports(sports);
         final Runnable r = () -> {
             final ServerAccess sa = new ServerAccess();
@@ -380,6 +385,9 @@ public class DBLIS implements Runnable {
     }
     
     private void timeSearch(ServerAccess sa, double[][] geos, List<String> sports) {
+        sports = Arrays.asList("FC Eindhoven", "FC Volendam", "VVV Venlo", 
+            "NAC Breda", "FC Emmen", "Roda JC", "Go Ahead Eagles", "De Graafschap");
+        
         final long starttime = 1399986000; //13-5-2014 15:00:00
         final long endtime = 1431522000; //13-5-2015 15:00:00
         final long hourdif = 3600;
@@ -509,6 +517,12 @@ public class DBLIS implements Runnable {
      */
     private RetryQuery timeTweets(int n, Query lastQuery, String search, double[] geocode, 
             Configuration auth) {
+        while (!DBStore.getInstance().isEmpty()) {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException ex) {
+            }
+        }
         TwitterFactory tf = new TwitterFactory(auth);
         Twitter twitter = tf.getInstance();
         Query query = new Query(search);
@@ -530,6 +544,13 @@ public class DBLIS implements Runnable {
         try {
             result = twitter.search(query);
             while (result.nextQuery() != null) {
+                while (!DBStore.getInstance().isEmpty()) {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException ex) {
+                    }
+                }
+                
                 synchronized (this) {
                     if (!tweets.containsKey(search)) {
                         tweets.put(search, new HashSet());

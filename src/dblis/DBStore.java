@@ -37,11 +37,17 @@ public class DBStore {
     
     // Variables
     
+    private final Set<Long> ids = new HashSet();
     private final Map<String, Set<Status>> tweets = new ConcurrentHashMap();
     private List<String> sports = new ArrayList<>();
     private int s = 0;
         
     // Methods
+    
+    public final void initIDs() {
+        final ServerAccess sa = new ServerAccess();
+        ids.addAll(sa.getTweetsIDs());
+    }
     
     public final void setSports(List<String> sports) {
         this.sports = sports;
@@ -53,7 +59,12 @@ public class DBStore {
                 if (!tweets.containsKey(elem.getKey())) {
                     tweets.put(elem.getKey(), new HashSet());
                 }
-                tweets.get(elem.getKey()).addAll(elem.getValue());
+                elem.getValue().stream()
+                        .filter(status -> !ids.contains(status.getId()))
+                        .forEach(status -> {
+                            tweets.get(elem.getKey()).add(status);
+                            ids.add(status.getId());
+                        });
             }
         });
     }
