@@ -173,19 +173,20 @@ public class DBLIS implements Runnable {
         PlayOffsPieChart pie = new PlayOffsPieChart();
         pie.run();
         return;*/
-        /*
-        SportData.getInstance().initPlayOff();
+        
+        /*SportData.getInstance().initPlayOff();
         final Map<Date, Double> sportForDate = 
                 SportData.getInstance()
                         .getSportsForDate(new Date(1430431200000L), new Date(), 
-                                "De Graafschap", 1);
+                                "tennis", 1);
         final Map<Date, Double> sportForDateM = 
                 SportData.getInstance()
                         .getSportsForDate(new Date(1430431200000L), new Date(), 
-                                "De Graafschap", 30);
+                                "tennis", 30);
         final Double total = sportForDate.values().stream().mapToDouble(d -> d).sum();
         final Double totalM = sportForDateM.values().stream().mapToDouble(d -> d).sum();
         */
+        
         // SEARCHING
         
         runStoreThread(sports);
@@ -364,6 +365,9 @@ public class DBLIS implements Runnable {
             final ServerAccess sa = new ServerAccess();
             while (true) {
                 if (DBStore.getInstance().isEmpty()) {
+                    if (DBStore.getInstance().isDone()) {
+                        return;
+                    }
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException ex) {
@@ -398,8 +402,8 @@ public class DBLIS implements Runnable {
     }
     
     private void timeSearch(ServerAccess sa, double[][] geos, List<String> sports) {
-        sports = Arrays.asList("FC Eindhoven", "FC Volendam", "VVV Venlo", 
-            "NAC Breda", "FC Emmen", "Roda JC", "Go Ahead Eagles", "De Graafschap");
+        /*sports = Arrays.asList("FC Eindhoven", "FC Volendam", "VVV Venlo", 
+            "NAC Breda", "FC Emmen", "Roda JC", "Go Ahead Eagles", "De Graafschap");*/
         
         final long starttime = 1399986000; //13-5-2014 15:00:00
         final long endtime = 1431522000; //13-5-2015 15:00:00
@@ -419,7 +423,7 @@ public class DBLIS implements Runnable {
                 sports1.add(sports.get(i));
             }
         }
-        Collections.reverse(sports1);
+        //Collections.reverse(sports1);
         searchTime1 = starttime;
         firstSearch.add(false);
         final Runnable r1 = () -> {
@@ -444,7 +448,7 @@ public class DBLIS implements Runnable {
                 sports2.add(sports.get(i));
             }
         }
-        Collections.reverse(sports2);
+        //Collections.reverse(sports2);
         searchTime2 = starttime;
         firstSearch.add(false);
         final Runnable r2 = () -> {
@@ -472,6 +476,7 @@ public class DBLIS implements Runnable {
         }
         
         storeRest();
+        DBStore.getInstance().setDone();
     }
     
     private boolean timeSearchSports(long searchTime, int n, final double[] geo, 

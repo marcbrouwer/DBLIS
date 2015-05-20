@@ -89,18 +89,17 @@ public class SportData {
             sports.stream().forEach(sport -> {
                 //addRetweetCount(country, sportRTpop);
                 //addRetweetCount(country, sportFavpop);
-                try {
                     System.out.println("SportData - init - get for sport: " + sport);
                     addRetweetCount(country, 
                             new ChartData(sport, 
                                     sa.getRelatedTweetsCountryCount(
-                                            country, sport, "retweets")
+                                            country, sport, "retweets", 0, 0)
                             )
                     );
                     addFavCount(country, 
                             new ChartData(sport, 
                                     sa.getRelatedTweetsCountryCount(
-                                            country, sport, "favourites")
+                                            country, sport, "favourites", 0, 0)
                             )
                     );
                     //System.out.println("SportData - init - getKeyCountRT - " + sport);
@@ -110,9 +109,6 @@ public class SportData {
                     //System.out.println("SportData - init - getKeyCountFav - " + sport);
                     addKeywordsCountFav(country, sport, 
                             sa.getKeywordsPopularityCount(country, sport, "favourites"));
-                } catch (JSONException ex) {
-                    System.out.println("init - " + ex);
-                }
             });
         //});
             
@@ -278,7 +274,7 @@ public class SportData {
      * @return popularity of all sports as percentage, map sport =&gt; popularity
      */
     private Map<String, Double> getSportsByPopularity(
-            Map<String, List<ChartData>> chartdata) {
+            Map<String, List<ChartData>> chartdata, boolean asPercentage) {
         final Map<String, Double> pop = new HashMap();
         
         chartdata.entrySet().stream().forEach(entry -> {
@@ -290,7 +286,10 @@ public class SportData {
             });
         });
         
-        return getAsPercentage(pop);
+        if (asPercentage) {
+            return getAsPercentage(pop);
+        }
+        return pop;
     }
     
     // Public Methods
@@ -436,7 +435,7 @@ public class SportData {
      * @return map with country =&gt; popularity
      */
     public final Map<String, Double> getSportPopFavourites() {
-        return getSportsByPopularity(favCounts);
+        return getSportsByPopularity(favCounts, true);
     }
     
     /**
@@ -446,10 +445,10 @@ public class SportData {
      * @return map with country =&gt; popularity
      */
     public final Map<String, Double> getSportPopRetweets() {
-        return getSportsByPopularity(retweetCounts);
+        return getSportsByPopularity(retweetCounts, true);
     }
     
-    public final Map<String, Double> getSportPop() {
+    public final Map<String, Double> getSportPop(boolean asPercentage) {
         final Map<String, List<ChartData>> counts = new HashMap();
         counts.putAll(retweetCounts);
         
@@ -477,7 +476,7 @@ public class SportData {
             });
         });
         
-        return getSportsByPopularity(counts);
+        return getSportsByPopularity(counts, asPercentage);
     }
     
     public final Map<String, Double> getSportPopMatch() {
@@ -508,7 +507,7 @@ public class SportData {
             });
         });
         
-        final Map<String, Double> combined = getSportsByPopularity(counts);
+        final Map<String, Double> combined = getSportsByPopularity(counts, true);
         List<String> matches = Arrays.asList(
                 "De Graafschap - Go Ahead Eagles",
                 "FC Volendam - FC Eindhoven", 
@@ -572,10 +571,10 @@ public class SportData {
         ChartData cd0;
         ChartData cd1;
         while (timeS < endtime) {
-            cd0 = sa.getRelatedTweetsCountryCountSingle(
-                    "NL", sport, "retweets", timeS, timeE);
-            cd1 = sa.getRelatedTweetsCountryCountSingle(
-                    "NL", sport, "favourites", timeS, timeE);
+            cd0 = new ChartData(sport, sa.getRelatedTweetsCountryCount(
+                    "NL", sport, "retweets", timeS, timeE));
+            cd1 = new ChartData(sport, sa.getRelatedTweetsCountryCount(
+                    "NL", sport, "favourites", timeS, timeE));
             cd0.addValue(cd1.getValue());
             count.put(new Date(timeS), (double) cd0.getValue());
             

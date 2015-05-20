@@ -41,6 +41,7 @@ public class DBStore {
     private final Map<String, Set<Status>> tweets = new ConcurrentHashMap();
     private List<String> sports = new ArrayList<>();
     private int s = 0;
+    private boolean done = false;
         
     // Methods
     
@@ -51,6 +52,10 @@ public class DBStore {
     
     public final void setSports(List<String> sports) {
         this.sports = sports;
+    }
+    
+    public final void setDone() {
+        this.done = true;
     }
     
     public final void addData(Map<String, Set<Status>> data) {
@@ -108,6 +113,10 @@ public class DBStore {
         }
         
         return !hasElem;
+    }
+    
+    public final boolean isDone() {
+        return done;
     }
     
 }

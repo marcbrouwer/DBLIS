@@ -233,18 +233,25 @@ public class ServerAccess {
     }
     
     public final int getRelatedTweetsCountryCount(String country, String sport, 
-            String type) throws JSONException {
-        final Map<String, Object> params = new HashMap();
-        params.put("countrycode", country);
-        params.put("sport", sport);
-        params.put("type", type);
-        final String response = 
-                getResponseObject("getRelatedTweetsCountryCount", params).toString();
-        final JSONArray json = new JSONArray(response);
-        if (json.getJSONObject(0).isNull("sum")) {
+            String type, long starttime, long endtime) {
+        try {
+            final Map<String, Object> params = new HashMap();
+            params.put("countrycode", country);
+            params.put("sport", sport);
+            params.put("type", type);
+            params.put("starttime", starttime);
+            params.put("endtime", endtime);
+            final String response = 
+                    getResponseObject("getRelatedTweetsCountryCount", params).toString();
+            final JSONArray json = new JSONArray(response);
+            if (json.getJSONObject(0).isNull("sum")) {
+                return 0;
+            }
+            return json.getJSONObject(0).getInt("sum");
+        } catch (JSONException ex) {
+            System.out.println("getRelatedTweetsCountryCount - " + ex);
             return 0;
         }
-        return json.getJSONObject(0).getInt("sum");
     }
     
     public final ChartData getRelatedTweetsCountryCountSingle(String country, 
