@@ -75,8 +75,9 @@ public class DBStore {
     }
     
     public final String getSport() {
-        final String sport = sports.get(s);
-        s = (s + 1) % sports.size();
+        final List<String> keys = new ArrayList(tweets.keySet());
+        s = (s + 1) % keys.size();
+        final String sport = keys.get(s);
         return sport;
     }
     

@@ -169,7 +169,7 @@ public class DBLIS implements Runnable {
         
         return;*/
         
-        /*SportData.getInstance().initPlayOff(1432080000000L, 1432130883000L);
+        /*SportData.getInstance().initPlayOff(0, 0);
         PlayOffsPieChart pie = new PlayOffsPieChart();
         pie.run();
         return;*/

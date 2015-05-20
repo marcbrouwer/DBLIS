@@ -568,6 +568,10 @@ public class SportData {
             timeE += dayInMiliseconds * timeinterval;
         }
         
+        if (timeE > endtime) {
+            timeE = endtime;
+        }
+        
         ChartData cd0;
         ChartData cd1;
         while (timeS < endtime) {
@@ -585,6 +589,10 @@ public class SportData {
             } else {
                 timeS += dayInMiliseconds * timeinterval;
                 timeE += dayInMiliseconds * timeinterval;
+            }
+            
+            if (timeE > endtime) {
+                timeE = endtime;
             }
         }
         
