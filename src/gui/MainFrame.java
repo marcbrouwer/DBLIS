@@ -68,9 +68,15 @@ public class MainFrame extends javax.swing.JFrame {
         endTimeLabel = new javax.swing.JLabel();
         timeIntervalCombo = new javax.swing.JComboBox();
         sportsLabel = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
+        yearCombo = new javax.swing.JComboBox();
         yearLabel = new javax.swing.JLabel();
         sportsChooseBtn = new javax.swing.JButton();
+        showYearDataCheckbox = new javax.swing.JCheckBox();
+        showBtn = new javax.swing.JButton();
+        lineChartBtn = new javax.swing.JButton();
+        histogramBtn = new javax.swing.JButton();
+        pieChartBtn = new javax.swing.JButton();
+        listBtn = new javax.swing.JButton();
         visualizationPanel = new javax.swing.JPanel();
         testPanel = new javax.swing.JPanel();
 
@@ -195,13 +201,15 @@ public class MainFrame extends javax.swing.JFrame {
 
         endTimeLabel.setText("End time");
 
-        timeIntervalCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Month", "Week" }));
+        timeIntervalCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Month", "Week", "Day" }));
 
         sportsLabel.setText("Sports");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "2013", "2014", "2015", " " }));
+        yearCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "< -- >", "2013", "2014", "2015", "" }));
+        yearCombo.setEnabled(false);
 
-        yearLabel.setText("Year");
+        yearLabel.setText("Year :");
+        yearLabel.setEnabled(false);
 
         sportsChooseBtn.setText("Choose");
         sportsChooseBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -210,60 +218,111 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        showYearDataCheckbox.setLabel("Show data in one year");
+        showYearDataCheckbox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                yearDataCheckboxChanged(evt);
+            }
+        });
+        showYearDataCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showYearDataCheckboxActionPerformed(evt);
+            }
+        });
+
+        showBtn.setText("Show");
+
+        lineChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Data-Line-Chart-icon_32x32.png"))); // NOI18N
+        lineChartBtn.setToolTipText("");
+
+        histogramBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/bar_chart-512_32x32.png"))); // NOI18N
+        histogramBtn.setToolTipText("");
+
+        pieChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/chart_pie_32x32.png"))); // NOI18N
+        pieChartBtn.setToolTipText("");
+
+        listBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/grid_layout_snap_small_stock-512_32x32.png"))); // NOI18N
+        listBtn.setToolTipText("");
+
         javax.swing.GroupLayout parametersPanelLayout = new javax.swing.GroupLayout(parametersPanel);
         parametersPanel.setLayout(parametersPanelLayout);
         parametersPanelLayout.setHorizontalGroup(
             parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(parametersPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(parametersPanelLayout.createSequentialGroup()
-                        .addComponent(startTimeLabel)
-                        .addGap(89, 89, 89)
-                        .addComponent(endTimeLabel))
-                    .addGroup(parametersPanelLayout.createSequentialGroup()
-                        .addComponent(startTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(endTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(parametersPanelLayout.createSequentialGroup()
-                        .addGap(5, 5, 5)
-                        .addComponent(yearLabel))
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16)
-                .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(sportsLabel)
-                    .addComponent(sportsChooseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(timeIntervalLabel)
-                    .addComponent(timeIntervalCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(yearCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(parametersPanelLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(yearLabel)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(parametersPanelLayout.createSequentialGroup()
+                                .addComponent(startTimeLabel)
+                                .addGap(89, 89, 89)
+                                .addComponent(endTimeLabel))
+                            .addGroup(parametersPanelLayout.createSequentialGroup()
+                                .addComponent(startTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(endTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(timeIntervalLabel)
+                            .addComponent(timeIntervalCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(sportsChooseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(sportsLabel)))
+                    .addComponent(showYearDataCheckbox))
+                .addGap(5, 5, 5)
+                .addComponent(showBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(parametersPanelLayout.createSequentialGroup()
+                .addGap(156, 156, 156)
+                .addComponent(lineChartBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(histogramBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(pieChartBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(listBtn)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         parametersPanelLayout.setVerticalGroup(
             parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, parametersPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(parametersPanelLayout.createSequentialGroup()
-                        .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(startTimeLabel)
-                            .addComponent(endTimeLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(startTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(endTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(parametersPanelLayout.createSequentialGroup()
-                        .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addGroup(parametersPanelLayout.createSequentialGroup()
+                .addComponent(showYearDataCheckbox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(parametersPanelLayout.createSequentialGroup()
+                            .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(startTimeLabel)
+                                .addComponent(endTimeLabel)
+                                .addComponent(yearLabel))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(startTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(endTimePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(parametersPanelLayout.createSequentialGroup()
                             .addComponent(sportsLabel)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(sportsChooseBtn))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, parametersPanelLayout.createSequentialGroup()
                             .addComponent(timeIntervalLabel)
-                            .addComponent(yearLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(timeIntervalCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sportsChooseBtn))))
-                .addContainerGap())
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(timeIntervalCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(yearCombo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(showBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lineChartBtn)
+                    .addComponent(histogramBtn)
+                    .addComponent(pieChartBtn)
+                    .addComponent(listBtn))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         visualizationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Visualization"));
@@ -279,7 +338,7 @@ public class MainFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(parametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(visualizationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -288,9 +347,10 @@ public class MainFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(visualizationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                .addComponent(visualizationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 321, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(parametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(parametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -346,6 +406,21 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_cyclingCheckBoxActionPerformed
 
+    private void showYearDataCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showYearDataCheckboxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_showYearDataCheckboxActionPerformed
+
+    private void yearDataCheckboxChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_yearDataCheckboxChanged
+        // TODO add your handling code here:
+        boolean showYear  = showYearDataCheckbox.isSelected();
+        this.yearLabel.setEnabled(showYear);
+        this.yearCombo.setEnabled(showYear);
+        this.startTimeLabel.setEnabled(!showYear);
+        this.endTimeLabel.setEnabled(!showYear);
+        this.startTimePicker.setEnabled(!showYear);
+        this.endTimePicker.setEnabled(!showYear);
+    }//GEN-LAST:event_yearDataCheckboxChanged
+
     /**
      * @param args the command line arguments
      */
@@ -387,9 +462,14 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel endTimeLabel;
     private com.lavantech.gui.comp.DateTimePicker endTimePicker;
     private javax.swing.JCheckBox footballCheckBox;
+    private javax.swing.JButton histogramBtn;
     private javax.swing.JCheckBox hockeyCheckBox;
-    private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JButton lineChartBtn;
+    private javax.swing.JButton listBtn;
     private javax.swing.JPanel parametersPanel;
+    private javax.swing.JButton pieChartBtn;
+    private javax.swing.JButton showBtn;
+    private javax.swing.JCheckBox showYearDataCheckbox;
     private javax.swing.JCheckBox skatingCheckBox;
     private javax.swing.JButton sportsCancelBtn;
     private javax.swing.JButton sportsChooseBtn;
@@ -406,6 +486,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox timeIntervalCombo;
     private javax.swing.JLabel timeIntervalLabel;
     private javax.swing.JPanel visualizationPanel;
+    private javax.swing.JComboBox yearCombo;
     private javax.swing.JLabel yearLabel;
     // End of variables declaration//GEN-END:variables
 }
