@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import twitter4j.FilterQuery;
 import twitter4j.HashtagEntity;
@@ -68,6 +69,7 @@ public class DBLIS implements Runnable {
     private final int searches = 5;
     
     // Data maps and sets
+    private final Map<String, List<String>> relations;
     private final Map<String, Set<Status>> tweets;
     private final Map<String, Integer> countHashtags;
     private final Map<String, Integer> countWords;
@@ -78,7 +80,6 @@ public class DBLIS implements Runnable {
     // Storage file paths and data seperator
     private final String tweetsStorePath = getWorkingDirectory() + "tweets.txt";
     private final String usersStorePath = getWorkingDirectory() + "users.txt";
-    private final String dataSeperator = ";&;";
     
     // Number of tweets loaded
     private int numberOfTweets = 0;
@@ -86,15 +87,12 @@ public class DBLIS implements Runnable {
     // Debug search
     private final List<Boolean> firstSearch = new ArrayList<>();
     
-    // Time search
-    private long searchTime1 = starttime;
-    private long searchTime2 = starttime;
-    
     // Locks
     private final Object lock = new Object();
     
     /** Constructor */
     public DBLIS() {
+        this.relations = new ConcurrentHashMap();
         this.tweets = new ConcurrentHashMap();
         this.countHashtags = new HashMap();
         this.countWords = new HashMap();
@@ -129,9 +127,9 @@ public class DBLIS implements Runnable {
         
         //final List<String> countryCodes = sa.getCountryCodes();
         //final List<String> sportsGB = sa.getSportsGB();
-        final List<String> sports = getSports(sa);
+        //final List<String> sports = getSports(sa);
         //final JSONArray geolocations = getGeolocations(sa);
-        final double[][] geos = getGeolocationsArray(sa);
+        //final double[][] geos = getGeolocationsArray(sa);
         
         /*if (useStream) {
             int max = 100;
@@ -147,13 +145,6 @@ public class DBLIS implements Runnable {
             return;
         }*/
         
-        // debug JSONArray's
-        /*JSONArray mostCommon = getCommonSports(sa, "NL", 5);
-        JSONArray popular = getPopularSportCountries(sa, "tennis", 5);
-        JSONArray mostCommonSports = getMostCommonSports(sa, "NL");
-        JSONArray mostCommonCountries = getMostCommonCountries(sa, "football", sportsGB.size());
-        JSONArray alternatives = getAlternatives(sa, "tennis");
-        */
         // EXCEL OUTPUT
         //toExcel(sa, countryCodes, sportsGB);
         
@@ -166,36 +157,34 @@ public class DBLIS implements Runnable {
         BarChartSimple bar = new BarChartSimple();
         bar.view();*/
         
-        /*SportData.getInstance().init();
-        PieChartFX pie = new PieChartFX();
-        pie.run();
+        /*SportData2.getInstance().init();
+        PieChartFX pie1 = new PieChartFX();
+        pie1.run();*/
         
-        return;*/
+        /*PlayOffsPieChart pie2 = new PlayOffsPieChart();
+        pie2.run();*/
         
-        /*SportData.getInstance().initPlayOff(0, 0);
-        PlayOffsPieChart pie = new PlayOffsPieChart();
-        pie.run();
-        return;*/
+        //return;
         
-        /*SportData.getInstance().initPlayOff();
-        final Map<Date, Double> sportForDate = 
-                SportData.getInstance()
-                        .getSportsForDate(new Date(1430431200000L), new Date(), 
-                                "tennis", 1);
-        final Map<Date, Double> sportForDateM = 
-                SportData.getInstance()
-                        .getSportsForDate(new Date(1430431200000L), new Date(), 
-                                "tennis", 30);
-        final Double total = sportForDate.values().stream().mapToDouble(d -> d).sum();
-        final Double totalM = sportForDateM.values().stream().mapToDouble(d -> d).sum();
-        */
         
         // SEARCHING
         
-        runStoreThread(sports);
+        final List<String> keywords = new ArrayList<>();
+        final List<String> sports = 
+                Arrays.asList("football", "hockey", "cycling", "tennis", "skating");
+        sports.stream().forEach(sport -> {
+            if (!relations.containsKey(sport)) {
+                relations.put(sport, new ArrayList<>());
+            }
+            final Set<String> alts = sa.getAlternatives(sport);
+            relations.get(sport).addAll(alts);
+            keywords.addAll(alts);
+        });
+        
+        runStoreThread(keywords);
         //userSearch(sa, getAuth2(), "FCBarcelona");
         //twitterStream2(sa, sports);
-        timeSearch(sa, geos, sports);
+        timeSearch(sa, keywords);
         
         //toSearch.stream().forEach(sport -> getTweets(sport, geocode));
         //getTweets(search);
@@ -404,7 +393,7 @@ public class DBLIS implements Runnable {
         t.start();
     }
     
-    private void timeSearch(ServerAccess sa, double[][] geos, List<String> sports) {
+    private void timeSearch(ServerAccess sa, List<String> sports) {
         /*sports = Arrays.asList("FC Eindhoven", "FC Volendam", "VVV Venlo", 
             "NAC Breda", "FC Emmen", "Roda JC", "Go Ahead Eagles", "De Graafschap");*/
         Collections.shuffle(sports);
@@ -415,54 +404,25 @@ public class DBLIS implements Runnable {
         final long daydif = 86400;
         final long weekdif = 7*daydif;
         
-        final String firstGeo1 = "geocode:52.0813,4.76814,40km";
-        final String firstSport1 = "alberto contador";
         final List<String> sports1 = new ArrayList<>();
-        boolean start1 = true;
         for (int i = 0; i < (int) Math.floor(sports.size() / 2); i++) {
-            if (sports.get(i).equals("depay")) {
-                start1 = true;
-            }
-            if (start1) {
-                sports1.add(sports.get(i));
-            }
+            sports1.add(sports.get(i));
         }
+        
         //Collections.reverse(sports1);
-        searchTime1 = starttime;
         firstSearch.add(false);
         final Runnable r1 = () -> {
-            //while (searchTime1 <= endtime) {
-                //for (int i = 0; i < (int) Math.floor(geos.length / 2); i++) {
-                    timeSearchSports(searchTime1, 1, geos[0], firstGeo1, 
-                            firstSport1, sports1, sa, getAuth());
-                //}
-            //    searchTime1 += weekdif;
-            //}
+            timeSearchSports(1, sports1, sa, getAuth());
         };
         
-        final String firstGeo2 = "geocode:50.8899,5.87614,15km";
-        final String firstSport2 = "alberto contador";
         final List<String> sports2 = new ArrayList<>();
-        boolean start2 = true;
         for (int i = (int) Math.floor(sports.size() / 2); i < sports.size(); i++) {
-            if (sports.get(i).equals("")) {
-                start2 = true;
-            }
-            if (start2) {
-                sports2.add(sports.get(i));
-            }
+            sports2.add(sports.get(i));
         }
         //Collections.reverse(sports2);
-        searchTime2 = starttime;
         firstSearch.add(false);
         final Runnable r2 = () -> {
-            //while (searchTime2 <= endtime) {
-                //for (int i = (int) Math.floor(geos.length / 2); i < geos.length; i++) {
-                    timeSearchSports(searchTime2, 2, geos[0], firstGeo2, 
-                            firstSport2, sports2, sa, getAuth2());
-                //}
-            //    searchTime2 += weekdif;
-            //}
+            timeSearchSports(2, sports2, sa, getAuth2());
         };
         
         final Thread t1 = new Thread(r1);
@@ -483,10 +443,8 @@ public class DBLIS implements Runnable {
         DBStore.getInstance().setDone();
     }
     
-    private boolean timeSearchSports(long searchTime, int n, final double[] geo, 
-            final String firstGeo, final String firstSport, 
-            final List<String> sports, final ServerAccess sa, 
-            final Configuration auth) {
+    private boolean timeSearchSports(int n, final List<String> sports,
+            final ServerAccess sa, final Configuration auth) {
         
         for (String sport : sports) {
                 /*final String loc = geo;
@@ -505,7 +463,7 @@ public class DBLIS implements Runnable {
                 RetryQuery rq = new RetryQuery(-2, null);
                 while (resetTime >= curTime 
                         || rq.getRetry() == -2 || rq.getQuery() != null) {
-                    rq = timeTweets(n, rq.getQuery(), sport, geo, auth);
+                    rq = timeTweets(n, rq.getQuery(), sport, auth);
                     resetTime = rq.getRetry();
                     curTime = new Date().getTime();
                     try {
@@ -515,8 +473,6 @@ public class DBLIS implements Runnable {
                             System.out.println("Sleeping "
                                     + (wait / 1000)
                                     + "s for n: " + n
-                                    + ", " + searchTime
-                                    + ", " + Arrays.toString(geo)
                                     + ", " + sport);
                             Thread.sleep(wait + 1000);
                         }
@@ -537,8 +493,7 @@ public class DBLIS implements Runnable {
     /**
      * Gets tweets for a given keyword and globally set time frame
      */
-    private RetryQuery timeTweets(int n, Query lastQuery, String search, double[] geocode, 
-            Configuration auth) {
+    private RetryQuery timeTweets(int n, Query lastQuery, String search, Configuration auth) {
         /*while (!DBStore.getInstance().isEmpty()) {
             try {
                 Thread.sleep(10000);
@@ -603,11 +558,11 @@ public class DBLIS implements Runnable {
             @Override
             public void onStatus(Status status) {
                 try {
-                    sa.addTweet(new TweetEntity(dataSeperator, status, search));
+                    sa.addTweet(new TweetEntity(status, search));
                 } catch (UnsupportedEncodingException ex) {
                 }
                 try {
-                    sa.addUser(new UserEntity(dataSeperator, status.getUser()));
+                    sa.addUser(new UserEntity(status.getUser()));
                 } catch (UnsupportedEncodingException ex) {
                 }
                 
@@ -697,7 +652,7 @@ public class DBLIS implements Runnable {
             final Configuration auth) {
         
         sportsGB.stream().forEach(sport -> {
-            final String[] alts = getAlternativesArray(sa, sport);
+            final List<String> alts = relations.get(sport);
 
             // for each alternative word
             for (String altSport : alts) {
@@ -831,11 +786,11 @@ public class DBLIS implements Runnable {
             public void onStatus(Status status) {
                 count.increment();
                 try {
-                    sa.addTweet(new TweetEntity(dataSeperator, status, search));
+                    sa.addTweet(new TweetEntity(status, search));
                 } catch (UnsupportedEncodingException ex) {
                 }
                 try {
-                    sa.addUser(new UserEntity(dataSeperator, status.getUser()));
+                    sa.addUser(new UserEntity(status.getUser()));
                 } catch (UnsupportedEncodingException ex) {
                 }
                 
@@ -875,10 +830,10 @@ public class DBLIS implements Runnable {
         //filterquery.count(500);
         //String[] searchwords = {"voetbal", "tennis", "basketbal"};
         //filterquery.track(searchwords);
-        final String[] alts = getAlternativesArray(sa, search);
-        final String[] altsGeo = new String[alts.length];
-        for (int i = 0; i < alts.length; i++) {
-            altsGeo[i] = alts[i] + " " + geocode;
+        final List<String> alts = relations.get(search);
+        final String[] altsGeo = new String[alts.size()];
+        for (int i = 0; i < alts.size(); i++) {
+            altsGeo[i] = alts.get(i) + " " + geocode;
         }
         filterquery.track(altsGeo);
         twitterStream.filter(filterquery);
@@ -1052,10 +1007,10 @@ public class DBLIS implements Runnable {
                     status -> {
                         try {
                             tweetEntities.add(
-                                    new TweetEntity(dataSeperator, status,
+                                    new TweetEntity(status,
                                             entry.getKey()));
                             userEntities.add(
-                                    new UserEntity(dataSeperator, status.getUser()));
+                                    new UserEntity(status.getUser()));
                         } catch (UnsupportedEncodingException ex) {
                             
                         }
@@ -1173,7 +1128,7 @@ public class DBLIS implements Runnable {
     
     private boolean addTweet(ServerAccess sa, Status status, String search) {
         try {
-            final TweetEntity entity = new TweetEntity(dataSeperator, status, search);
+            final TweetEntity entity = new TweetEntity(status, search);
             return sa.addTweet(entity);
         } catch (Exception ex) {
             return false;
@@ -1182,7 +1137,7 @@ public class DBLIS implements Runnable {
     
     private boolean addUser(ServerAccess sa, User user) {
         try {
-            final UserEntity entity = new UserEntity(dataSeperator, user);
+            final UserEntity entity = new UserEntity(user);
             return sa.addUser(entity);
         } catch (Exception ex) {
             return false;
@@ -1290,30 +1245,6 @@ public class DBLIS implements Runnable {
             System.out.println("DBLIS - getMostCommonCountries - " + ex);
         }
         return new JSONArray();
-    }
-    
-    private JSONArray getAlternatives(ServerAccess sa, String sport) {
-        try {
-            return sa.getAlternatives(sport);
-        } catch (Exception ex) {
-            System.out.println("DBLIS - getAlternatives - " + ex);
-        }
-        return new JSONArray();
-    }
-    
-    private String[] getAlternativesArray(ServerAccess sa, String sport) {
-        final JSONArray json = getAlternatives(sa, sport);
-        final List<String> list = new ArrayList<>();
-        
-        for (int i = 0; i < json.length(); i++) {
-            try {
-                list.add(json.getJSONObject(i).getString("sport"));
-            } catch (Exception ex) {
-                System.out.println("DBLIS - getAlternativesArray - " + ex);
-            }
-        }
-        
-        return list.toArray(new String[list.size()]);
     }
     
     private class Count {

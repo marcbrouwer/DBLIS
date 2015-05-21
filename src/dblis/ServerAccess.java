@@ -204,12 +204,32 @@ public class ServerAccess {
         return new JSONArray(response);
     }
    
-    public final JSONArray getAlternatives(String sport) throws JSONException {
-        final Map<String, Object> params = new HashMap();
-        params.put("sport", sport);
-        final String response =
-                getResponseObject("getAlts", params).toString();
-        return new JSONArray(response);
+    public final Set<String> getAlternatives(String sport) {
+        final Set<String> alts = new HashSet();
+        
+        try {
+            final Map<String, Object> params = new HashMap();
+            params.put("sport", sport);
+            final String response
+                    = getResponseObject("getAlts", params).toString();
+            final JSONArray json = new JSONArray(response);
+
+            JSONObject obj;
+            String alt;
+            for (int i = 0; i < json.length(); i++) {
+                try {
+                    obj = json.getJSONObject(i);
+                    alt = obj.getString("sport");
+                    alts.add(alt);
+                } catch (JSONException ex) {
+                    System.out.println("getAlternatives - " + ex);
+                }
+            }
+        } catch (JSONException ex) {
+            System.out.println("getAlternatives - " + ex);
+        }
+        
+        return alts;
     }
     
     public final List<String> getCountryCodes() {
@@ -390,6 +410,84 @@ public class ServerAccess {
         }
         
         return list;
+    }
+    
+    
+    // Get all tweets first
+    
+    public final int getTweetsCountNL() {
+        try {
+            final String response = 
+                    getResponseObject("getTweetsCountNL", null).toString();
+            final JSONArray json = new JSONArray(response);
+            if (json.getJSONObject(0).isNull("count")) {
+                return 0;
+            }
+            return json.getJSONObject(0).getInt("count");
+        } catch (JSONException ex) {
+            System.out.println("getTweetsCountNL - " + ex);
+            return 0;
+        }
+    }
+    
+    public final Set<TweetEntity> getTweetsNL() {
+        final int total = getTweetsCountNL();
+        final int part = 50000;
+        final Set<TweetEntity> tweets = new HashSet();
+        
+        int tries = 0;
+        int limitlow = 0;
+        int limithigh = part;
+        if (limithigh > total) {
+            limithigh = total;
+        }
+        
+        while (limithigh <= total && limitlow < limithigh) {
+            try {
+                final Map<String, Object> params = new HashMap();
+                params.put("limitlow", limitlow);
+                params.put("limithigh", limithigh);
+                final String response = getResponseObject(
+                        "getTweetsNL", params)
+                        .toString();
+                final JSONArray json = new JSONArray(response);
+
+                JSONObject obj;
+                TweetEntity te;
+                for (int i = 0; i < json.length(); i++) {
+                    try {
+                        obj = json.getJSONObject(i);
+                        te = new TweetEntity(
+                                obj.getLong("id"), 
+                                obj.getLong("retweetid"), 
+                                obj.getInt("retweets"), 
+                                obj.getInt("favourites"), 
+                                obj.getString("text"), 
+                                obj.getLong("creationTime"), 
+                                obj.getString("countryCode"), 
+                                obj.getString("language"), 
+                                obj.getLong("userID"), 
+                                obj.getString("keywords"));
+                        tweets.add(te);
+                    } catch (JSONException ex) {
+                        System.out.println("getTweetsNL - " + ex);
+                    }
+                }
+                
+                limitlow += part;
+                limithigh += part;
+                if (limithigh > total) {
+                    limithigh = total;
+                }
+                tries = 0;
+            } catch (JSONException ex) {
+                tries++;
+                System.out.println("getTweetsNL - " + ex);
+            }
+            
+        }
+        
+        return tweets;
     }
     
 }

@@ -10,22 +10,20 @@ import twitter4j.User;
  */
 public class UserEntity {
     
-    private final String dataSeperator;
     private final long id;
     private final String name;
     private final int followers;
     private final int favourites;
     private final int friends;
     
-    public UserEntity(String dataSeperator, User user) throws UnsupportedEncodingException {
-        this(dataSeperator, user.getId(), user.getName(), 
+    public UserEntity(User user) throws UnsupportedEncodingException {
+        this(user.getId(), user.getName(), 
                 user.getFollowersCount(), user.getFavouritesCount(),
                 user.getFriendsCount());
     }
     
-    public UserEntity(String dataSeperator, long id, String name, 
+    public UserEntity(long id, String name, 
             int followers, int favourites, int friends) throws UnsupportedEncodingException {
-        this.dataSeperator = dataSeperator;
         this.id = id;
         this.name = new String(formatText(name).getBytes(), "UTF-8");
         this.followers = followers;
@@ -62,7 +60,7 @@ public class UserEntity {
     
     @Override
     public String toString() {
-        final String s = dataSeperator;
+        final String s = ";&;";
         return id + s + name + s + followers + s + favourites + s + friends;
     }
     

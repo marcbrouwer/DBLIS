@@ -1,6 +1,7 @@
 package dblis;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Objects;
 import twitter4j.Place;
 import twitter4j.Status;
@@ -11,7 +12,6 @@ import twitter4j.Status;
  */
 public class TweetEntity {
     
-    private String dataSeperator = ";&;";
     private long id;
     private long retweetid;
     private int retweets;
@@ -23,17 +23,17 @@ public class TweetEntity {
     private long userID;
     private String keywords;
     
-    public TweetEntity(String dataSeperator, Status status, String keywords) 
+    public TweetEntity(Status status, String keywords) 
             throws UnsupportedEncodingException {
-        this(dataSeperator, status, status.getPlace(), 
+        this(status, status.getPlace(), 
                 status.getRetweetedStatus(), keywords);
         if (status.getLang().equals("nl")) {
             countryCode = "NL";
         }
     }
     
-    private TweetEntity(String dataSeperator, Status status, Place place, 
-            Status retweet, String keywords) throws UnsupportedEncodingException {
+    private TweetEntity(Status status, Place place, Status retweet, 
+            String keywords) throws UnsupportedEncodingException {
         String countrycode = "";
         if (place != null) {
             countrycode = place.getCountryCode();
@@ -46,7 +46,6 @@ public class TweetEntity {
         if (status.getLang() != null) {
             lang = status.getLang();
         }
-        this.dataSeperator = dataSeperator;
         this.id = status.getId();
         this.retweetid = retweetStatusID;
         this.retweets = status.getRetweetCount();
@@ -62,10 +61,9 @@ public class TweetEntity {
         }
     }
     
-    public TweetEntity(String dataSeperator, long id, long retweetid, int retweets, 
+    public TweetEntity(long id, long retweetid, int retweets, 
             int favourites, String text, long time, String country, 
             String language, long userId, String keywords) {
-        this.dataSeperator = dataSeperator;
         this.id = id;
         this.retweetid = retweetid;
         this.retweets = retweets;
@@ -128,9 +126,13 @@ public class TweetEntity {
         return keywords;
     }
     
+    public final TweetEntity getEntity() {
+        return this;
+    }
+    
     @Override
     public String toString() {
-        final String s = dataSeperator;
+        final String s = ";&;";
         return id + s + retweets + s + favourites + s + text + s + creationTime + s + 
                 countryCode + s + userID + s + keywords;
     }
@@ -157,5 +159,32 @@ public class TweetEntity {
         hash = 37 * hash + (int) (this.userID ^ (this.userID >>> 32));
         hash = 37 * hash + Objects.hashCode(this.keywords);
         return hash;
+    }
+    
+    public final boolean isRelatedTo(List<String> words) {
+        if (words.parallelStream().anyMatch((word) -> (isRelatedTo(word)))) {
+            return true;
+        }
+        return false;
+    }
+    
+    public final boolean isRelatedTo(String word) {
+        if (keywords.equals(word)) {
+            return true;
+        }
+        return text.contains(" " + word + " ")
+                || text.contains(" " + word + ".")
+                || text.contains(" " + word + "!")
+                || text.contains(" " + word + "?")
+                
+                || text.contains("#" + word + " ")
+                || text.contains("#" + word + ".")
+                || text.contains("#" + word + "!")
+                || text.contains("#" + word + "?")
+                
+                || text.contains("@" + word + " ")
+                || text.contains("@" + word + ".")
+                || text.contains("@" + word + "!")
+                || text.contains("@" + word + "?");
     }
 }

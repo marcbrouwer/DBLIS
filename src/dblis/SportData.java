@@ -34,7 +34,9 @@ public class SportData {
      * Gets the SportData instance
      *
      * @return SportData instance
+     * @deprecated use {@link SportData2} instead
      */
+    @Deprecated
     public synchronized static final SportData getInstance() {
         return instance;
     }
@@ -108,11 +110,13 @@ public class SportData {
                     );
                     //System.out.println("SportData - init - getKeyCountRT - " + sport);
                     addKeywordsCountRT(country, sport, 
-                            sa.getKeywordsPopularityCount(country, sport, "retweets", starttime, endtime));
+                            sa.getKeywordsPopularityCount(
+                                    country, sport, "retweets", starttime, endtime));
                     
                     //System.out.println("SportData - init - getKeyCountFav - " + sport);
                     addKeywordsCountFav(country, sport, 
-                            sa.getKeywordsPopularityCount(country, sport, "favourites", starttime, endtime));
+                            sa.getKeywordsPopularityCount(
+                                    country, sport, "favourites", starttime, endtime));
             });
         //});
             
@@ -557,7 +561,7 @@ public class SportData {
             Date enddate, String sport, int timeinterval){
         final Map<Date, Double> count = new HashMap();
         final ServerAccess sa = new ServerAccess();
-        final long dayInMiliseconds = 86400000L;
+        final long dayInMilliseconds = 86400000L;
         final long starttime = startdate.getTime();
         final long endtime = enddate.getTime();
         
@@ -569,7 +573,7 @@ public class SportData {
             timeM = getMonthTimeIncr(starttime);
             timeE += timeM;
         } else {
-            timeE += dayInMiliseconds * timeinterval;
+            timeE += dayInMilliseconds * timeinterval;
         }
         
         if (timeE > endtime) {
@@ -591,8 +595,8 @@ public class SportData {
                 timeS += timeE;
                 timeE += timeM;
             } else {
-                timeS += dayInMiliseconds * timeinterval;
-                timeE += dayInMiliseconds * timeinterval;
+                timeS += dayInMilliseconds * timeinterval;
+                timeE += dayInMilliseconds * timeinterval;
             }
             
             if (timeE > endtime) {

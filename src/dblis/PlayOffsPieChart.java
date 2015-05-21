@@ -17,7 +17,7 @@ public class PlayOffsPieChart extends Application implements Runnable {
         primaryStage.setScene(new Scene(root));
         
         final Map<String, Double> sportPop = 
-                SportData.getInstance().getSportPopMatch();
+                SportData2.getInstance().getPlayOffsPopMatch();
         
         final List<PieChart.Data> list = new ArrayList<>();
         

@@ -20,7 +20,7 @@ public class PieChartFX extends Application implements Runnable {
         //String drilldownCss = PieChart.class.getResource("DrilldownChart.css").toExternalForm();
  
         final Map<String, Double> sportPop = 
-                SportData.getInstance().getSportPop(true);
+                SportData2.getInstance().getPopularityAllSportsAsPercentage();
         
         final List<PieChart.Data> list = new ArrayList<>();
         
@@ -45,8 +45,7 @@ public class PieChartFX extends Application implements Runnable {
             public void handle(MouseEvent t) {
                 final List<PieChart.Data> list = new ArrayList<>();
                 final Map<String, Double> cPop = 
-                        SportData.getInstance().getKeywordCountRT("NL", sport);
-                        //SportData.getInstance().getCountryPopRetweets(sport);
+                        SportData2.getInstance().getPopularityKeywordsAsPercentage(sport);
                 cPop.entrySet().stream().forEach(country -> {
                     list.add(new PieChart.Data(country.getKey(), country.getValue()));
                 });
