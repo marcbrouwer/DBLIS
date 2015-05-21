@@ -148,15 +148,6 @@ public class DBLIS implements Runnable {
         // EXCEL OUTPUT
         //toExcel(sa, countryCodes, sportsGB);
         
-        /*final List<ChartData> chartdata = sorted.get("NL");
-        Chart3D pie = new Chart3D("NL", chartdata, "Pie");
-        pie.view();*/
-        
-        /*BarChartSimpleData.setCountryCode("NL");
-        BarChartSimpleData.setChartData(chartdata);
-        BarChartSimple bar = new BarChartSimple();
-        bar.view();*/
-        
         /*SportData2.getInstance().init();
         PieChartFX pie1 = new PieChartFX();
         pie1.run();*/

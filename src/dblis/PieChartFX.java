@@ -46,8 +46,8 @@ public class PieChartFX extends Application implements Runnable {
                 final List<PieChart.Data> list = new ArrayList<>();
                 final Map<String, Double> cPop = 
                         SportData2.getInstance().getPopularityKeywordsAsPercentage(sport);
-                cPop.entrySet().stream().forEach(country -> {
-                    list.add(new PieChart.Data(country.getKey(), country.getValue()));
+                cPop.entrySet().stream().forEach(keyword -> {
+                    list.add(new PieChart.Data(keyword.getKey(), keyword.getValue()));
                 });
                 pie.setData(FXCollections.observableArrayList(list));
             }

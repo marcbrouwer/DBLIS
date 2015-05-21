@@ -93,24 +93,42 @@ public class SportData2 {
                 + getFavCount(sport, starttime, endtime);
     }
     
-    public final Map<String, Double> getPopularityAllSports() {
+    public final Map<String, Double> getPopularitySports(List<String> sports) {
         final Map<String, Double> pop = new HashMap();
         
-        getSports().stream().forEach(sport -> {
+        sports.stream().forEach(sport -> {
             pop.put(sport, (double) getPopularity(sport));
         });
         
         return pop;
     }
     
-    public final Map<String, Double> getPopularityAllSports(long starttime, long endtime) {
+    public final Map<String, Double> getPopularitySports(List<String> sports, 
+            long starttime, long endtime) {
         final Map<String, Double> pop = new HashMap();
         
-        getSports().stream().forEach(sport -> {
+        sports.stream().forEach(sport -> {
             pop.put(sport, (double) getPopularity(sport, starttime, endtime));
         });
         
         return pop;
+    }
+    
+    public final Map<String, Double> getPopularitySportsAsPercentage(List<String> sports) {
+        return getAsPercentage(getPopularitySports(sports));
+    }
+    
+    public final Map<String, Double> getPopularitySportsAsPercentage(List<String> sports, 
+            long starttime, long endtime) {
+        return getAsPercentage(getPopularitySports(sports, starttime, endtime));
+    }
+    
+    public final Map<String, Double> getPopularityAllSports() {
+        return getPopularitySports(sports);
+    }
+    
+    public final Map<String, Double> getPopularityAllSports(long starttime, long endtime) {
+        return getPopularitySports(sports, starttime, endtime);
     }
     
     public final Map<String, Double> getPopularityAllSportsAsPercentage() {
@@ -132,8 +150,52 @@ public class SportData2 {
         return pop;
     }
     
+    public final Map<String, Double> getPopularityKeywords(String sport, long starttime, 
+            long endtime) {
+        final Map<String, Double> pop = new HashMap();
+        
+        if (relations.containsKey(sport)) {
+            relations.get(sport).stream().forEach(keyword -> 
+                    pop.put(keyword, (double) getPopularity(keyword, starttime, endtime)));
+        }
+        
+        return pop;
+    }
+    
+    public final Map<String, Double> getPopularityKeywords(List<String> keywords) {
+        final Map<String, Double> pop = new HashMap();
+        
+        keywords.stream().forEach(keyword -> pop.put(keyword, (double) getPopularity(keyword)));
+        
+        return pop;
+    }
+    
+    public final Map<String, Double> getPopularityKeywords(List<String> keywords, 
+            long starttime, long endtime) {
+        final Map<String, Double> pop = new HashMap();
+        
+        keywords.stream().forEach(keyword -> 
+                pop.put(keyword, (double) getPopularity(keyword, starttime, endtime)));
+        
+        return pop;
+    }
+    
     public final Map<String, Double> getPopularityKeywordsAsPercentage(String sport) {
         return getAsPercentage(getPopularityKeywords(sport));
+    }
+    
+    public final Map<String, Double> getPopularityKeywordsAsPercentage(String sport, 
+            long starttime, long endtime) {
+        return getAsPercentage(getPopularityKeywords(sport, starttime, endtime));
+    }
+    
+    public final Map<String, Double> getPopularityKeywordsAsPercentage(List<String> keywords) {
+        return getAsPercentage(getPopularityKeywords(keywords));
+    }
+    
+    public final Map<String, Double> getPopularityKeywordsAsPercentage(List<String> keywords, 
+            long starttime, long endtime) {
+        return getAsPercentage(getPopularityKeywords(keywords, starttime, endtime));
     }
     
     public final Map<String, Double> getPlayOffsPopMatch() {
