@@ -90,6 +90,9 @@ public class DBLIS implements Runnable {
     private long searchTime1 = starttime;
     private long searchTime2 = starttime;
     
+    // Locks
+    private final Object lock = new Object();
+    
     /** Constructor */
     public DBLIS() {
         this.tweets = new ConcurrentHashMap();
@@ -404,6 +407,7 @@ public class DBLIS implements Runnable {
     private void timeSearch(ServerAccess sa, double[][] geos, List<String> sports) {
         /*sports = Arrays.asList("FC Eindhoven", "FC Volendam", "VVV Venlo", 
             "NAC Breda", "FC Emmen", "Roda JC", "Go Ahead Eagles", "De Graafschap");*/
+        Collections.shuffle(sports);
         
         final long starttime = 1399986000; //13-5-2014 15:00:00
         final long endtime = 1431522000; //13-5-2015 15:00:00
@@ -521,8 +525,8 @@ public class DBLIS implements Runnable {
                     }
                 }
 
+                storeRest();
                 if (resetTime == -1) {
-                    storeRest();
                     return true;
                 }
         }
@@ -535,12 +539,12 @@ public class DBLIS implements Runnable {
      */
     private RetryQuery timeTweets(int n, Query lastQuery, String search, double[] geocode, 
             Configuration auth) {
-        while (!DBStore.getInstance().isEmpty()) {
+        /*while (!DBStore.getInstance().isEmpty()) {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException ex) {
             }
-        }
+        }*/
         TwitterFactory tf = new TwitterFactory(auth);
         Twitter twitter = tf.getInstance();
         Query query = new Query(search);
@@ -562,7 +566,7 @@ public class DBLIS implements Runnable {
         try {
             result = twitter.search(query);
             while (result.nextQuery() != null) {
-                synchronized (this) {
+                synchronized (lock) {
                     if (!tweets.containsKey(search)) {
                         tweets.put(search, new HashSet());
                     }
@@ -572,7 +576,7 @@ public class DBLIS implements Runnable {
                 result = twitter.search(query);
             }
 
-            synchronized (this) {
+            synchronized (lock) {
                 if (!tweets.containsKey(search)) {
                     tweets.put(search, new HashSet());
                 }
@@ -1075,7 +1079,7 @@ public class DBLIS implements Runnable {
     }
     
     private void storeRest() {
-        synchronized (this) {
+        synchronized (lock) {
             DBStore.getInstance().addData(tweets);
             tweets.clear();
         }

@@ -109,6 +109,8 @@ public class DBStore {
                 if (!tweets.get(key).isEmpty()) {
                     hasElem = true;
                     break;
+                } else {
+                    tweets.remove(key);
                 }
             }
         }

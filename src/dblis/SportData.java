@@ -62,10 +62,14 @@ public class SportData {
     
     // Initialization
     
+    public final void init() {
+        init(0, 0);
+    }
+    
     /**
      * Initializes SportData
      */
-    public final void init() {
+    public final void init(long starttime, long endtime) {
         System.out.println("SportData - init - start");
         clear();
         
@@ -93,22 +97,22 @@ public class SportData {
                     addRetweetCount(country, 
                             new ChartData(sport, 
                                     sa.getRelatedTweetsCountryCount(
-                                            country, sport, "retweets", 0, 0)
+                                            country, sport, "retweets", starttime, endtime)
                             )
                     );
                     addFavCount(country, 
                             new ChartData(sport, 
                                     sa.getRelatedTweetsCountryCount(
-                                            country, sport, "favourites", 0, 0)
+                                            country, sport, "favourites", starttime, endtime)
                             )
                     );
                     //System.out.println("SportData - init - getKeyCountRT - " + sport);
                     addKeywordsCountRT(country, sport, 
-                            sa.getKeywordsPopularityCount(country, sport, "retweets"));
+                            sa.getKeywordsPopularityCount(country, sport, "retweets", starttime, endtime));
                     
                     //System.out.println("SportData - init - getKeyCountFav - " + sport);
                     addKeywordsCountFav(country, sport, 
-                            sa.getKeywordsPopularityCount(country, sport, "favourites"));
+                            sa.getKeywordsPopularityCount(country, sport, "favourites", starttime, endtime));
             });
         //});
             

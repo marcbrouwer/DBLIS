@@ -83,6 +83,10 @@ public class ServerAccess {
             } catch (Exception e) {
                 System.out.println("PHP Client - Error in http connection "
                         + "(" + t + "/" + max + ") " + e.toString());
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ie) {
+                }
                 return getResponseObject(t + 1, max, method, params);
             }
         }
@@ -300,7 +304,7 @@ public class ServerAccess {
     }
     
     public final List<ChartData> getKeywordsPopularityCount(String country, 
-            String sport, String type) {
+            String sport, String type, long starttime, long endtime) {
         final List<ChartData> list = new ArrayList<>();
         
         try {
@@ -308,6 +312,8 @@ public class ServerAccess {
             params.put("sport", sport);
             params.put("countrycode", country);
             params.put("type", type);
+            params.put("starttime", starttime);
+            params.put("endtime", endtime);
             final String response = getResponseObject(
                     "getKeywordsPopularityCount", params)
                     .toString();
