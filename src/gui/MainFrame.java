@@ -368,9 +368,9 @@ public class MainFrame extends CenterFrame {
 
     private void sportsChooseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsChooseBtnActionPerformed
         // TODO add your handling code here:
-        for(JCheckBox cb : sportCheckboxes){
+        /*for(JCheckBox cb : sportCheckboxes){
             cb.setSelected(false);
-        }
+        }*/
         sportsDialog.setSize(380, 180);
         sportsDialog.show();
     }//GEN-LAST:event_sportsChooseBtnActionPerformed
@@ -458,20 +458,20 @@ public class MainFrame extends CenterFrame {
     
     private List<String> getSports() {
         List sports = new ArrayList();
-        if(footballCheckBox.isSelected() == true) {
-            sports.add(footballCheckBox.getName().toLowerCase());
+        if(footballCheckBox.isSelected()) {
+            sports.add(footballCheckBox.getText().toLowerCase());
         }
-        if(hockeyCheckBox.isSelected() == true) {
-            sports.add(hockeyCheckBox.getName().toLowerCase());
+        if(hockeyCheckBox.isSelected()) {
+            sports.add(hockeyCheckBox.getText().toLowerCase());
         }
-        if(cyclingCheckBox.isSelected() == true) {
-            sports.add(cyclingCheckBox.getName().toLowerCase());
+        if(cyclingCheckBox.isSelected()) {
+            sports.add(cyclingCheckBox.getText().toLowerCase());
         }
-        if(tennisCheckBox.isSelected() == true) {
-            sports.add(tennisCheckBox.getName().toLowerCase());
+        if(tennisCheckBox.isSelected()) {
+            sports.add(tennisCheckBox.getText().toLowerCase());
         }
-        if(skatingCheckBox.isSelected() == true) {
-            sports.add(skatingCheckBox.getName().toLowerCase());
+        if(skatingCheckBox.isSelected()) {
+            sports.add(skatingCheckBox.getText().toLowerCase());
         }
         return sports;
     }
