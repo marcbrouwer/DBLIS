@@ -3,6 +3,7 @@ package dblis;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
+import twitter4j.JSONException;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.User;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
 
 /**
  *
@@ -41,18 +52,32 @@ public class SportData2 {
     }
     
     // Variables
+    
     private int numberTweets = 0;
     private final List<String> sports
             = Arrays.asList("football", "hockey", "cycling", "tennis", "skating");
     private final Set<TweetEntity> tweets = new HashSet();
     private final Map<String, List<String>> relations = new ConcurrentHashMap();
     
+    // Search variables
+    
+    private final Map<String, Set<Status>> searchTweets = new ConcurrentHashMap();
+    private final Object searchLock = new Object();
+    
+    // Temp storage
+    
+    private Date startdate = new Date();
+    private Date enddate = new Date();
+    private int interval = 1;
+    private List<String> selected = new ArrayList<>();
+    
     // PUBLIC Methods
     
     public final void init() {
         final ServerAccess sa = new ServerAccess();
         numberTweets = sa.getTweetsCountNL();
-        tweets.addAll(sa.getTweetsNL(numberTweets));
+        //tweets.addAll(sa.getTweetsNL(numberTweets));
+        getTweets(sa);
         sports.stream().forEach(sport -> {
             if (!relations.containsKey(sport)) {
                 relations.put(sport, new ArrayList<>());
@@ -72,7 +97,8 @@ public class SportData2 {
     public final void search() {
         final List<String> keywords = new ArrayList<>();
         relations.values().stream().forEach(list -> keywords.addAll(list));
-        //runStoreThread(keywords);
+        runStoreThread(keywords);
+        timeSearch(new ServerAccess(), keywords);
     }
     
     public final List<String> getSports() {
@@ -304,32 +330,36 @@ public class SportData2 {
         return count;
     }
     
+    
+    // TEMP Setters and Getters
+    
     public final void setDates(Date startdate, Date enddate) {
-        
+        this.startdate = startdate;
+        this.enddate = enddate;
     }
     
     public final Date getStartDate() {
-        return null;
+        return startdate;
     }
     
     public final Date getEndDate() {
-        return null;
+        return enddate;
     }
     
     public final void setSelected(List<String> sports) {
-        
+        this.selected = sports;
     }
     
     public final List<String> getSelected() {
-        return new ArrayList<>();
+        return selected;
     }
     
     public final void setInterval(int interval) {
-        
+        this.interval = interval;
     }
     
     public final int getInterval() {
-        return 0;
+        return interval;
     }
     
     // PRIVATE Methods
@@ -383,6 +413,274 @@ public class SportData2 {
         });
         
         return perc;
+    }
+    
+    private void getTweets(ServerAccess sa) {
+        final int part = 50000;
+        int tries = 0;
+        int limitlow = 0;
+        int limithigh = part;
+        if (limithigh > numberTweets) {
+            limithigh = numberTweets;
+        }
+        
+        while (limithigh <= numberTweets && limitlow < limithigh) {
+            try {
+                tweets.addAll(sa.getTweetsPartNL(limitlow, limithigh));
+                limitlow += part;
+                limithigh += part;
+                if (limithigh > numberTweets) {
+                    limithigh = numberTweets;
+                }
+                tries = 0;
+            } catch (JSONException ex) {
+                tries++;
+                System.out.println("getTweets - " + ex);
+            }
+        }
+    }
+    
+    // Searching
+    
+    private void runStoreThread(List<String> sports) {
+        DBStore.getInstance().initIDs();
+        DBStore.getInstance().setSports(sports);
+        final Runnable r = () -> {
+            final ServerAccess sa = new ServerAccess();
+            while (true) {
+                if (DBStore.getInstance().isEmpty()) {
+                    if (DBStore.getInstance().isDone()) {
+                        return;
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                    }
+                } else {
+                    final String sport = DBStore.getInstance().getSport();
+                    final Status status = DBStore.getInstance().getElem(sport);
+                    if (status != null) {
+                        if (status.getRetweetedStatus() != null) {
+                            if (addTweet(sa, status.getRetweetedStatus(), sport)) {
+                                if (!addUser(sa, status.getRetweetedStatus().getUser())) {
+                                    System.out.println("User not saved: "
+                                            + status.getRetweetedStatus().getUser());
+                                }
+                            } else {
+                                System.out.println("Tweet not saved: " + status.getRetweetedStatus());
+                            }
+                        }
+                        if (addTweet(sa, status, sport)) {
+                            if (!addUser(sa, status.getUser())) {
+                                System.out.println("User not saved: " + status.getUser());
+                            }
+                        } else {
+                            System.out.println("Tweet not saved: " + status);
+                        }
+                    }
+                }
+            }
+        };
+        final Thread t = new Thread(r);
+        t.start();
+    }
+    
+    private void timeSearch(ServerAccess sa, List<String> sports) {
+        Collections.shuffle(sports);
+        
+        final List<String> sports1 = new ArrayList<>();
+        for (int i = 0; i < (int) Math.floor(sports.size() / 2); i++) {
+            sports1.add(sports.get(i));
+        }
+        
+        //Collections.reverse(sports1);
+        final Runnable r1 = () -> timeSearchSports(1, sports1, sa, getAuth());
+        
+        
+        final List<String> sports2 = new ArrayList<>();
+        for (int i = (int) Math.floor(sports.size() / 2); i < sports.size(); i++) {
+            sports2.add(sports.get(i));
+        }
+        //Collections.reverse(sports2);
+        final Runnable r2 = () ->  timeSearchSports(2, sports2, sa, getAuth2());
+        
+        final Thread t1 = new Thread(r1);
+        final Thread t2 = new Thread(r2);
+        t1.start();
+        t2.start();
+        
+        try {
+            t1.join();
+        } catch (InterruptedException ex) {
+        }
+        try {
+            t2.join();
+        } catch (InterruptedException ex) {
+        }
+        
+        storeRest();
+        DBStore.getInstance().setDone();
+    }
+    
+    private boolean timeSearchSports(int n, final List<String> sports,
+            final ServerAccess sa, final Configuration auth) {
+        
+        for (String sport : sports) {
+               long resetTime = 0;
+                long curTime = 0;
+                long wait = 0;
+                RetryQuery rq = new RetryQuery(-2, null);
+                while (resetTime >= curTime 
+                        || rq.getRetry() == -2 || rq.getQuery() != null) {
+                    rq = timeTweets(n, rq.getQuery(), sport, auth);
+                    resetTime = rq.getRetry();
+                    curTime = new Date().getTime();
+                    try {
+                        storeRest();
+                        if (curTime <= resetTime) {
+                            wait = resetTime - curTime;
+                            System.out.println("Sleeping "
+                                    + (wait / 1000)
+                                    + "s for n: " + n
+                                    + ", " + sport);
+                            Thread.sleep(wait + 1000);
+                        }
+                    } catch (InterruptedException ex) {
+                        System.out.println("Error sleeping - " + ex);
+                    }
+                }
+
+                storeRest();
+                if (resetTime == -1) {
+                    return true;
+                }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Gets tweets for a given keyword and globally set time frame
+     */
+    private RetryQuery timeTweets(int n, Query lastQuery, String search, Configuration auth) {
+        TwitterFactory tf = new TwitterFactory(auth);
+        Twitter twitter = tf.getInstance();
+        Query query = new Query(search);
+        query.setLang("nl");
+        query.count(1000);
+        
+        if (lastQuery != null) {
+            query = lastQuery;
+        }
+        
+        QueryResult result;
+        
+        if (Abort.getInstance().abort()) {
+            return new RetryQuery(-1, query);
+        }
+
+        try {
+            result = twitter.search(query);
+            while (result.nextQuery() != null) {
+                synchronized (searchLock) {
+                    if (!searchTweets.containsKey(search)) {
+                        searchTweets.put(search, new HashSet());
+                    }
+                    searchTweets.get(search).addAll(result.getTweets());
+                }
+                query = result.nextQuery();
+                result = twitter.search(query);
+            }
+
+            synchronized (searchLock) {
+                if (!searchTweets.containsKey(search)) {
+                    searchTweets.put(search, new HashSet());
+                }
+                searchTweets.get(search).addAll(result.getTweets());
+            }
+
+        } catch (TwitterException te) {
+            System.out.println("Failed to search tweets: " + te);
+            System.out.println("\nRetry at n = " + n + ": " + 
+                    (new Date(te.getRateLimitStatus()
+                            .getResetTimeInSeconds() * 1000L)));
+            return new RetryQuery(
+                    te.getRateLimitStatus().getResetTimeInSeconds() * 1000L,
+                    query);
+        }
+        return new RetryQuery(0, null);
+    }
+    
+    private boolean addTweet(ServerAccess sa, Status status, String search) {
+        try {
+            final TweetEntity entity = new TweetEntity(status, search);
+            return sa.addTweet(entity);
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+    
+    private boolean addUser(ServerAccess sa, User user) {
+        try {
+            final UserEntity entity = new UserEntity(user);
+            return sa.addUser(entity);
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+    
+    private void storeRest() {
+        synchronized (searchLock) {
+            DBStore.getInstance().addData(searchTweets);
+            searchTweets.clear();
+        }
+    }
+    
+    /** Gets configuration builder for authentication */
+    private Configuration getAuth() {
+        final ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setOAuthConsumerKey("n2g9XOjAr9p44yJwFjXUbeUa2");
+        cb.setOAuthConsumerSecret("57FHkBBptp17yBGl1v853lldZO9Kh4osJnDQqQEcXd4d9C3xFA");
+        cb.setOAuthAccessToken("113906448-2fx9njfJgzQrGdnRaGchI9GlZTzLMXrayEzFk2ju");
+        cb.setOAuthAccessTokenSecret("FJOqMt7dtBp1yuW2VnQDfzksa7IS5h3IxxsJ1ixBGI1ny");
+        
+        return cb.build();
+    }
+    
+    private Configuration getAuth2() {
+        final ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setOAuthConsumerKey("fiQ7TIyf4mUHl8STmT6m9YVTQ");
+        cb.setOAuthConsumerSecret("vpuJv3q1Z3PMuZfZoZu9BIF8nm6sK0jRcQfKpaCQyWZIJnHLcw");
+        cb.setOAuthAccessToken("79107187-siXbdmIMXXcalZ043Pa7yfHXvUGXRnThoUB6p6EIg");
+        cb.setOAuthAccessTokenSecret("8X4Yo8dOigSsuqD8udwoc1WmhRfoDmUoEpyIRbR4SwEEm");
+        
+        return cb.build();
+    }
+    
+    private class RetryQuery {
+        
+        private final long retry;
+        private final Query query;
+        
+        public RetryQuery(long retry, Query query) {
+            this.retry = retry;
+            this.query = query;
+        }
+
+        /**
+         * @return the retry
+         */
+        public long getRetry() {
+            return retry;
+        }
+
+        /**
+         * @return the query
+         */
+        public Query getQuery() {
+            return query;
+        }
+        
     }
     
 }

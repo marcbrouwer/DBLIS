@@ -489,4 +489,41 @@ public class ServerAccess {
         return tweets;
     }
     
+    public final Set<TweetEntity> getTweetsPartNL(int limitlow, int limithigh)
+            throws JSONException {
+        final Set<TweetEntity> tweets = new HashSet();
+        
+        final Map<String, Object> params = new HashMap();
+        params.put("limitlow", limitlow);
+        params.put("limithigh", limithigh);
+        final String response = getResponseObject(
+                "getTweetsNL", params)
+                .toString();
+        final JSONArray json = new JSONArray(response);
+
+        JSONObject obj;
+        TweetEntity te;
+        for (int i = 0; i < json.length(); i++) {
+            try {
+                obj = json.getJSONObject(i);
+                te = new TweetEntity(
+                        obj.getLong("id"),
+                        obj.getLong("retweetid"),
+                        obj.getInt("retweets"),
+                        obj.getInt("favourites"),
+                        obj.getString("text"),
+                        obj.getLong("creationTime"),
+                        obj.getString("countryCode"),
+                        obj.getString("language"),
+                        obj.getLong("userID"),
+                        obj.getString("keywords"));
+                tweets.add(te);
+            } catch (JSONException ex) {
+                System.out.println("getTweetsNL - " + ex);
+            }
+        }
+
+        return tweets;
+    }
+    
 }
