@@ -7,6 +7,7 @@
 package gui;
 
 import dblis.GraphInfo;
+import dblis.SportData2;
 //import java.awt.Dimension;
 //import java.text.DateFormat;
 //import java.text.SimpleDateFormat;
@@ -440,6 +441,10 @@ public class MainFrame extends CenterFrame {
             hockeyCheckBox.isSelected(), cyclingCheckBox.isSelected(),
             tennisCheckBox.isSelected(), skatingCheckBox.isSelected(), 1);
         fxPanel.drawScene(2);
+        
+        SportData2.getInstance().setDates(getStartDate(), getEndDate());
+        SportData2.getInstance().setSelected(getSports());
+        SportData2.getInstance().setInterval(timeInterval);
     }//GEN-LAST:event_showBtnActionPerformed
 
     private Date getStartDate() {
@@ -449,6 +454,7 @@ public class MainFrame extends CenterFrame {
     private Date getEndDate() {
         return endTimePicker.getDate();
     }
+    
     
     private List<String> getSports() {
         List sports = new ArrayList();
@@ -496,7 +502,7 @@ public class MainFrame extends CenterFrame {
         }
         //</editor-fold>
         //</editor-fold>
-
+        SportData2.getInstance().init();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

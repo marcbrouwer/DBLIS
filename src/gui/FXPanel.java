@@ -7,8 +7,11 @@ package gui;
 
 import dblis.GraphInfo;
 import dblis.SportData2;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -108,7 +111,11 @@ public class FXPanel extends JFXPanel {
         Date startdate = SportData2.getInstance().getStartDate();
         Date enddate = SportData2.getInstance().getEndDate();
         int interval = SportData2.getInstance().getInterval();
-        count = SportData2.getInstance().getSportsForDate(startdate,enddate,"football",interval);
+        count = SportData2.getInstance().getSportsForDate(startdate, enddate,
+                "football", interval);
+        List<Date> listofdates = new ArrayList(count.keySet());
+        Collections.sort(listofdates, Collections.reverseOrder());
+        System.out.println(listofdates);
         Scene scene  = new Scene(lineChart,800,600);
         lineChart.getData().add(series);
         return scene;
