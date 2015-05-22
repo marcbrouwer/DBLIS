@@ -153,10 +153,10 @@ public class DBLIS implements Runnable {
         pie1.run();
         return;*/
         
-        SportData2.getInstance().init();
+        /*SportData2.getInstance().init();
         PlayOffsPieChart pie2 = new PlayOffsPieChart();
         pie2.run();
-        return;
+        return;*/
         
         
         
