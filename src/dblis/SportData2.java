@@ -66,7 +66,16 @@ public class SportData2 {
         if (numberTweets == 0) {
             return 0;
         }
-        return tweets.size() / numberTweets;
+        if (tweets.size() == numberTweets) {
+            return 100;
+        }
+        return (int) Math.round(100 * tweets.size() / numberTweets);
+    }
+    
+    public final void search() {
+        final List<String> keywords = new ArrayList<>();
+        relations.values().stream().forEach(list -> keywords.addAll(list));
+        //runStoreThread(keywords);
     }
     
     public final List<String> getSports() {

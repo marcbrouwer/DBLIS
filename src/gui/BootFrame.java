@@ -35,7 +35,7 @@ public class BootFrame extends javax.swing.JFrame {
         int progress = 0;
         while (progress < 100) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
                 progress = SportData2.getInstance().getInitProgress();
                 System.out.println(progress);
                 jProgressBar1.setValue(progress);
