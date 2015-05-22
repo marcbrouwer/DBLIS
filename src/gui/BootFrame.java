@@ -14,13 +14,14 @@ import java.util.logging.Logger;
  *
  * @author s124392
  */
-public class BootFrame extends javax.swing.JFrame {
+public class BootFrame extends CenterFrame {
 
     /**
      * Creates new form BootFrame
      */
     public BootFrame() {
         initComponents();
+        centerize();
         retrieveData();
     }
     

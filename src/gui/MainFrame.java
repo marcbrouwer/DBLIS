@@ -20,7 +20,7 @@ import javax.swing.JCheckBox;
  *
  * @author Chen
  */
-public class MainFrame extends javax.swing.JFrame {
+public class MainFrame extends CenterFrame {
     private FXPanel fxPanel;
 
     /**
@@ -29,6 +29,7 @@ public class MainFrame extends javax.swing.JFrame {
     List<JCheckBox> sportCheckboxes;
     public MainFrame() {
         initComponents();
+        centerize();
         sportCheckboxes = new ArrayList<>();
         sportCheckboxes.add(hockeyCheckBox);
         sportCheckboxes.add(tennisCheckBox);
