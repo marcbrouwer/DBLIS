@@ -117,7 +117,7 @@ public class FXPanel extends JFXPanel {
         List<Date> listofdates = new ArrayList(count.keySet());
         Collections.sort(listofdates);
         listofdates.stream().forEach(d -> {
-            series.getData().add(new XYChart.Data(sf.format(d),count.get(d)));
+            series.getData().add(new XYChart.Data(d.getTime(),count.get(d)));
         });
         System.out.println(listofdates);
         Scene scene  = new Scene(lineChart,800,600);
