@@ -22,6 +22,7 @@ public class BootFrame extends javax.swing.JFrame {
     public BootFrame() {
         initComponents();
         retrieveData();
+        updateProgress();
     }
     
     private void retrieveData() {
@@ -35,7 +36,8 @@ public class BootFrame extends javax.swing.JFrame {
         while (progress < 100) {
             try {
                 Thread.sleep(1000);
-                // call SportData2 to get new progress value
+                progress = SportData2.getInstance().getInitProgress();
+                jProgressBar1.setValue(progress);
             } catch (InterruptedException ex) {
                 Logger.getLogger(BootFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
