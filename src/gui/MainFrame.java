@@ -246,6 +246,11 @@ public class MainFrame extends CenterFrame {
 
         pieChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/chart_pie_32x32.png"))); // NOI18N
         pieChartBtn.setToolTipText("");
+        pieChartBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pieChartBtnActionPerformed(evt);
+            }
+        });
 
         listBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/grid_layout_snap_small_stock-512_32x32.png"))); // NOI18N
         listBtn.setToolTipText("");
@@ -446,6 +451,12 @@ public class MainFrame extends CenterFrame {
         SportData2.getInstance().setSelected(getSports());
         SportData2.getInstance().setInterval(timeInterval);
     }//GEN-LAST:event_showBtnActionPerformed
+
+    private void pieChartBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pieChartBtnActionPerformed
+        PopFrame pf = new PopFrame(3);
+        pf.setVisible(true);
+        pf.toFront();
+    }//GEN-LAST:event_pieChartBtnActionPerformed
 
     private Date getStartDate() {
         return startTimePicker.getDate();

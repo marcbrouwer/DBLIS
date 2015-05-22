@@ -7,6 +7,7 @@ package gui;
 
 import dblis.GraphInfo;
 import dblis.SportData2;
+import java.awt.Dimension;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,12 +16,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -29,6 +34,7 @@ import javafx.scene.text.Text;
  * @author s124392
  */
 public class FXPanel extends JFXPanel {
+    private static final Dimension POPSIZE = new Dimension(780, 578);
     
     public FXPanel() {}
     
@@ -46,6 +52,9 @@ public class FXPanel extends JFXPanel {
                     break;
                 case 2:
                     scene = drawLineChart();
+                    break;
+                case 3:
+                    scene = drawPieChart();
                     break;
                 }
                 if (scene != null) {
@@ -124,4 +133,44 @@ public class FXPanel extends JFXPanel {
         lineChart.getData().add(series);
         return scene;
     }
+    
+    private Scene drawPieChart() {
+        Group root = new Group();
+        Scene scene = new Scene(root);
+        final Map<String, Double> sportPop =
+                SportData2.getInstance().getPopularityAllSportsAsPercentage();
+        
+        final List<PieChart.Data> list = new ArrayList<>();
+        
+        sportPop.entrySet().stream().forEach(entry -> {
+            list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+        });
+        
+        PieChart pie = new PieChart(
+                FXCollections.observableArrayList(list));
+        pie.setTitle("Popularity");
+        pie.setPrefSize(POPSIZE.width, POPSIZE.height);
+        
+        list.stream().forEach(data -> {
+            setDrilldownData(pie, data, data.getName());
+        });
+        
+        root.getChildren().add(pie);
+        return scene;
+    }
+    
+    private void setDrilldownData(final PieChart pie, PieChart.Data data, final String sport) {
+        data.getNode().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent t) {
+                final List<PieChart.Data> list = new ArrayList<>();
+                final Map<String, Double> cPop =
+                        SportData2.getInstance().getPopularityKeywordsAsPercentage(sport);
+                cPop.entrySet().stream().forEach(keyword -> {
+                    list.add(new PieChart.Data(keyword.getKey(), keyword.getValue()));
+                });
+                pie.setData(FXCollections.observableArrayList(list));
+            }
+        });
+    }
+
 }
