@@ -22,7 +22,6 @@ public class BootFrame extends javax.swing.JFrame {
     public BootFrame() {
         initComponents();
         retrieveData();
-        updateProgress();
     }
     
     private void retrieveData() {
@@ -32,18 +31,22 @@ public class BootFrame extends javax.swing.JFrame {
     }
     
     private void updateProgress() {
-        int progress = 0;
-        while (progress < 100) {
-            try {
-                Thread.sleep(2000);
-                progress = SportData2.getInstance().getInitProgress();
-                System.out.println(progress);
-                jProgressBar1.setValue(progress);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(BootFrame.class.getName()).log(Level.SEVERE, null, ex);
+        final Runnable r1 = () -> {
+            int progress = 0;
+            while (progress < 100) {
+                try {
+                    Thread.sleep(2000);
+                    progress = SportData2.getInstance().getInitProgress();
+                    System.out.println(progress);
+                    jProgressBar1.setValue(progress);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(BootFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        }
-        jButton2.setEnabled(true);
+            jButton2.setEnabled(true);
+        };
+        final Thread t = new Thread(r1);
+        t.start();
     }
 
     /**
@@ -141,7 +144,9 @@ public class BootFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new BootFrame().setVisible(true);
+                BootFrame frame = new BootFrame();
+                frame.setVisible(true);
+                frame.updateProgress();
             }
         });
     }
