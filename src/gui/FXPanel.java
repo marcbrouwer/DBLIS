@@ -6,6 +6,10 @@
 package gui;
 
 import dblis.GraphInfo;
+import dblis.SportData2;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
@@ -81,11 +85,12 @@ public class FXPanel extends JFXPanel {
         final LineChart<Number,Number> lineChart = 
                 new LineChart<Number,Number>(xAxis,yAxis);
                 
-        lineChart.setTitle("Stock Monitoring, 2010");
+        lineChart.setTitle("Popularity of Sports");
         //defining a series
         XYChart.Series series = new XYChart.Series();
-        series.setName("My portfolio");
+        series.setName("Popularity of Sports");
         //populating the series with datas
+        /*
         series.getData().add(new XYChart.Data(1, 23));
         series.getData().add(new XYChart.Data(2, 14));
         series.getData().add(new XYChart.Data(3, 15));
@@ -98,7 +103,12 @@ public class FXPanel extends JFXPanel {
         series.getData().add(new XYChart.Data(10, 17));
         series.getData().add(new XYChart.Data(11, 29));
         series.getData().add(new XYChart.Data(12, 25));
-        
+        */
+        Map<Date, Double> count = new HashMap();
+        Date startdate = SportData2.getInstance().getStartDate();
+        Date enddate = SportData2.getInstance().getEndDate();
+        int interval = SportData2.getInstance().getInterval();
+        count = SportData2.getInstance().getSportsForDate(startdate,enddate,"football",interval);
         Scene scene  = new Scene(lineChart,800,600);
         lineChart.getData().add(series);
         return scene;
