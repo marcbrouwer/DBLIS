@@ -37,6 +37,7 @@ public class BootFrame extends javax.swing.JFrame {
             try {
                 Thread.sleep(1000);
                 progress = SportData2.getInstance().getInitProgress();
+                System.out.println(progress);
                 jProgressBar1.setValue(progress);
             } catch (InterruptedException ex) {
                 Logger.getLogger(BootFrame.class.getName()).log(Level.SEVERE, null, ex);
