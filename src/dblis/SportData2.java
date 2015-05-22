@@ -304,6 +304,34 @@ public class SportData2 {
         return count;
     }
     
+    public final void setDates(Date startdate, Date enddate) {
+        
+    }
+    
+    public final Date getStartDate() {
+        return null;
+    }
+    
+    public final Date getEndDate() {
+        return null;
+    }
+    
+    public final void setSelected(List<String> sports) {
+        
+    }
+    
+    public final List<String> getSelected() {
+        return new ArrayList<>();
+    }
+    
+    public final void setInterval(int interval) {
+        
+    }
+    
+    public final int getInterval() {
+        return 0;
+    }
+    
     // PRIVATE Methods
     
     private long getMonthTimeIncr(long starttime) {
