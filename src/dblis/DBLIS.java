@@ -150,12 +150,14 @@ public class DBLIS implements Runnable {
         
         /*SportData2.getInstance().init();
         PieChartFX pie1 = new PieChartFX();
-        pie1.run();*/
+        pie1.run();
+        return;*/
         
-        /*PlayOffsPieChart pie2 = new PlayOffsPieChart();
-        pie2.run();*/
+        SportData2.getInstance().init();
+        PlayOffsPieChart pie2 = new PlayOffsPieChart();
+        pie2.run();
+        return;
         
-        //return;
         
         
         // SEARCHING
@@ -402,9 +404,8 @@ public class DBLIS implements Runnable {
         
         //Collections.reverse(sports1);
         firstSearch.add(false);
-        final Runnable r1 = () -> {
-            timeSearchSports(1, sports1, sa, getAuth());
-        };
+        final Runnable r1 = () -> timeSearchSports(1, sports1, sa, getAuth());
+        
         
         final List<String> sports2 = new ArrayList<>();
         for (int i = (int) Math.floor(sports.size() / 2); i < sports.size(); i++) {
@@ -412,9 +413,7 @@ public class DBLIS implements Runnable {
         }
         //Collections.reverse(sports2);
         firstSearch.add(false);
-        final Runnable r2 = () -> {
-            timeSearchSports(2, sports2, sa, getAuth2());
-        };
+        final Runnable r2 = () ->  timeSearchSports(2, sports2, sa, getAuth2());
         
         final Thread t1 = new Thread(r1);
         final Thread t2 = new Thread(r2);

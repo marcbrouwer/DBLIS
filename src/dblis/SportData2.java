@@ -41,6 +41,7 @@ public class SportData2 {
     }
     
     // Variables
+    private int numberTweets = 0;
     private final List<String> sports
             = Arrays.asList("football", "hockey", "cycling", "tennis", "skating");
     private final Set<TweetEntity> tweets = new HashSet();
@@ -50,7 +51,8 @@ public class SportData2 {
     
     public final void init() {
         final ServerAccess sa = new ServerAccess();
-        tweets.addAll(sa.getTweetsNL());
+        numberTweets = sa.getTweetsCountNL();
+        tweets.addAll(sa.getTweetsNL(numberTweets));
         sports.stream().forEach(sport -> {
             if (!relations.containsKey(sport)) {
                 relations.put(sport, new ArrayList<>());
@@ -58,6 +60,10 @@ public class SportData2 {
             final Set<String> alts = sa.getAlternatives(sport);
             relations.get(sport).addAll(alts);
         });
+    }
+    
+    public final int getInitProgress() {
+        return tweets.size() / numberTweets;
     }
     
     public final List<String> getSports() {
@@ -304,8 +310,14 @@ public class SportData2 {
     
     private Stream<TweetEntity> getRelatedTweets(String sport, long starttime, 
             long endtime) {
-        return getRelatedTweets(sport).parallel()
-                .filter(te -> starttime <= te.getTime() && te.getTime() <= endtime);
+        if (relations.containsKey(sport)) {
+            return tweets.parallelStream()
+                    .filter(te -> starttime <= te.getTime() && te.getTime() <= endtime)
+                    .filter(te -> te.isRelatedTo(relations.get(sport)));
+        }
+        return tweets.parallelStream()
+                .filter(te -> starttime <= te.getTime() && te.getTime() <= endtime)
+                .filter(te -> te.isRelatedTo(sport));
     }
     
     private Stream<TweetEntity> getRelatedTweets(String sport) {

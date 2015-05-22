@@ -430,19 +430,18 @@ public class ServerAccess {
         }
     }
     
-    public final Set<TweetEntity> getTweetsNL() {
-        final int total = getTweetsCountNL();
+    public final Set<TweetEntity> getTweetsNL(int numberTweets) {
         final int part = 50000;
         final Set<TweetEntity> tweets = new HashSet();
         
         int tries = 0;
         int limitlow = 0;
         int limithigh = part;
-        if (limithigh > total) {
-            limithigh = total;
+        if (limithigh > numberTweets) {
+            limithigh = numberTweets;
         }
         
-        while (limithigh <= total && limitlow < limithigh) {
+        while (limithigh <= numberTweets && limitlow < limithigh) {
             try {
                 final Map<String, Object> params = new HashMap();
                 params.put("limitlow", limitlow);
@@ -476,8 +475,8 @@ public class ServerAccess {
                 
                 limitlow += part;
                 limithigh += part;
-                if (limithigh > total) {
-                    limithigh = total;
+                if (limithigh > numberTweets) {
+                    limithigh = numberTweets;
                 }
                 tries = 0;
             } catch (JSONException ex) {
