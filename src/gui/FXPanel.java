@@ -7,8 +7,12 @@ package gui;
 
 import dblis.GraphInfo;
 import dblis.SportData2;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -89,6 +93,7 @@ public class FXPanel extends JFXPanel {
         //defining a series
         XYChart.Series series = new XYChart.Series();
         series.setName("Popularity of Sports");
+        SimpleDateFormat sf = new SimpleDateFormat("dd-mm-yyyy");
         //populating the series with datas
         /*
         series.getData().add(new XYChart.Data(1, 23));
@@ -104,11 +109,17 @@ public class FXPanel extends JFXPanel {
         series.getData().add(new XYChart.Data(11, 29));
         series.getData().add(new XYChart.Data(12, 25));
         */
-        Map<Date, Double> count = new HashMap();
         Date startdate = SportData2.getInstance().getStartDate();
         Date enddate = SportData2.getInstance().getEndDate();
         int interval = SportData2.getInstance().getInterval();
-        count = SportData2.getInstance().getSportsForDate(startdate,enddate,"football",interval);
+        final Map<Date, Double> count = SportData2.getInstance().getSportsForDate(startdate, enddate,
+                "football", interval);
+        List<Date> listofdates = new ArrayList(count.keySet());
+        Collections.sort(listofdates);
+        listofdates.stream().forEach(d -> {
+            series.getData().add(new XYChart.Data(sf.format(d),count.get(d)));
+        });
+        System.out.println(listofdates);
         Scene scene  = new Scene(lineChart,800,600);
         lineChart.getData().add(series);
         return scene;

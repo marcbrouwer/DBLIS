@@ -7,6 +7,7 @@
 package gui;
 
 import dblis.GraphInfo;
+import dblis.SportData2;
 //import java.awt.Dimension;
 //import java.text.DateFormat;
 //import java.text.SimpleDateFormat;
@@ -367,9 +368,9 @@ public class MainFrame extends CenterFrame {
 
     private void sportsChooseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsChooseBtnActionPerformed
         // TODO add your handling code here:
-        for(JCheckBox cb : sportCheckboxes){
+        /*for(JCheckBox cb : sportCheckboxes){
             cb.setSelected(false);
-        }
+        }*/
         sportsDialog.setSize(380, 180);
         sportsDialog.show();
     }//GEN-LAST:event_sportsChooseBtnActionPerformed
@@ -440,6 +441,10 @@ public class MainFrame extends CenterFrame {
             hockeyCheckBox.isSelected(), cyclingCheckBox.isSelected(),
             tennisCheckBox.isSelected(), skatingCheckBox.isSelected(), 1);
         fxPanel.drawScene(2);
+        
+        SportData2.getInstance().setDates(getStartDate(), getEndDate());
+        SportData2.getInstance().setSelected(getSports());
+        SportData2.getInstance().setInterval(timeInterval);
     }//GEN-LAST:event_showBtnActionPerformed
 
     private Date getStartDate() {
@@ -450,22 +455,23 @@ public class MainFrame extends CenterFrame {
         return endTimePicker.getDate();
     }
     
+    
     private List<String> getSports() {
         List sports = new ArrayList();
-        if(footballCheckBox.isSelected() == true) {
-            sports.add(footballCheckBox.getName().toLowerCase());
+        if(footballCheckBox.isSelected()) {
+            sports.add(footballCheckBox.getText().toLowerCase());
         }
-        if(hockeyCheckBox.isSelected() == true) {
-            sports.add(hockeyCheckBox.getName().toLowerCase());
+        if(hockeyCheckBox.isSelected()) {
+            sports.add(hockeyCheckBox.getText().toLowerCase());
         }
-        if(cyclingCheckBox.isSelected() == true) {
-            sports.add(cyclingCheckBox.getName().toLowerCase());
+        if(cyclingCheckBox.isSelected()) {
+            sports.add(cyclingCheckBox.getText().toLowerCase());
         }
-        if(tennisCheckBox.isSelected() == true) {
-            sports.add(tennisCheckBox.getName().toLowerCase());
+        if(tennisCheckBox.isSelected()) {
+            sports.add(tennisCheckBox.getText().toLowerCase());
         }
-        if(skatingCheckBox.isSelected() == true) {
-            sports.add(skatingCheckBox.getName().toLowerCase());
+        if(skatingCheckBox.isSelected()) {
+            sports.add(skatingCheckBox.getText().toLowerCase());
         }
         return sports;
     }
@@ -496,7 +502,7 @@ public class MainFrame extends CenterFrame {
         }
         //</editor-fold>
         //</editor-fold>
-
+        SportData2.getInstance().init();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
