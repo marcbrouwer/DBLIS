@@ -158,11 +158,18 @@ public class DBLIS implements Runnable {
         pie2.run();
         return;*/
         
-        
+        /*final List<String> teams = Arrays.asList("De Graafschap", "Go Ahead Eagles",
+                "FC Volendam", "FC Eindhoven", "VVV Venlo", "NAC Breda",
+                "FC Emmen", "Roda JC");
+        SportData2.getInstance().init();
+        final int n = SportData2.getInstance().getNumberOfTweets(teams);*/
         
         // SEARCHING
         
-        final List<String> keywords = new ArrayList<>();
+        SportData2.getInstance().init();
+        SportData2.getInstance().search();
+        
+        /*final List<String> keywords = new ArrayList<>();
         final List<String> sports = 
                 Arrays.asList("football", "hockey", "cycling", "tennis", "skating");
         sports.stream().forEach(sport -> {
@@ -177,7 +184,7 @@ public class DBLIS implements Runnable {
         runStoreThread(keywords);
         //userSearch(sa, getAuth2(), "FCBarcelona");
         //twitterStream2(sa, sports);
-        timeSearch(sa, keywords);
+        timeSearch(sa, keywords);*/
         
         //toSearch.stream().forEach(sport -> getTweets(sport, geocode));
         //getTweets(search);
