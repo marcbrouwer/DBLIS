@@ -37,7 +37,6 @@ public class BootFrame extends javax.swing.JFrame {
                 try {
                     Thread.sleep(2000);
                     progress = SportData2.getInstance().getInitProgress();
-                    System.out.println(progress);
                     jProgressBar1.setValue(progress);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(BootFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -76,6 +75,11 @@ public class BootFrame extends javax.swing.JFrame {
 
         jButton2.setText("Launch");
         jButton2.setEnabled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -113,6 +117,13 @@ public class BootFrame extends javax.swing.JFrame {
         Abort.getInstance().setAbort(true);
         jButton2.setEnabled(false);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        MainFrame mainFrame = new MainFrame();
+        mainFrame.setVisible(true);
+        this.setVisible(false);
+        mainFrame.toFront();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
