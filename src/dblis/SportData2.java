@@ -63,6 +63,9 @@ public class SportData2 {
     }
     
     public final int getInitProgress() {
+        if (numberTweets == 0) {
+            return 0;
+        }
         return tweets.size() / numberTweets;
     }
     
