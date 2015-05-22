@@ -37,13 +37,13 @@ public class MainFrame extends javax.swing.JFrame {
         sportCheckboxes.add(skatingCheckBox);
         fxPanel = new FXPanel();
         testPanel.add(fxPanel);
-        GraphInfo graphInfo = new GraphInfo(startTimePicker.getDate(),
-                endTimePicker.getDate(), footballCheckBox.isSelected(),
-            hockeyCheckBox.isSelected(), cyclingCheckBox.isSelected(),
-            tennisCheckBox.isSelected(), skatingCheckBox.isSelected(), 1);
-        fxPanel.drawScene(0, graphInfo);
+//        GraphInfo graphInfo = new GraphInfo(startTimePicker.getDate(),
+//                endTimePicker.getDate(), footballCheckBox.isSelected(),
+//            hockeyCheckBox.isSelected(), cyclingCheckBox.isSelected(),
+//            tennisCheckBox.isSelected(), skatingCheckBox.isSelected(), 1);
+        fxPanel.drawScene(0);
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -438,7 +438,7 @@ public class MainFrame extends javax.swing.JFrame {
                 endTimePicker.getDate(), footballCheckBox.isSelected(),
             hockeyCheckBox.isSelected(), cyclingCheckBox.isSelected(),
             tennisCheckBox.isSelected(), skatingCheckBox.isSelected(), 1);
-        fxPanel.drawScene(2, graphInfo);
+        fxPanel.drawScene(2);
     }//GEN-LAST:event_showBtnActionPerformed
 
     /**

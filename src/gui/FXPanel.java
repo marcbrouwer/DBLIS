@@ -24,7 +24,7 @@ public class FXPanel extends JFXPanel {
     
     public FXPanel() {}
     
-    public void drawScene(int index, GraphInfo graph) {
+    public void drawScene(int index) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
