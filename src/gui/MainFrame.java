@@ -441,6 +441,33 @@ public class MainFrame extends javax.swing.JFrame {
         fxPanel.drawScene(2);
     }//GEN-LAST:event_showBtnActionPerformed
 
+    private Date getStartDate() {
+        return startTimePicker.getDate();
+    }
+    
+    private Date getEndDate() {
+        return endTimePicker.getDate();
+    }
+    
+    private List<String> getSports() {
+        List sports = new ArrayList();
+        if(footballCheckBox.isSelected() == true) {
+            sports.add(footballCheckBox.getName().toLowerCase());
+        }
+        if(hockeyCheckBox.isSelected() == true) {
+            sports.add(hockeyCheckBox.getName().toLowerCase());
+        }
+        if(cyclingCheckBox.isSelected() == true) {
+            sports.add(cyclingCheckBox.getName().toLowerCase());
+        }
+        if(tennisCheckBox.isSelected() == true) {
+            sports.add(tennisCheckBox.getName().toLowerCase());
+        }
+        if(skatingCheckBox.isSelected() == true) {
+            sports.add(skatingCheckBox.getName().toLowerCase());
+        }
+        return sports;
+    }
     /**
      * @param args the command line arguments
      */
