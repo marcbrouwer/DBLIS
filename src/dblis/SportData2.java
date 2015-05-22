@@ -98,7 +98,7 @@ public class SportData2 {
         final List<String> keywords = new ArrayList<>();
         relations.values().stream().forEach(list -> keywords.addAll(list));
         runStoreThread(keywords);
-        timeSearch(new ServerAccess(), keywords);
+        timeSearch(keywords);
     }
     
     public final List<String> getSports() {
@@ -272,6 +272,11 @@ public class SportData2 {
         });
         
         return getAsPercentage(matchPop);
+    }
+    
+    public final int getNumberOfTweets(List<String> keywords) {
+        return (int) tweets.parallelStream()
+                .filter(te -> te.isRelatedTo(keywords)).count();
     }
     
     /**
@@ -448,6 +453,10 @@ public class SportData2 {
         final Runnable r = () -> {
             final ServerAccess sa = new ServerAccess();
             while (true) {
+                if (Abort.getInstance().abort()) {
+                    Abort.getInstance().setAbort(false);
+                    return;
+                }
                 if (DBStore.getInstance().isEmpty()) {
                     if (DBStore.getInstance().isDone()) {
                         return;
@@ -485,7 +494,7 @@ public class SportData2 {
         t.start();
     }
     
-    private void timeSearch(ServerAccess sa, List<String> sports) {
+    private void timeSearch(List<String> sports) {
         Collections.shuffle(sports);
         
         final List<String> sports1 = new ArrayList<>();
@@ -494,15 +503,14 @@ public class SportData2 {
         }
         
         //Collections.reverse(sports1);
-        final Runnable r1 = () -> timeSearchSports(1, sports1, sa, getAuth());
-        
+        final Runnable r1 = () -> timeSearchSports(1, sports1, getAuth());
         
         final List<String> sports2 = new ArrayList<>();
         for (int i = (int) Math.floor(sports.size() / 2); i < sports.size(); i++) {
             sports2.add(sports.get(i));
         }
         //Collections.reverse(sports2);
-        final Runnable r2 = () ->  timeSearchSports(2, sports2, sa, getAuth2());
+        final Runnable r2 = () ->  timeSearchSports(2, sports2, getAuth2());
         
         final Thread t1 = new Thread(r1);
         final Thread t2 = new Thread(r2);
@@ -523,39 +531,42 @@ public class SportData2 {
     }
     
     private boolean timeSearchSports(int n, final List<String> sports,
-            final ServerAccess sa, final Configuration auth) {
+            final Configuration auth) {
         
         for (String sport : sports) {
-               long resetTime = 0;
-                long curTime = 0;
-                long wait = 0;
-                RetryQuery rq = new RetryQuery(-2, null);
-                while (resetTime >= curTime 
-                        || rq.getRetry() == -2 || rq.getQuery() != null) {
-                    rq = timeTweets(n, rq.getQuery(), sport, auth);
-                    resetTime = rq.getRetry();
-                    curTime = new Date().getTime();
-                    try {
-                        storeRest();
-                        if (curTime <= resetTime) {
-                            wait = resetTime - curTime;
-                            System.out.println("Sleeping "
-                                    + (wait / 1000)
-                                    + "s for n: " + n
-                                    + ", " + sport);
-                            Thread.sleep(wait + 1000);
-                        }
-                    } catch (InterruptedException ex) {
-                        System.out.println("Error sleeping - " + ex);
+            long resetTime = 0;
+            long curTime = 0;
+            long wait = 0;
+            RetryQuery rq = new RetryQuery(-2, null);
+            while (resetTime >= curTime
+                    || rq.getRetry() == -2 || rq.getQuery() != null) {
+                rq = timeTweets(n, rq.getQuery(), sport, auth);
+                resetTime = rq.getRetry();
+                curTime = new Date().getTime();
+                try {
+                    storeRest();
+                    if (resetTime == -1 || Abort.getInstance().abort()) {
+                        return true;
                     }
+                    if (curTime <= resetTime) {
+                        wait = resetTime - curTime;
+                        System.out.println("Sleeping "
+                                + (wait / 1000)
+                                + "s for n: " + n
+                                + ", " + sport);
+                        Thread.sleep(wait + 1000);
+                    }
+                } catch (InterruptedException ex) {
+                    System.out.println("Error sleeping - " + ex);
                 }
+            }
 
-                storeRest();
-                if (resetTime == -1) {
-                    return true;
-                }
+            storeRest();
+            if (resetTime == -1 || Abort.getInstance().abort()) {
+                return true;
+            }
         }
-        
+
         return true;
     }
     
@@ -582,6 +593,9 @@ public class SportData2 {
         try {
             result = twitter.search(query);
             while (result.nextQuery() != null) {
+                if (Abort.getInstance().abort()) {
+                    return new RetryQuery(-1, query);
+                }
                 synchronized (searchLock) {
                     if (!searchTweets.containsKey(search)) {
                         searchTweets.put(search, new HashSet());
