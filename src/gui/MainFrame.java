@@ -236,16 +236,16 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        lineChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Data-Line-Chart-icon_32x32.png"))); // NOI18N
+        lineChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/Data-Line-Chart-icon_32x32.png"))); // NOI18N
         lineChartBtn.setToolTipText("");
 
-        histogramBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/bar_chart-512_32x32.png"))); // NOI18N
+        histogramBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/bar_chart-512_32x32.png"))); // NOI18N
         histogramBtn.setToolTipText("");
 
-        pieChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/chart_pie_32x32.png"))); // NOI18N
+        pieChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/chart_pie_32x32.png"))); // NOI18N
         pieChartBtn.setToolTipText("");
 
-        listBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/grid_layout_snap_small_stock-512_32x32.png"))); // NOI18N
+        listBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/grid_layout_snap_small_stock-512_32x32.png"))); // NOI18N
         listBtn.setToolTipText("");
 
         javax.swing.GroupLayout parametersPanelLayout = new javax.swing.GroupLayout(parametersPanel);
