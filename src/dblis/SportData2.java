@@ -1,5 +1,8 @@
 package dblis;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -12,7 +15,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
+import twitter4j.JSONArray;
 import twitter4j.JSONException;
+import twitter4j.JSONObject;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Status;
@@ -75,9 +80,9 @@ public class SportData2 {
     
     public final void init() {
         final ServerAccess sa = new ServerAccess();
-        numberTweets = sa.getTweetsCountNL();
-        //tweets.addAll(sa.getTweetsNL(numberTweets));
-        getTweets(sa);
+        getTweetsJSONFile();
+        //numberTweets = sa.getTweetsCountNL();
+        //getTweets(sa);
         sports.stream().forEach(sport -> {
             if (!relations.containsKey(sport)) {
                 relations.put(sport, new ArrayList<>());
@@ -429,7 +434,7 @@ public class SportData2 {
             limithigh = numberTweets;
         }
         
-        while (limithigh <= numberTweets && limitlow < limithigh) {
+        while (limithigh <= numberTweets && limitlow < limithigh && tries < 3) {
             try {
                 tweets.addAll(sa.getTweetsPartNL(limitlow, limithigh));
                 limitlow += part;
@@ -443,6 +448,59 @@ public class SportData2 {
                 System.out.println("getTweets - " + ex);
             }
         }
+    }
+    
+    private void getTweetsJSONFile() {
+        String jsonString = "";
+        JSONArray json = new JSONArray();
+
+        try {
+            final BufferedReader reader = new BufferedReader(
+                    new FileReader(DBLIS.getWorkingDirectory() + "Tweets.json"));
+            String line;
+            boolean add = false;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("[")) {
+                    add = true;
+                }
+                if (add) {
+                    jsonString += line;
+                }
+                if (line.endsWith("]")) {
+                    add = false;
+                }
+            }
+            json = new JSONArray(jsonString);
+        } catch (IOException | JSONException ex) {
+            System.out.println("getTweetsJSONFile - " + ex);
+        }
+        
+        JSONObject obj;
+        TweetEntity te;
+        for (int i = 0; i < json.length(); i++) {
+            try {
+                obj = json.getJSONObject(i);
+                if (obj.getLong("retweetid") != -1) {
+                    continue;
+                }
+                te = new TweetEntity(
+                        obj.getLong("id"),
+                        obj.getLong("retweetid"),
+                        obj.getInt("retweets"),
+                        obj.getInt("favourites"),
+                        obj.getString("text"),
+                        obj.getLong("creationTime"),
+                        obj.getString("countryCode"),
+                        obj.getString("language"),
+                        obj.getLong("userID"),
+                        obj.getString("keywords"));
+                tweets.add(te);
+            } catch (JSONException ex) {
+                System.out.println("getTweetsNL - " + ex);
+            }
+        }
+        
+        numberTweets = tweets.size();
     }
     
     // Searching

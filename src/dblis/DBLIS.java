@@ -1042,7 +1042,7 @@ public class DBLIS implements Runnable {
      * 
      * @return directory as String
      */
-    private String getWorkingDirectory() {
+    public static String getWorkingDirectory() {
         try {
             // get working directory as File
             String path = DBLIS.class.getProtectionDomain().getCodeSource()
