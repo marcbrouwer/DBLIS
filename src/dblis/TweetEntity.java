@@ -187,4 +187,9 @@ public class TweetEntity {
                 || text.contains("@" + word + "!")
                 || text.contains("@" + word + "?");
     }
+    
+    public final boolean isInTimeFrame(long starttime, long endtime) {
+        return starttime <= creationTime && creationTime <= endtime;
+    }
+    
 }

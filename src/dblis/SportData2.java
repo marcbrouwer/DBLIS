@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import twitter4j.JSONArray;
 import twitter4j.JSONException;
@@ -321,7 +323,7 @@ public class SportData2 {
         }
         
         while (timeS < endtime) {
-            count.put(new Date(timeS), (double) getPopularity(sport, starttime, endtime));
+            count.put(new Date(timeS), (double) getPopularity(sport, timeS, timeE));
             
             if (timeinterval == 30) {
                 timeM = getMonthTimeIncr(starttime);
@@ -389,11 +391,11 @@ public class SportData2 {
             long endtime) {
         if (relations.containsKey(sport)) {
             return tweets.parallelStream()
-                    .filter(te -> starttime <= te.getTime() && te.getTime() <= endtime)
+                    .filter(te -> te.isInTimeFrame(starttime, endtime))
                     .filter(te -> te.isRelatedTo(relations.get(sport)));
         }
         return tweets.parallelStream()
-                .filter(te -> starttime <= te.getTime() && te.getTime() <= endtime)
+                .filter(te -> te.isInTimeFrame(starttime, endtime))
                 .filter(te -> te.isRelatedTo(sport));
     }
     
