@@ -5,7 +5,6 @@
  */
 package gui;
 
-import dblis.GraphInfo;
 import dblis.SportData2;
 import java.awt.Dimension;
 import java.text.SimpleDateFormat;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
@@ -30,7 +28,6 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import org.jfree.chart.axis.DateAxis;
 
 /**
  *
@@ -132,7 +129,7 @@ public class FXPanel extends JFXPanel {
         series.add(new XYChart.Series<>("Series2", series2Data));
         NumberAxis numberAxis = new NumberAxis();
         DateAxis dateAxis = new DateAxis();
-        LineChart<Date, Number> lineChart = new LineChart(dateAxis, numberAxis, series);
+        LineChart<Date, Number> lineChart = new LineChart<Date, Number>(dateAxis, numberAxis, series);
         Date startdate = SportData2.getInstance().getStartDate();
         Date enddate = SportData2.getInstance().getEndDate();
         int interval = SportData2.getInstance().getInterval();
