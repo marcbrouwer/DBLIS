@@ -12,11 +12,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -28,6 +30,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import org.jfree.chart.axis.DateAxis;
 
 /**
  *
@@ -95,13 +98,13 @@ public class FXPanel extends JFXPanel {
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Number of Month");
         //creating the chart
-        final LineChart<Number,Number> lineChart = 
-                new LineChart<Number,Number>(xAxis,yAxis);
+        //final LineChart<Number,Number> lineChart = 
+          //      new LineChart<Number,Number>(xAxis,yAxis);
                 
-        lineChart.setTitle("Popularity of Sports");
+        //lineChart.setTitle("Popularity of Sports");
         //defining a series
-        XYChart.Series series = new XYChart.Series();
-        series.setName("Popularity of Sports");
+        //XYChart.Series series = new XYChart.Series();
+        //series.setName("Popularity of Sports");
         SimpleDateFormat sf = new SimpleDateFormat("dd-mm-yyyy");
         //populating the series with datas
         /*
@@ -118,6 +121,18 @@ public class FXPanel extends JFXPanel {
         series.getData().add(new XYChart.Data(11, 29));
         series.getData().add(new XYChart.Data(12, 25));
         */
+        ObservableList<XYChart.Series<Date, Number>> series = FXCollections.observableArrayList();
+        ObservableList<XYChart.Data<Date, Number>> series1Data = FXCollections.observableArrayList();
+        series1Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2012, 11, 15).getTime(), 2));
+        series1Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2014, 5, 3).getTime(), 4));
+        ObservableList<XYChart.Data<Date, Number>> series2Data = FXCollections.observableArrayList();
+        series2Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2014, 0, 13).getTime(), 8));
+        series2Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2014, 7, 27).getTime(), 4));
+        series.add(new XYChart.Series<>("Series1", series1Data));
+        series.add(new XYChart.Series<>("Series2", series2Data));
+        NumberAxis numberAxis = new NumberAxis();
+        DateAxis dateAxis = new DateAxis();
+        LineChart<Date, Number> lineChart = new LineChart(dateAxis, numberAxis, series);
         Date startdate = SportData2.getInstance().getStartDate();
         Date enddate = SportData2.getInstance().getEndDate();
         int interval = SportData2.getInstance().getInterval();
@@ -125,12 +140,12 @@ public class FXPanel extends JFXPanel {
                 "football", interval);
         List<Date> listofdates = new ArrayList(count.keySet());
         Collections.sort(listofdates);
-        listofdates.stream().forEach(d -> {
+        /*listofdates.stream().forEach(d -> {
             series.getData().add(new XYChart.Data(d.getTime(),count.get(d)));
-        });
+        });*/
         System.out.println(listofdates);
-        Scene scene  = new Scene(lineChart,800,600);
-        lineChart.getData().add(series);
+        Scene scene  = new Scene(lineChart,1600,900);
+        //lineChart.getData().add(series);
         return scene;
     }
     
