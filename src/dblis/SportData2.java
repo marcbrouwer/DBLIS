@@ -309,11 +309,9 @@ public class SportData2 {
         
         long timeS = starttime;
         long timeE = starttime;
-        long timeM = 0;
         
         if (timeinterval == 30) {
-            timeM = getMonthTimeIncr(starttime);
-            timeE += timeM;
+            timeE = getMonthTimeEnd(timeS);
         } else {
             timeE += dayInMilliseconds * timeinterval;
         }
@@ -326,9 +324,14 @@ public class SportData2 {
             count.put(new Date(timeS), (double) getPopularity(sport, timeS, timeE));
             
             if (timeinterval == 30) {
-                timeM = getMonthTimeIncr(starttime);
-                timeS += timeE;
-                timeE += timeM;
+                if (timeE >= endtime) {
+                    break;
+                }
+            }
+            
+            if (timeinterval == 30) {
+                timeS = getMonthTimeStart(timeE + 1);
+                timeE = getMonthTimeEnd(timeS);
             } else {
                 timeS += dayInMilliseconds * timeinterval;
                 timeE += dayInMilliseconds * timeinterval;
@@ -376,7 +379,18 @@ public class SportData2 {
     
     // PRIVATE Methods
     
-    private long getMonthTimeIncr(long starttime) {
+    private long getMonthTimeStart(long starttime) {
+        Calendar calS = Calendar.getInstance();
+        calS.setTimeInMillis(starttime);
+        
+        Calendar calE = Calendar.getInstance();
+        calE.clear();
+        calE.set(calS.get(Calendar.YEAR), calS.get(Calendar.MONTH), 1, 0, 0, 0);
+        
+        return calE.getTimeInMillis();
+    }
+    
+    private long getMonthTimeEnd(long starttime) {
         Calendar calS = Calendar.getInstance();
         calS.setTimeInMillis(starttime);
         
@@ -384,7 +398,7 @@ public class SportData2 {
         calE.clear();
         calE.set(calS.get(Calendar.YEAR), calS.get(Calendar.MONTH) + 1, 1, 0, 0, 0);
         
-        return calE.getTimeInMillis() - starttime;
+        return calE.getTimeInMillis() - 1;
     }
     
     private Stream<TweetEntity> getRelatedTweets(String sport, long starttime, 
