@@ -10,7 +10,6 @@ import dblis.SportData2;
 import java.awt.Dimension;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -124,13 +123,13 @@ public class FXPanel extends JFXPanel {
         */
         ObservableList<XYChart.Series<Date, Number>> series = FXCollections.observableArrayList();
         ObservableList<XYChart.Data<Date, Number>> series1Data = FXCollections.observableArrayList();
-        //series1Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2012, 11, 15).getTime(), 2));
-        //series1Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2014, 5, 3).getTime(), 4));
+        series1Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2012, 11, 15).getTime(), 2));
+        series1Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2014, 5, 3).getTime(), 4));
         ObservableList<XYChart.Data<Date, Number>> series2Data = FXCollections.observableArrayList();
-        //series2Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2014, 0, 13).getTime(), 8));
-        //series2Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2014, 7, 27).getTime(), 4));
-        //series.add(new XYChart.Series<>("Series1", series1Data));
-        //series.add(new XYChart.Series<>("Series2", series2Data));
+        series2Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2014, 0, 13).getTime(), 8));
+        series2Data.add(new XYChart.Data<Date, Number>(new GregorianCalendar(2014, 7, 27).getTime(), 4));
+        series.add(new XYChart.Series<>("Series1", series1Data));
+        series.add(new XYChart.Series<>("Series2", series2Data));
         NumberAxis numberAxis = new NumberAxis();
         DateAxis dateAxis = new DateAxis();
         LineChart<Date, Number> lineChart = new LineChart(dateAxis, numberAxis, series);
@@ -141,11 +140,9 @@ public class FXPanel extends JFXPanel {
                 "football", interval);
         List<Date> listofdates = new ArrayList(count.keySet());
         Collections.sort(listofdates);
-        Calendar calendar = Calendar.getInstance();
-        listofdates.stream().forEach(d -> {
-            calendar.setTimeInMillis(d.getTime());
-            series.getData().add(new XYChart.Data(calendar.getTime(),count.get(d)));
-        });
+        /*listofdates.stream().forEach(d -> {
+            series.getData().add(new XYChart.Data(d.getTime(),count.get(d)));
+        });*/
         System.out.println(listofdates);
         Scene scene  = new Scene(lineChart,1600,900);
         //lineChart.getData().add(series);
