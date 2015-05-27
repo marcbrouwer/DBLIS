@@ -2,6 +2,7 @@ package gui;
 
 import dblis.SportData2;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +35,7 @@ public class Marc {
         series.stream().forEach(serie -> {
             serie.getData().stream().forEach(data -> {
                 data.getNode().setOnMousePressed((MouseEvent mouseEvent) -> {
-                    System.out.println(serie.getName() + ", "
-                            + data.getXValue() + ", " + data.getYValue());
+                    makePieChart(serie.getName(), data.getXValue());
                 });
             });
         });
@@ -50,13 +50,10 @@ public class Marc {
         
         final List<PieChart.Data> list = new ArrayList<>();
         
-        final Date startdate = SportData2.getInstance().getStartDate();
-        final Date enddate = SportData2.getInstance().getEndDate();
-        final List<String> sports = SportData2.getInstance().getSelected();
+        final long[] stamps = SportData2.getInstance().getDayTimestamps(date);
         
         final Map<String, Double> sportPop = SportData2.getInstance()
-                .getPopularitySportsAsPercentage(sports, startdate.getTime(), 
-                        enddate.getTime());
+                .getPopularitySports(Arrays.asList(sport), stamps[0], stamps[1]);
         
         sportPop.entrySet().stream().forEach(entry -> {
             list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
@@ -64,7 +61,7 @@ public class Marc {
         
         PieChart pie = new PieChart(
                 FXCollections.observableArrayList(list));
-        pie.setTitle("Popularity");
+        pie.setTitle("Popularity for " + sport + ", " + date);
 
         root.getChildren().add(pie);
     }
