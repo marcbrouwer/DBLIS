@@ -355,6 +355,23 @@ public class SportData2 {
         return getSportsForDate(startdate, enddate, sport, timeinterval);
     }
     
+    public final long[] getDayTimestamps(Date date) {
+        Calendar calS = Calendar.getInstance();
+        calS.setTimeInMillis(date.getTime());
+        
+        Calendar calB = Calendar.getInstance();
+        calB.clear();
+        calB.set(calS.get(Calendar.YEAR), calS.get(Calendar.MONTH), 
+                calS.get(Calendar.DATE), 0, 0, 0);
+        
+        Calendar calE = Calendar.getInstance();
+        calE.clear();
+        calE.set(calS.get(Calendar.YEAR), calS.get(Calendar.MONTH), 
+                calS.get(Calendar.DATE), 23, 59, 59);
+        
+        return new long[]{calB.getTimeInMillis(), calE.getTimeInMillis()};
+    }
+    
     // TEMP Setters and Getters
     
     public final void setDates(Date startdate, Date enddate) {

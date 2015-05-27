@@ -1,12 +1,18 @@
 package gui;
 
+import dblis.SportData2;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.input.MouseEvent;
 
@@ -39,8 +45,28 @@ public class Marc {
         return scene;
     }
     
-    private static void makePieChart() {
+    private static void makePieChart(String sport, Date date) {
+        Group root = new Group();
         
+        final List<PieChart.Data> list = new ArrayList<>();
+        
+        final Date startdate = SportData2.getInstance().getStartDate();
+        final Date enddate = SportData2.getInstance().getEndDate();
+        final List<String> sports = SportData2.getInstance().getSelected();
+        
+        final Map<String, Double> sportPop = SportData2.getInstance()
+                .getPopularitySportsAsPercentage(sports, startdate.getTime(), 
+                        enddate.getTime());
+        
+        sportPop.entrySet().stream().forEach(entry -> {
+            list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+        });
+        
+        PieChart pie = new PieChart(
+                FXCollections.observableArrayList(list));
+        pie.setTitle("Popularity");
+
+        root.getChildren().add(pie);
     }
     
 }
