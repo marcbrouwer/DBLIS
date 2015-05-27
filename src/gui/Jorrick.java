@@ -44,62 +44,37 @@ public class Jorrick {
     
     
     public static Scene drawBarChart() {
-        ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
+        final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Event");
         yAxis.setLabel("Popularity");
         
-        final BarChart<String, Number> bareChart = new BarChart<String, Number>(xAxis, yAxis);
+        final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
         
-        series.addAll(getSerie()); // implementation should be changed
+        final List<String> events = SportData2.getInstance().getSelected();
+        events.stream().forEach(e -> series.addAll(getSerie(e)));
         
-        Scene scene = new Scene(bareChart, 800, 600);
+        Scene scene = new Scene(barChart, 800, 600);
         
         return scene;
     }
     
-    private static XYChart.Series<String, Number> getSerie() {
+    private static XYChart.Series<String, Number> getSerie(String event) {
         //Getting the selected information from the GUI
         final Date startdate = SportData2.getInstance().getStartDate();
         final Date enddate = SportData2.getInstance().getEndDate();
-        final List<String> events = Arrays.asList("Roland Garros", "Champions League");//SportData2.getInstance().getSelected();
         
         //Creating variables required
-        final Map<String, Map<String, Double>> sportpop = new HashMap();
+        final int pop = SportData2.getInstance().getPopularity(
+                        event, startdate.getTime(), enddate.getTime());
         final XYChart.Series<String, Number> serie = new XYChart.Series();
         
+        serie.getData().add(new XYChart.Data(event, pop));
+        serie.setName(event);
         
-        //Getting the data from the server
-        events.stream().forEach(e -> {
-            //Get the data for a specific time frame
-            sportpop.put(e, SportData2.getInstance()
-                    .getPopularityKeywords(e, startdate.getTime(), enddate.getTime() ));
-            //Putting it in the chart and setting the name of the sport
-            
-            serie.getData().add(
-                    new XYChart.Data(e, sportpop.get(e)));
-            
-            
-            
-            //listofdates.stream().forEach()
-            //
-            //final List<Date> listofdates = new ArrayList(sportpop.get(e).keySet());
-            //Collections.sort(listofdates);
-            
-            //
-            //final Calendar calendar = Calendar.getInstance();
-            
-            //Adding the data to the line chart.
-            //listofdates.stream().forEach(d -> {
-            //    calendar.setTimeInMillis(d.getTime());
-            //    sportseries.get(e).getData().add(
-            //            new XYChart.Data(calendar.getTime(), 
-             //                   sportpop.get(e).get(d)));
-            //});
-            
-        });        
         return serie;
     }
+    
 }
