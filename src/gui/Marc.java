@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -16,6 +15,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 /**
  *
@@ -30,8 +30,16 @@ public class Marc {
         final DateAxis dateAxis = new DateAxis();
         final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, series);
         
-        series.addAll(FXPanel.getSeries());
+        series.addAll(FXPanel.getSeries(SportData2.getInstance().getSelected()));
         
+        addShowPieOnClick(series);
+
+        Scene scene = new Scene(lineChart, 800, 600);
+        
+        return scene;
+    }
+    
+    private static void addShowPieOnClick(ObservableList<XYChart.Series<Date, Number>> series) {
         series.stream().forEach(serie -> {
             serie.getData().stream().forEach(data -> {
                 data.getNode().setOnMousePressed((MouseEvent mouseEvent) -> {
@@ -39,14 +47,11 @@ public class Marc {
                 });
             });
         });
-
-        Scene scene = new Scene(lineChart, 800, 600);
-        
-        return scene;
     }
     
     private static void makePieChart(String sport, Date date) {
-        Group root = new Group();
+        final Stage primaryStage = new Stage();
+        primaryStage.setTitle("Popularity for " + sport + ", " + date);
         
         final List<PieChart.Data> list = new ArrayList<>();
         
@@ -63,7 +68,9 @@ public class Marc {
                 FXCollections.observableArrayList(list));
         pie.setTitle("Popularity for " + sport + ", " + date);
 
-        root.getChildren().add(pie);
+        Scene scene = new Scene(pie, 800, 600);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
     
 }

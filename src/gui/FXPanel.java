@@ -3,6 +3,7 @@ package gui;
 import dblis.SportData2;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,8 +15,8 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -24,6 +25,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 /**
  *
@@ -93,7 +95,43 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawLineChart() {
-        return Marc.drawLineChart();
+        ObservableList<XYChart.Series<Date, Number>> seriesFootball = FXCollections.observableArrayList();
+        ObservableList<XYChart.Series<Date, Number>> seriesRest = FXCollections.observableArrayList();
+        
+        final Stage primaryStage = new Stage();
+        primaryStage.setTitle("Football Popup");
+        
+        final NumberAxis numberAxis = new NumberAxis();
+        final DateAxis dateAxis = new DateAxis();
+        
+        final NumberAxis numberAxis2 = new NumberAxis();
+        final DateAxis dateAxis2 = new DateAxis();
+        
+        final List<String> selected = SportData2.getInstance().getSelected();
+        
+        final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, seriesRest);
+        final LineChart<Date, Number> lineChartFootball = new LineChart<>(dateAxis2, numberAxis2, seriesFootball);
+        
+        if (selected.contains("football")) {
+            
+            selected.remove("football");
+            seriesFootball.addAll(getSeries(Arrays.asList("football")));
+            seriesRest.addAll(getSeries(selected));
+            
+            addShowPieOnClick(seriesFootball);
+        } else { 
+            seriesRest.addAll(getSeries(selected));
+        }
+        
+        addShowPieOnClick(seriesRest);
+        
+        Scene scene = new Scene(lineChart, 800, 600);
+        Scene sceneFootball = new Scene(lineChartFootball, 800, 600); 
+        
+        primaryStage.setScene(sceneFootball);
+        primaryStage.show();
+        
+        return scene;
     }
     
     private Scene drawRelativeChart() {
@@ -147,11 +185,10 @@ public class FXPanel extends JFXPanel {
         });
     }
     
-    public static Collection<XYChart.Series<Date, Number>> getSeries() {
+    public static Collection<XYChart.Series<Date, Number>> getSeries(List<String> sports) {
         final Date startdate = SportData2.getInstance().getStartDate();
         final Date enddate = SportData2.getInstance().getEndDate();
         final int interval = SportData2.getInstance().getInterval();
-        final List<String> sports = SportData2.getInstance().getSelected();
         
         final Map<String, Map<Date, Double>> sportpop = new HashMap();
         final Map<String, XYChart.Series<Date, Number>> sportseries = new HashMap();
@@ -178,4 +215,42 @@ public class FXPanel extends JFXPanel {
         return sportseries.values();
     }
 
+    private void addShowPieOnClick(ObservableList<XYChart.Series<Date, Number>> series) {
+        series.stream().forEach(serie -> {
+            serie.getData().stream().forEach(data -> {
+                try {
+                    data.getNode().setOnMousePressed((MouseEvent mouseEvent) -> {
+                        makePieChart(serie.getName(), data.getXValue());
+                    });
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
+            });
+        });
+    }
+    
+    private void makePieChart(String sport, Date date) {
+        final Stage primaryStage = new Stage();
+        primaryStage.setTitle("Popularity for " + sport + ", " + date);
+        
+        final List<PieChart.Data> list = new ArrayList<>();
+        
+        final long[] stamps = SportData2.getInstance().getDayTimestamps(date);
+        
+        final Map<String, Double> sportPop = SportData2.getInstance()
+                .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
+        
+        sportPop.entrySet().stream().forEach(entry -> {
+            list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+        });
+        
+        PieChart pie = new PieChart(
+                FXCollections.observableArrayList(list));
+        pie.setTitle("Popularity for " + sport + ", " + date);
+
+        Scene scene = new Scene(pie, 800, 600);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+    
 }
