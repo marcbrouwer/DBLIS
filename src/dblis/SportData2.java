@@ -1,8 +1,10 @@
 package dblis;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -345,6 +347,13 @@ public class SportData2 {
         return count;
     }
     
+    public final Map<Date, Double> getSportsForYear(int year, String sport,
+            int timeinterval) {
+        final Date startdate = new Date(getYearTimeStart(year));
+        final Date enddate = new Date(getYearTimeEnd(year));
+        
+        return getSportsForDate(startdate, enddate, sport, timeinterval);
+    }
     
     // TEMP Setters and Getters
     
@@ -399,6 +408,22 @@ public class SportData2 {
         calE.set(calS.get(Calendar.YEAR), calS.get(Calendar.MONTH) + 1, 1, 0, 0, 0);
         
         return calE.getTimeInMillis() - 1;
+    }
+    
+    private long getYearTimeStart(int year) {
+        Calendar calS = Calendar.getInstance();
+        calS.clear();
+        calS.set(year, 0, 1, 0, 0, 0);
+        
+        return calS.getTimeInMillis();
+    }
+    
+    private long getYearTimeEnd(int year) {
+        Calendar calS = Calendar.getInstance();
+        calS.clear();
+        calS.set(year + 1, 0, 1, 0, 0, 0);
+        
+        return calS.getTimeInMillis() - 1;
     }
     
     private Stream<TweetEntity> getRelatedTweets(String sport, long starttime, 
@@ -472,7 +497,7 @@ public class SportData2 {
 
         try {
             final BufferedReader reader = new BufferedReader(
-                    new FileReader(DBLIS.getWorkingDirectory() + "Tweets.json"));
+                    new FileReader(getWorkingDirectory() + "Tweets.json"));
             String line;
             boolean add = false;
             while ((line = reader.readLine()) != null) {
@@ -517,6 +542,26 @@ public class SportData2 {
         }
         
         numberTweets = tweets.size();
+    }
+    
+    /**
+     * Gets current working directory of executing process
+     * 
+     * @return directory as String
+     */
+    private String getWorkingDirectory() {
+        try {
+            // get working directory as File
+            String path = SportData2.class.getProtectionDomain().getCodeSource()
+                    .getLocation().toURI().getPath();
+            File folder = new File(path);
+            folder = folder.getParentFile().getParentFile(); // 2x .getParentFile() for debug, 1x for normal
+
+            // directory as String
+            return folder.getPath() + "/"; // /dist/ for debug, / for normal
+        } catch (URISyntaxException ex) {
+            return "./";
+        }
     }
     
     // Searching
