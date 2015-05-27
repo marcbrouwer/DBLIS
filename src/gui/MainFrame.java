@@ -257,6 +257,11 @@ public class MainFrame extends CenterFrame {
 
         histogramBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/bar_chart-512_32x32.png"))); // NOI18N
         histogramBtn.setToolTipText("");
+        histogramBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                histogramBtnActionPerformed(evt);
+            }
+        });
 
         pieChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/chart_pie_32x32.png"))); // NOI18N
         pieChartBtn.setToolTipText("");
@@ -316,7 +321,7 @@ public class MainFrame extends CenterFrame {
                                 .addComponent(showBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, parametersPanelLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGap(0, 11, Short.MAX_VALUE)
                                 .addComponent(jCheckBox1))))
                     .addGroup(parametersPanelLayout.createSequentialGroup()
                         .addGap(156, 156, 156)
@@ -327,7 +332,7 @@ public class MainFrame extends CenterFrame {
                         .addComponent(pieChartBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(listBtn)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         parametersPanelLayout.setVerticalGroup(
             parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -509,7 +514,7 @@ public class MainFrame extends CenterFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(parametersPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 655, Short.MAX_VALUE)
+                            .addComponent(parametersPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(visualizationPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(comparisonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -625,6 +630,10 @@ public class MainFrame extends CenterFrame {
     private void showComparisonBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showComparisonBtnActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_showComparisonBtnActionPerformed
+
+    private void histogramBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_histogramBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_histogramBtnActionPerformed
 
     private void setParameters() {
         int timeInterval = 0;
