@@ -644,7 +644,6 @@ public class MainFrame extends CenterFrame {
 
     private void comparisonTypeChangedHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comparisonTypeChangedHandler
         // TODO add your handling code here:
-        //String type = typeComboBox.getSelectedItem().
     }//GEN-LAST:event_comparisonTypeChangedHandler
 
     private void setParameters() {
