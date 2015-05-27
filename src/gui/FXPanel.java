@@ -56,7 +56,7 @@ public class FXPanel extends JFXPanel {
                     case 3:
                         scene = drawPieChart();
                         break;
-                    case 4: 
+                    case 4:
                         scene = drawRelativeChart();
                         break;
                     case 5:
@@ -97,47 +97,48 @@ public class FXPanel extends JFXPanel {
     private Scene drawLineChart() {
         ObservableList<XYChart.Series<Date, Number>> seriesFootball = FXCollections.observableArrayList();
         ObservableList<XYChart.Series<Date, Number>> seriesRest = FXCollections.observableArrayList();
-        
+
         final Stage primaryStage = new Stage();
         primaryStage.setTitle("Football Popup");
-        
+
         final NumberAxis numberAxis = new NumberAxis();
         final DateAxis dateAxis = new DateAxis();
-        
+
         final NumberAxis numberAxis2 = new NumberAxis();
         final DateAxis dateAxis2 = new DateAxis();
-        
+
         final List<String> selected = SportData2.getInstance().getSelected();
-        
+
         final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, seriesRest);
         final LineChart<Date, Number> lineChartFootball = new LineChart<>(dateAxis2, numberAxis2, seriesFootball);
-        
-        if (selected.contains("football")) {
-            
-            selected.remove("football");
-            seriesFootball.addAll(getSeries(Arrays.asList("football")));
-            seriesRest.addAll(getSeries(selected));
-            
-            addShowPieOnClick(seriesFootball);
-        } else { 
+        if (SportData2.getInstance().footballSeperate()) {
+            if (selected.contains("football")) {
+
+                selected.remove("football");
+                seriesFootball.addAll(getSeries(Arrays.asList("football")));
+                seriesRest.addAll(getSeries(selected));
+
+                addShowPieOnClick(seriesFootball);
+            }
+        } else {
             seriesRest.addAll(getSeries(selected));
         }
-        
+
         addShowPieOnClick(seriesRest);
-        
+
         Scene scene = new Scene(lineChart, 800, 600);
-        Scene sceneFootball = new Scene(lineChartFootball, 800, 600); 
-        
-        primaryStage.setScene(sceneFootball);
-        primaryStage.show();
-        
+        Scene sceneFootball = new Scene(lineChartFootball, 800, 600);
+        if (SportData2.getInstance().footballSeperate()) {
+            primaryStage.setScene(sceneFootball);
+            primaryStage.show();
+        }
         return scene;
     }
-    
+
     private Scene drawRelativeChart() {
         return Jorrick.drawRelativeChart();
     }
-    
+
     private Scene drawBarChart() {
         return Jorrick.drawBarChart();
     }
@@ -145,21 +146,21 @@ public class FXPanel extends JFXPanel {
     private Scene drawPieChart() {
         Group root = new Group();
         Scene scene = new Scene(root);
-        
+
         final List<PieChart.Data> list = new ArrayList<>();
-        
+
         final Date startdate = SportData2.getInstance().getStartDate();
         final Date enddate = SportData2.getInstance().getEndDate();
         final List<String> sports = SportData2.getInstance().getSelected();
-        
+
         final Map<String, Double> sportPop = SportData2.getInstance()
-                .getPopularitySportsAsPercentage(sports, startdate.getTime(), 
+                .getPopularitySportsAsPercentage(sports, startdate.getTime(),
                         enddate.getTime());
-        
+
         sportPop.entrySet().stream().forEach(entry -> {
             list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
         });
-        
+
         PieChart pie = new PieChart(
                 FXCollections.observableArrayList(list));
         pie.setTitle("Popularity");
@@ -184,34 +185,34 @@ public class FXPanel extends JFXPanel {
             pie.setData(FXCollections.observableArrayList(list));
         });
     }
-    
+
     public static Collection<XYChart.Series<Date, Number>> getSeries(List<String> sports) {
         final Date startdate = SportData2.getInstance().getStartDate();
         final Date enddate = SportData2.getInstance().getEndDate();
         final int interval = SportData2.getInstance().getInterval();
-        
+
         final Map<String, Map<Date, Double>> sportpop = new HashMap();
         final Map<String, XYChart.Series<Date, Number>> sportseries = new HashMap();
-        
+
         sports.stream().forEach(s -> {
             sportpop.put(s, SportData2.getInstance()
                     .getSportsForDate(startdate, enddate, s, interval));
             sportseries.put(s, new XYChart.Series());
             sportseries.get(s).setName(s);
-            
+
             final List<Date> listofdates = new ArrayList(sportpop.get(s).keySet());
             Collections.sort(listofdates);
-            
+
             final Calendar calendar = Calendar.getInstance();
-            
+
             listofdates.stream().forEach(d -> {
                 calendar.setTimeInMillis(d.getTime());
                 sportseries.get(s).getData().add(
-                        new XYChart.Data(calendar.getTime(), 
+                        new XYChart.Data(calendar.getTime(),
                                 sportpop.get(s).get(d)));
             });
         });
-        
+
         return sportseries.values();
     }
 
@@ -228,22 +229,22 @@ public class FXPanel extends JFXPanel {
             });
         });
     }
-    
+
     private void makePieChart(String sport, Date date) {
         final Stage primaryStage = new Stage();
         primaryStage.setTitle("Popularity for " + sport + ", " + date);
-        
+
         final List<PieChart.Data> list = new ArrayList<>();
-        
+
         final long[] stamps = SportData2.getInstance().getDayTimestamps(date);
-        
+
         final Map<String, Double> sportPop = SportData2.getInstance()
                 .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
-        
+
         sportPop.entrySet().stream().forEach(entry -> {
             list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
         });
-        
+
         PieChart pie = new PieChart(
                 FXCollections.observableArrayList(list));
         pie.setTitle("Popularity for " + sport + ", " + date);
@@ -252,5 +253,5 @@ public class FXPanel extends JFXPanel {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    
+
 }
