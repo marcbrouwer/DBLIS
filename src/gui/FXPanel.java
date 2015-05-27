@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
@@ -21,6 +22,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -129,17 +131,24 @@ public class FXPanel extends JFXPanel {
         Date startdate = SportData2.getInstance().getStartDate();
         Date enddate = SportData2.getInstance().getEndDate();
         int interval = SportData2.getInstance().getInterval();
-        final Map<Date, Double> count = SportData2.getInstance().getSportsForDate(startdate, enddate,
-                "football", interval);
-        List<Date> listofdates = new ArrayList(count.keySet());
-        Collections.sort(listofdates);
-        Calendar calendar = Calendar.getInstance();
-        listofdates.stream().forEach(d -> {
-            calendar.setTimeInMillis(d.getTime());
-            series0.getData().add(new XYChart.Data(calendar.getTime(),count.get(d)));
+        List<String> sports = SportData2.getInstance().getSelected();
+        Map<String, Map<Date,Double>> count2 = new HashMap();
+        Map<String, XYChart.Series> sportseries = new HashMap();
+        sports.stream().forEach(s -> {
+            count2.put(s, SportData2.getInstance().getSportsForDate(startdate, enddate, s, interval));
+            sportseries.put(s, new XYChart.Series());
+            sportseries.get(s).setName(s);
+            final List<Date> listofdates = new ArrayList(count2.get(s).keySet());
+            Collections.sort(listofdates);
+            Calendar calendar = Calendar.getInstance();
+            listofdates.stream().forEach(d -> {
+                calendar.setTimeInMillis(d.getTime());
+                sportseries.get(s).getData().add(new XYChart.Data(calendar.getTime(), count2.get(s).get(d)));
+            }); 
         });
-        series.add(series0);
-        System.out.println(listofdates);
+        sportseries.entrySet().stream().forEach(serie ->  {
+            series.add(serie.getValue());
+        });
         Scene scene  = new Scene(lineChart,1600,900);
         //lineChart.getData().add(series);
         return scene;
