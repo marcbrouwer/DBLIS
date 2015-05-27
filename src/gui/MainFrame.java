@@ -642,11 +642,10 @@ public class MainFrame extends CenterFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_showComparisonBtnActionPerformed
 
-<<<<<<< HEAD
     private void histogramBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_histogramBtnActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_histogramBtnActionPerformed
-=======
+
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
         // TODO add your handling code here:
         
@@ -655,7 +654,6 @@ public class MainFrame extends CenterFrame {
     private void comparisonTypeChangedHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comparisonTypeChangedHandler
         // TODO add your handling code here:
     }//GEN-LAST:event_comparisonTypeChangedHandler
->>>>>>> origin/master
 
     private void setParameters() {
         int timeInterval = 0;
