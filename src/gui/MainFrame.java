@@ -643,7 +643,10 @@ public class MainFrame extends CenterFrame {
     }//GEN-LAST:event_showComparisonBtnActionPerformed
 
     private void histogramBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_histogramBtnActionPerformed
-        // TODO add your handling code here:
+        setParameters();
+        PopFrame pf = new PopFrame(5);
+        pf.setVisible(true);
+        pf.toFront();
     }//GEN-LAST:event_histogramBtnActionPerformed
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
@@ -673,6 +676,7 @@ public class MainFrame extends CenterFrame {
         SportData2.getInstance().setDates(getStartDate(), getEndDate());
         SportData2.getInstance().setSelected(getSports());
         SportData2.getInstance().setInterval(timeInterval);
+        SportData2.getInstance().setFootballSeperate(jCheckBox1.isSelected());
     }
     
     private Date getStartDate() {
