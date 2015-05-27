@@ -119,6 +119,13 @@ public class SportData2 {
         return new ArrayList(relations.values());
     }
     
+    public final List<String> getKeywords(String sport) {
+        if (!relations.containsKey(sport)) {
+            return new ArrayList<>();
+        }
+        return relations.get(sport);
+    }
+    
     public final int getRetweetCount(String sport) {
         return getRetweetCount(getRelatedTweets(sport));
     }
