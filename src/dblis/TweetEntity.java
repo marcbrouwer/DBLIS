@@ -162,30 +162,30 @@ public class TweetEntity {
     }
     
     public final boolean isRelatedTo(List<String> words) {
-        if (words.parallelStream().anyMatch((word) -> (isRelatedTo(word)))) {
-            return true;
-        }
-        return false;
+        return words.parallelStream().anyMatch((word) -> (isRelatedTo(word)));
     }
     
     public final boolean isRelatedTo(String word) {
-        if (keywords.equals(word)) {
+        word = word.toLowerCase();
+        if (keywords.toLowerCase().equals(word)) {
             return true;
         }
-        return text.contains(" " + word + " ")
-                || text.contains(" " + word + ".")
-                || text.contains(" " + word + "!")
-                || text.contains(" " + word + "?")
+        
+        String lowerText = text.toLowerCase();
+        return lowerText.contains(" " + word + " ")
+                || lowerText.contains(" " + word + ".")
+                || lowerText.contains(" " + word + "!")
+                || lowerText.contains(" " + word + "?")
                 
-                || text.contains("#" + word + " ")
-                || text.contains("#" + word + ".")
-                || text.contains("#" + word + "!")
-                || text.contains("#" + word + "?")
+                || lowerText.contains("#" + word + " ")
+                || lowerText.contains("#" + word + ".")
+                || lowerText.contains("#" + word + "!")
+                || lowerText.contains("#" + word + "?")
                 
-                || text.contains("@" + word + " ")
-                || text.contains("@" + word + ".")
-                || text.contains("@" + word + "!")
-                || text.contains("@" + word + "?");
+                || lowerText.contains("@" + word + " ")
+                || lowerText.contains("@" + word + ".")
+                || lowerText.contains("@" + word + "!")
+                || lowerText.contains("@" + word + "?");
     }
     
     public final boolean isInTimeFrame(long starttime, long endtime) {

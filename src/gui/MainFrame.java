@@ -1,18 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gui;
 
 import dblis.GraphInfo;
 import dblis.SportData2;
-//import java.awt.Dimension;
-//import java.text.DateFormat;
-//import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-//import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JCheckBox;
@@ -432,32 +422,42 @@ public class MainFrame extends CenterFrame {
     // 
     private void showBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showBtnActionPerformed
         System.out.println("Pressed");
-        int timeInterval = 0;
-        String selected = timeIntervalCombo.getSelectedItem().toString();
-        if(selected.equals("Month")){
-            timeInterval = 30;
-        } else if(selected.equals("Week")){
-            timeInterval = 7;
-        } else if(selected.equals("Day")){
-            timeInterval = 1;
-        }
+        setParameters();
+        
         GraphInfo graphInfo = new GraphInfo(startTimePicker.getDate(),
                 endTimePicker.getDate(), footballCheckBox.isSelected(),
             hockeyCheckBox.isSelected(), cyclingCheckBox.isSelected(),
             tennisCheckBox.isSelected(), skatingCheckBox.isSelected(), 1);
         fxPanel.drawScene(2);
-        
-        SportData2.getInstance().setDates(getStartDate(), getEndDate());
-        SportData2.getInstance().setSelected(getSports());
-        SportData2.getInstance().setInterval(timeInterval);
     }//GEN-LAST:event_showBtnActionPerformed
 
     private void pieChartBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pieChartBtnActionPerformed
+        setParameters();
         PopFrame pf = new PopFrame(3);
         pf.setVisible(true);
         pf.toFront();
     }//GEN-LAST:event_pieChartBtnActionPerformed
 
+    private void setParameters() {
+        int timeInterval = 0;
+        String selected = timeIntervalCombo.getSelectedItem().toString();
+        switch (selected) {
+            case "Month":
+                timeInterval = 30;
+                break;
+            case "Week":
+                timeInterval = 7;
+                break;
+            case "Day":
+                timeInterval = 1;
+                break;
+        }
+        
+        SportData2.getInstance().setDates(getStartDate(), getEndDate());
+        SportData2.getInstance().setSelected(getSports());
+        SportData2.getInstance().setInterval(timeInterval);
+    }
+    
     private Date getStartDate() {
         return startTimePicker.getDate();
     }
@@ -465,7 +465,6 @@ public class MainFrame extends CenterFrame {
     private Date getEndDate() {
         return endTimePicker.getDate();
     }
-    
     
     private List<String> getSports() {
         List sports = new ArrayList();
@@ -486,6 +485,7 @@ public class MainFrame extends CenterFrame {
         }
         return sports;
     }
+    
     /**
      * @param args the command line arguments
      */
