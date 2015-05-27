@@ -2,6 +2,7 @@ package gui;
 
 import dblis.SportData2;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +13,8 @@ import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -29,65 +32,74 @@ public class Jorrick {
         final DateAxis dateAxis = new DateAxis();
         final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, series);
         
-        series.addAll(getSeries()); // implementation should be changed
+        //series.addAll(getSeries()); // implementation should be changed
         
         Scene scene = new Scene(lineChart, 800, 600);
         
         return scene;
     }
     
-    private static Collection<XYChart.Series<Date, Number>> getSeries() {
+    
+    
+    
+    
+    public static Scene drawBarChart() {
+        ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
+
+        final CategoryAxis xAxis = new CategoryAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Event");
+        yAxis.setLabel("Popularity");
+        
+        final BarChart<String, Number> bareChart = new BarChart<String, Number>(xAxis, yAxis);
+        
+        series.addAll(getSerie()); // implementation should be changed
+        
+        Scene scene = new Scene(bareChart, 800, 600);
+        
+        return scene;
+    }
+    
+    private static XYChart.Series<String, Number> getSerie() {
         //Getting the selected information from the GUI
         final Date startdate = SportData2.getInstance().getStartDate();
         final Date enddate = SportData2.getInstance().getEndDate();
-        final int interval = SportData2.getInstance().getInterval();
-        final List<String> sports = SportData2.getInstance().getSelected();
+        final List<String> events = Arrays.asList("Roland Garros", "Champions League");//SportData2.getInstance().getSelected();
         
         //Creating variables required
-        final Map<String, Map<Date, Double>> sportpop = new HashMap();
-        final Map<String, XYChart.Series<Date, Number>> sportseries = new HashMap();
-        
+        final Map<String, Map<String, Double>> sportpop = new HashMap();
+        final XYChart.Series<String, Number> serie = new XYChart.Series();
         
         
         //Getting the data from the server
-        sports.stream().forEach(s -> {
+        events.stream().forEach(e -> {
             //Get the data for a specific time frame
-            sportpop.put(s, SportData2.getInstance()
-                    .getSportsForDate(startdate, enddate, s, interval));
+            sportpop.put(e, SportData2.getInstance()
+                    .getPopularityKeywords(e, startdate.getTime(), enddate.getTime() ));
             //Putting it in the chart and setting the name of the sport
-            sportseries.put(s, new XYChart.Series());
-            sportseries.get(s).setName(s);
+            
+            serie.getData().add(
+                    new XYChart.Data(e, sportpop.get(e)));
+            
+            
+            
+            //listofdates.stream().forEach()
+            //
+            //final List<Date> listofdates = new ArrayList(sportpop.get(e).keySet());
+            //Collections.sort(listofdates);
             
             //
-            final List<Date> listofdates = new ArrayList(sportpop.get(s).keySet());
-            Collections.sort(listofdates);
-            
-            //
-            final Calendar calendar = Calendar.getInstance();
+            //final Calendar calendar = Calendar.getInstance();
             
             //Adding the data to the line chart.
-            listofdates.stream().forEach(d -> {
-                calendar.setTimeInMillis(d.getTime());
-                sportseries.get(s).getData().add(
-                        new XYChart.Data(calendar.getTime(), 
-                                sportpop.get(s).get(d)));
-            });
-        });
-        
-        return sportseries.values();
-    }
-    
-    public static Scene drawBarChart() {
-        ObservableList<XYChart.Series<Date, Number>> series = FXCollections.observableArrayList();
-
-        final NumberAxis numberAxis = new NumberAxis();
-        final DateAxis dateAxis = new DateAxis();
-        final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, series);
-        
-        series.addAll(getSeries()); // implementation should be changed
-        
-        Scene scene = new Scene(lineChart, 800, 600);
-        
-        return scene;
+            //listofdates.stream().forEach(d -> {
+            //    calendar.setTimeInMillis(d.getTime());
+            //    sportseries.get(e).getData().add(
+            //            new XYChart.Data(calendar.getTime(), 
+             //                   sportpop.get(e).get(d)));
+            //});
+            
+        });        
+        return serie;
     }
 }
