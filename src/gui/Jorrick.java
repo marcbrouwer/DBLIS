@@ -77,4 +77,17 @@ public class Jorrick {
         return sportseries.values();
     }
     
+    public static Scene drawBarChart() {
+        ObservableList<XYChart.Series<Date, Number>> series = FXCollections.observableArrayList();
+
+        final NumberAxis numberAxis = new NumberAxis();
+        final DateAxis dateAxis = new DateAxis();
+        final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, series);
+        
+        series.addAll(getSeries()); // implementation should be changed
+        
+        Scene scene = new Scene(lineChart, 800, 600);
+        
+        return scene;
+    }
 }

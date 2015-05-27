@@ -1,20 +1,14 @@
 package gui;
 
-import dblis.SportData2;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.input.MouseEvent;
 
 /**
  *
@@ -31,9 +25,22 @@ public class Marc {
         
         series.addAll(FXPanel.getSeries());
         
+        series.stream().forEach(serie -> {
+            serie.getData().stream().forEach(data -> {
+                data.getNode().setOnMousePressed((MouseEvent mouseEvent) -> {
+                    System.out.println(serie.getName() + ", "
+                            + data.getXValue() + ", " + data.getYValue());
+                });
+            });
+        });
+
         Scene scene = new Scene(lineChart, 800, 600);
         
         return scene;
+    }
+    
+    private static void makePieChart() {
+        
     }
     
 }

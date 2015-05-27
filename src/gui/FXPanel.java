@@ -57,6 +57,9 @@ public class FXPanel extends JFXPanel {
                     case 4: 
                         scene = drawRelativeChart();
                         break;
+                    case 5:
+                        scene = drawBarChart();
+                        break;
                 }
                 if (scene != null) {
                     setScene(scene);
@@ -90,11 +93,15 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawLineChart() {
-        return Anava.drawLineChart();
+        return Marc.drawLineChart();
     }
     
     private Scene drawRelativeChart() {
         return Jorrick.drawRelativeChart();
+    }
+    
+    private Scene drawBarChart() {
+        return Jorrick.drawBarChart();
     }
 
     private Scene drawPieChart() {

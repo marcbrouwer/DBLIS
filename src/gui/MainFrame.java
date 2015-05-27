@@ -238,6 +238,11 @@ public class MainFrame extends CenterFrame {
 
         histogramBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/bar_chart-512_32x32.png"))); // NOI18N
         histogramBtn.setToolTipText("");
+        histogramBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                histogramBtnActionPerformed(evt);
+            }
+        });
 
         pieChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/chart_pie_32x32.png"))); // NOI18N
         pieChartBtn.setToolTipText("");
@@ -449,6 +454,13 @@ public class MainFrame extends CenterFrame {
         pf.setVisible(true);
         pf.toFront();
     }//GEN-LAST:event_lineChartBtnActionPerformed
+
+    private void histogramBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_histogramBtnActionPerformed
+        setParameters();
+        PopFrame pf = new PopFrame(5);
+        pf.setVisible(true);
+        pf.toFront();
+    }//GEN-LAST:event_histogramBtnActionPerformed
 
     private void setParameters() {
         int timeInterval = 0;
