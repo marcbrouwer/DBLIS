@@ -79,6 +79,7 @@ public class SportData2 {
     private Date enddate = new Date();
     private int interval = 1;
     private List<String> selected = new ArrayList<>();
+    private boolean footballSeperate = false;
     
     // PUBLIC Methods
     
@@ -248,6 +249,40 @@ public class SportData2 {
         return getAsPercentage(getPopularityKeywords(keywords, starttime, endtime));
     }
     
+    public final Map<String, Double> getPopularityMatches(List<String> matches) {
+        final Map<String, Double> matchPop = new HashMap();
+        matches.stream().forEach(match -> {
+            final String[] teams = match.split(" ;&; ");
+            final double pop = getPopularity(teams[0]) + getPopularity(teams[1]);
+            matchPop.put(match, pop);
+        });
+        
+        return matchPop;
+    }
+    
+    public final Map<String, Double> getPopularityMatches(List<String> matches, 
+            long starttime, long endtime) {
+        final Map<String, Double> matchPop = new HashMap();
+        matches.stream().forEach(match -> {
+            final String[] teams = match.split(" ;&; ");
+            final double pop = getPopularity(teams[0]) + getPopularity(teams[1], 
+                    starttime, endtime);
+            matchPop.put(match, pop);
+        });
+        
+        return matchPop;
+    }
+    
+    public final Map<String, Double> getPopularityMatchesAsPercentage(
+            List<String> matches) {
+        return getAsPercentage(getPopularityMatches(matches));
+    }
+    
+    public final Map<String, Double> getPopularityMatchesAsPercentage(
+            List<String> matches, long starttime, long endtime) {
+        return getAsPercentage(getPopularityMatches(matches, starttime, endtime));
+    }
+    
     public final Map<String, Double> getPlayOffsPopMatch() {
         final List<String> matches = Arrays.asList(
                 "De Graafschap - Go Ahead Eagles",
@@ -255,14 +290,7 @@ public class SportData2 {
                 "VVV Venlo - NAC Breda",
                 "FC Emmen - Roda JC");
         
-        final Map<String, Double> matchPop = new HashMap();
-        matches.stream().forEach(match -> {
-            final String[] teams = match.split(" - ");
-            final double pop = getPopularity(teams[0]) + getPopularity(teams[1]);
-            matchPop.put(match, pop);
-        });
-        
-        return getAsPercentage(matchPop);
+        return getPopularityMatchesAsPercentage(matches);
     }
     
     public final Map<String, Double> getPlayOffsPopMatch(long starttime, long endtime) {
@@ -272,15 +300,7 @@ public class SportData2 {
                 "VVV Venlo - NAC Breda",
                 "FC Emmen - Roda JC");
         
-        final Map<String, Double> matchPop = new HashMap();
-        matches.stream().forEach(match -> {
-            final String[] teams = match.split(" - ");
-            final double pop = getPopularity(teams[0], starttime, endtime) 
-                    + getPopularity(teams[1], starttime, endtime);
-            matchPop.put(match, pop);
-        });
-        
-        return getAsPercentage(matchPop);
+        return getPopularityMatchesAsPercentage(matches, starttime, endtime);
     }
     
     public final int getNumberOfTweets(List<String> keywords) {
@@ -401,6 +421,14 @@ public class SportData2 {
     
     public final int getInterval() {
         return interval;
+    }
+    
+    public final void setFootballSeperate(boolean seperate) {
+        this.footballSeperate = seperate;
+    }
+    
+    public final boolean footballSeperate() {
+        return footballSeperate;
     }
     
     // PRIVATE Methods
