@@ -67,6 +67,11 @@ public class SportData2 {
             = Arrays.asList("football", "hockey", "cycling", "tennis", "skating");
     private final Set<TweetEntity> tweets = new HashSet();
     private final Map<String, List<String>> relations = new ConcurrentHashMap();
+    private final List<String> playoffMatches = Arrays.asList(
+                "De Graafschap ;&; Go Ahead Eagles",
+                "FC Volendam ;&; FC Eindhoven", 
+                "VVV Venlo ;&; NAC Breda",
+                "FC Emmen ;&; Roda JC");
     
     // Search variables
     
@@ -291,23 +296,11 @@ public class SportData2 {
     }
     
     public final Map<String, Double> getPlayOffsPopMatch() {
-        final List<String> matches = Arrays.asList(
-                "De Graafschap - Go Ahead Eagles",
-                "FC Volendam - FC Eindhoven", 
-                "VVV Venlo - NAC Breda",
-                "FC Emmen - Roda JC");
-        
-        return getPopularityMatchesAsPercentage(matches);
+        return getPopularityMatchesAsPercentage(playoffMatches);
     }
     
     public final Map<String, Double> getPlayOffsPopMatch(long starttime, long endtime) {
-        final List<String> matches = Arrays.asList(
-                "De Graafschap - Go Ahead Eagles",
-                "FC Volendam - FC Eindhoven", 
-                "VVV Venlo - NAC Breda",
-                "FC Emmen - Roda JC");
-        
-        return getPopularityMatchesAsPercentage(matches, starttime, endtime);
+        return getPopularityMatchesAsPercentage(playoffMatches, starttime, endtime);
     }
     
     public final int getNumberOfTweets(List<String> keywords) {
