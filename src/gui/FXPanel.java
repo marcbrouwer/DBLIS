@@ -116,7 +116,7 @@ public class FXPanel extends JFXPanel {
         sportseries.entrySet().stream().forEach(serie -> {
             series.add(serie.getValue());
         });
-        Scene scene = new Scene(lineChart, 1600, 900);
+        Scene scene = new Scene(lineChart, 800, 600);
         //lineChart.getData().add(series);
         return scene;
     }
