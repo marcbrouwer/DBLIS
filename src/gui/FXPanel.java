@@ -140,7 +140,7 @@ public class FXPanel extends JFXPanel {
         });
     }
     
-    private Collection<XYChart.Series<Date, Number>> getSeries() {
+    public static Collection<XYChart.Series<Date, Number>> getSeries() {
         final Date startdate = SportData2.getInstance().getStartDate();
         final Date enddate = SportData2.getInstance().getEndDate();
         final int interval = SportData2.getInstance().getInterval();

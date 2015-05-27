@@ -1,6 +1,12 @@
 package gui;
 
+import java.util.Date;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 
 /**
  *
@@ -9,9 +15,15 @@ import javafx.scene.Scene;
 public class Jorrick {
     
     public static Scene drawRelativeChart() {
-        // implementation
+        ObservableList<XYChart.Series<Date, Number>> series = FXCollections.observableArrayList();
+
+        final NumberAxis numberAxis = new NumberAxis();
+        final DateAxis dateAxis = new DateAxis();
+        final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, series);
         
-        Scene scene = new Scene(null, 800, 600); // change null to chart
+        series.addAll(FXPanel.getSeries()); // implementation should be changed
+        
+        Scene scene = new Scene(lineChart, 800, 600);
         
         return scene;
     }
