@@ -132,16 +132,14 @@ public class FXPanel extends JFXPanel {
     }
 
     private void setDrilldownData(final PieChart pie, PieChart.Data data, final String sport) {
-        data.getNode().setOnMouseClicked(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent t) {
-                final List<PieChart.Data> list = new ArrayList<>();
-                final Map<String, Double> cPop
-                        = SportData2.getInstance().getPopularityKeywordsAsPercentage(sport);
-                cPop.entrySet().stream().forEach(keyword -> {
-                    list.add(new PieChart.Data(keyword.getKey(), keyword.getValue()));
-                });
-                pie.setData(FXCollections.observableArrayList(list));
-            }
+        data.getNode().setOnMouseClicked((MouseEvent t) -> {
+            final List<PieChart.Data> list = new ArrayList<>();
+            final Map<String, Double> cPop
+                    = SportData2.getInstance().getPopularityKeywordsAsPercentage(sport);
+            cPop.entrySet().stream().forEach(keyword -> {
+                list.add(new PieChart.Data(keyword.getKey(), keyword.getValue()));
+            });
+            pie.setData(FXCollections.observableArrayList(list));
         });
     }
     
