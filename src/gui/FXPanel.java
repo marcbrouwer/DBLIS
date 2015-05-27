@@ -54,6 +54,9 @@ public class FXPanel extends JFXPanel {
                     case 3:
                         scene = drawPieChart();
                         break;
+                    case 4: 
+                        scene = drawRelativeChart();
+                        break;
                 }
                 if (scene != null) {
                     setScene(scene);
@@ -87,17 +90,11 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawLineChart() {
-        ObservableList<XYChart.Series<Date, Number>> series = FXCollections.observableArrayList();
-
-        final NumberAxis numberAxis = new NumberAxis();
-        final DateAxis dateAxis = new DateAxis();
-        final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, series);
-        
-        series.addAll(getSeries());
-        
-        Scene scene = new Scene(lineChart, 800, 600);
-        
-        return scene;
+        return Anava.drawLineChart();
+    }
+    
+    private Scene drawRelativeChart() {
+        return Jorrick.drawRelativeChart();
     }
 
     private Scene drawPieChart() {
