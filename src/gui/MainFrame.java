@@ -388,9 +388,14 @@ public class MainFrame extends CenterFrame {
         });
         jScrollPane1.setViewportView(eventList);
 
-        sportComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Hockey", "Tennis", "Ice skating", "Cycling", " " }));
+        sportComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Hockey", "Tennis", "Skating", "Cycling", " " }));
 
         typeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Event", "Match" }));
+        typeComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comparisonTypeChangedHandler(evt);
+            }
+        });
 
         typeLabel.setText("Type");
 
@@ -402,6 +407,11 @@ public class MainFrame extends CenterFrame {
 
         addBtn.setFont(new java.awt.Font("宋体", 0, 8)); // NOI18N
         addBtn.setText(">>");
+        addBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addBtnActionPerformed(evt);
+            }
+        });
 
         deleteBtn.setFont(new java.awt.Font("宋体", 0, 8)); // NOI18N
         deleteBtn.setText("<<");
@@ -440,15 +450,16 @@ public class MainFrame extends CenterFrame {
                         .addComponent(sportComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(teamBLabel)
                     .addComponent(teamBComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(comparisonPanelLayout.createSequentialGroup()
+                        .addComponent(eventsLabel)
+                        .addGap(111, 111, 111)))
                 .addGap(18, 18, 18)
                 .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(comparisonPanelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(addBtn)
-                            .addComponent(deleteBtn)))
-                    .addComponent(eventsLabel))
+                    .addComponent(addBtn)
+                    .addComponent(deleteBtn))
                 .addGap(18, 18, 18)
                 .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(Candidates)
@@ -464,9 +475,9 @@ public class MainFrame extends CenterFrame {
                 .addContainerGap()
                 .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(comparisonPanelLayout.createSequentialGroup()
-                        .addComponent(eventsLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(21, 21, 21)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(eventsLabel)
                     .addGroup(comparisonPanelLayout.createSequentialGroup()
                         .addComponent(Candidates)
                         .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -625,6 +636,16 @@ public class MainFrame extends CenterFrame {
     private void showComparisonBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showComparisonBtnActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_showComparisonBtnActionPerformed
+
+    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_addBtnActionPerformed
+
+    private void comparisonTypeChangedHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comparisonTypeChangedHandler
+        // TODO add your handling code here:
+        String type = typeComboBox.getSelectedItem().
+    }//GEN-LAST:event_comparisonTypeChangedHandler
 
     private void setParameters() {
         int timeInterval = 0;
