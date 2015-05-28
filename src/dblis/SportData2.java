@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import twitter4j.JSONArray;
 import twitter4j.JSONException;
@@ -66,7 +66,9 @@ public class SportData2 {
     private final List<String> sports
             = Arrays.asList("football", "hockey", "cycling", "tennis", "skating");
     private final Set<TweetEntity> tweets = new HashSet();
-    private final Map<String, List<String>> relations = new ConcurrentHashMap();
+    
+    // sport => [ alternative => type ]
+    private final Map<String, Map<String, String>> relations = new ConcurrentHashMap();
     private final List<String> playoffMatches = Arrays.asList(
                 "De Graafschap ;&; Go Ahead Eagles",
                 "FC Volendam ;&; FC Eindhoven", 
@@ -95,10 +97,10 @@ public class SportData2 {
         //getTweets(sa);
         sports.stream().forEach(sport -> {
             if (!relations.containsKey(sport)) {
-                relations.put(sport, new ArrayList<>());
+                relations.put(sport, new HashMap());
             }
-            final Set<String> alts = sa.getAlternatives(sport);
-            relations.get(sport).addAll(alts);
+            final Map<String, String> alts = sa.getAlternatives(sport);
+            relations.get(sport).putAll(alts);
         });
     }
     
@@ -111,7 +113,7 @@ public class SportData2 {
     
     public final void search() {
         final List<String> keywords = new ArrayList<>();
-        relations.values().stream().forEach(list -> keywords.addAll(list));
+        relations.values().stream().forEach(list -> keywords.addAll(list.keySet()));
         runStoreThread(keywords);
         timeSearch(keywords);
     }
@@ -121,14 +123,31 @@ public class SportData2 {
     }
     
     public final List<String> getKeywords() {
-        return new ArrayList(relations.values());
+        final List<String> list = new ArrayList<>();
+        
+        sports.stream().forEach(sport -> list.addAll(getKeywords(sport)));
+        
+        return list;
     }
     
     public final List<String> getKeywords(String sport) {
+        sport = sport.toLowerCase();
         if (!relations.containsKey(sport)) {
             return new ArrayList<>();
         }
-        return relations.get(sport);
+        return new ArrayList<>(relations.get(sport).keySet());
+    }
+    
+    public final List<String> getTeams(String sport) {
+        return getTypes(sport, "T");
+    }
+    
+    public final List<String> getEvents(String sport) {
+        return getTypes(sport, "E");
+    }
+    
+    public final List<String> getPlayers(String sport) {
+        return getTypes(sport, "P");
     }
     
     public final int getRetweetCount(String sport) {
@@ -206,7 +225,7 @@ public class SportData2 {
         final Map<String, Double> pop = new HashMap();
         
         if (relations.containsKey(sport)) {
-            relations.get(sport).stream().forEach(keyword -> 
+            getKeywords(sport).stream().forEach(keyword -> 
                     pop.put(keyword, (double) getPopularity(keyword)));
         }
         
@@ -218,7 +237,7 @@ public class SportData2 {
         final Map<String, Double> pop = new HashMap();
         
         if (relations.containsKey(sport)) {
-            relations.get(sport).stream().forEach(keyword -> 
+            getKeywords(sport).stream().forEach(keyword -> 
                     pop.put(keyword, (double) getPopularity(keyword, starttime, endtime)));
         }
         
@@ -473,23 +492,25 @@ public class SportData2 {
     
     private Stream<TweetEntity> getRelatedTweets(String sport, long starttime, 
             long endtime) {
-        if (relations.containsKey(sport)) {
+        final String sportL = sport.toLowerCase();
+        if (relations.containsKey(sportL)) {
             return tweets.parallelStream()
                     .filter(te -> te.isInTimeFrame(starttime, endtime))
-                    .filter(te -> te.isRelatedTo(relations.get(sport)));
+                    .filter(te -> te.isRelatedTo(getKeywords(sportL)));
         }
         return tweets.parallelStream()
                 .filter(te -> te.isInTimeFrame(starttime, endtime))
-                .filter(te -> te.isRelatedTo(sport));
+                .filter(te -> te.isRelatedTo(sportL));
     }
     
     private Stream<TweetEntity> getRelatedTweets(String sport) {
-        if (relations.containsKey(sport)) {
+        final String sportL = sport.toLowerCase();
+        if (relations.containsKey(sportL)) {
             return tweets.parallelStream()
-                    .filter(te -> te.isRelatedTo(relations.get(sport)));
+                    .filter(te -> te.isRelatedTo(getKeywords(sportL)));
         }
         return tweets.parallelStream()
-                .filter(te -> te.isRelatedTo(sport));
+                .filter(te -> te.isRelatedTo(sportL));
     }
     
     private int getRetweetCount(Stream<TweetEntity> data) {
@@ -607,6 +628,17 @@ public class SportData2 {
         } catch (URISyntaxException ex) {
             return "./";
         }
+    }
+    
+    private List<String> getTypes(String sport, String type) {
+        sport = sport.toLowerCase();
+        if (!relations.containsKey(sport)) {
+            return new ArrayList<>();
+        }
+        final List<String> types = relations.get(sport).entrySet().stream()
+                .filter(alt -> alt.getValue().equals(type)).map(Entry::getKey)
+                .collect(Collectors.toList());
+        return types;
     }
     
     // Searching
@@ -778,13 +810,17 @@ public class SportData2 {
             }
 
         } catch (TwitterException te) {
-            System.out.println("Failed to search tweets: " + te);
-            System.out.println("\nRetry at n = " + n + ": " + 
-                    (new Date(te.getRateLimitStatus()
-                            .getResetTimeInSeconds() * 1000L)));
-            return new RetryQuery(
-                    te.getRateLimitStatus().getResetTimeInSeconds() * 1000L,
-                    query);
+            try {
+                System.out.println("Failed to search tweets: " + te);
+                System.out.println("\nRetry at n = " + n + ": " + 
+                        (new Date(te.getRateLimitStatus()
+                                .getResetTimeInSeconds() * 1000L)));
+                return new RetryQuery(
+                        te.getRateLimitStatus().getResetTimeInSeconds() * 1000L,
+                        query);
+            } catch (NullPointerException ex) {
+                return new RetryQuery(0, query);
+            }
         }
         return new RetryQuery(0, null);
     }

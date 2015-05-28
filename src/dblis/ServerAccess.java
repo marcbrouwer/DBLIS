@@ -84,7 +84,7 @@ public class ServerAccess {
                 System.out.println("PHP Client - Error in http connection "
                         + "(" + t + "/" + max + ") " + e.toString());
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException ie) {
                 }
                 return getResponseObject(t + 1, max, method, params);
@@ -204,8 +204,8 @@ public class ServerAccess {
         return new JSONArray(response);
     }
    
-    public final Set<String> getAlternatives(String sport) {
-        final Set<String> alts = new HashSet();
+    public final Map<String, String> getAlternatives(String sport) {
+        final Map<String, String> alts = new HashMap();
         
         try {
             final Map<String, Object> params = new HashMap();
@@ -215,12 +215,13 @@ public class ServerAccess {
             final JSONArray json = new JSONArray(response);
 
             JSONObject obj;
-            String alt;
+            String alt, type;
             for (int i = 0; i < json.length(); i++) {
                 try {
                     obj = json.getJSONObject(i);
                     alt = obj.getString("sport");
-                    alts.add(alt);
+                    type = obj.getString("type");
+                    alts.put(alt, type);
                 } catch (JSONException ex) {
                     System.out.println("getAlternatives - " + ex);
                 }
