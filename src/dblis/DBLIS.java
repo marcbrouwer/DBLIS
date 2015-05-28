@@ -166,6 +166,7 @@ public class DBLIS implements Runnable {
         
         // SEARCHING
         
+        //splitJSON();
         SportData2.getInstance().init();
         SportData2.getInstance().search();
         
@@ -212,6 +213,56 @@ public class DBLIS implements Runnable {
         
         //scanLocations();
         storeData();*/
+    }
+    
+    private void splitJSON() {
+        final File tweetsFile = new File(getWorkingDirectory() + "Tweets.json");
+        try {
+            final BufferedReader reader = new BufferedReader(
+                    new FileReader(tweetsFile));
+            String line;
+            String jsonString = "";
+            boolean add = false;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("[")) {
+                    add = true;
+                }
+                if (add) {
+                    jsonString += line;
+                }
+                if (line.endsWith("]")) {
+                    add = false;
+                }
+            }
+            
+            final JSONArray json = new JSONArray(jsonString);
+
+            File file;
+            int sizeMB = (int) (tweetsFile.length() / (float) (1024 * 1024));
+            int parts = (int) Math.ceil(sizeMB / 95f);
+            int start = 0;
+            int partsize = (int) Math.ceil(json.length() / (parts * 1f));
+            JSONArray part;
+            for (int i = 0; i < parts; i++) {
+                part = new JSONArray();
+                for (int j = start; j < Math.min(start + partsize, json.length() - 1); j++) {
+                    part.put(json.get(j));
+                }
+                file = new File(getWorkingDirectory()
+                        + "Tweets_" + String.format("%02d", i) + ".json");
+                if (file.exists()) {
+                    file.delete();
+                }
+                try (PrintWriter writer = new PrintWriter(file)) {
+                    writer.println(part.toString());
+                }
+                start += partsize;
+            }
+            
+            tweetsFile.delete();
+        } catch (IOException | JSONException ex) {
+            System.out.println("Error splitting json");
+        }
     }
     
     private void toExcel(ServerAccess sa, List<String> countryCodes, 

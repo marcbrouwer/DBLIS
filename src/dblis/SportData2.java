@@ -345,8 +345,8 @@ public class SportData2 {
             Date enddate, String sport, int timeinterval){
         final Map<Date, Double> count = new HashMap();
         final long dayInMilliseconds = 86400000L;
-        final long starttime = startdate.getTime();
-        final long endtime = enddate.getTime();
+        final long starttime = getDayTimestamps(startdate)[0];
+        final long endtime = getDayTimestamps(enddate)[1];
         
         long timeS = starttime;
         long timeE = starttime;
@@ -560,24 +560,40 @@ public class SportData2 {
     private void getTweetsJSONFile() {
         String jsonString = "";
         JSONArray json = new JSONArray();
-
+        int n = 0;
+        
         try {
-            final BufferedReader reader = new BufferedReader(
-                    new FileReader(getWorkingDirectory() + "Tweets.json"));
-            String line;
+            File file = new File(getWorkingDirectory() 
+                    + "Tweets_" + String.format("%02d", n++) + ".json");
             boolean add = false;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("[")) {
-                    add = true;
+            JSONArray jsonPart;
+            
+            while (file.exists()) {
+                jsonString = "";
+                final BufferedReader reader = new BufferedReader(
+                        new FileReader(file));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.startsWith("[")) {
+                        add = true;
+                    }
+                    if (add) {
+                        jsonString += line;
+                    }
+                    if (line.endsWith("]")) {
+                        add = false;
+                    }
                 }
-                if (add) {
-                    jsonString += line;
+                
+                jsonPart = new JSONArray(jsonString);
+                for (int i = 0; i < jsonPart.length(); i++) {
+                    json.put(jsonPart.get(i));
                 }
-                if (line.endsWith("]")) {
-                    add = false;
-                }
+                
+                file = new File(getWorkingDirectory()
+                        + "Tweets_" + String.format("%02d", n++) + ".json");
             }
-            json = new JSONArray(jsonString);
+            
         } catch (IOException | JSONException ex) {
             System.out.println("getTweetsJSONFile - " + ex);
         }
@@ -601,6 +617,9 @@ public class SportData2 {
                         obj.getString("language"),
                         obj.getLong("userID"),
                         obj.getString("keywords"));
+                /*if (tweets.contains(te)) {
+                    System.out.println("YES");
+                }*/
                 tweets.add(te);
             } catch (JSONException ex) {
                 System.out.println("getTweetsNL - " + ex);
