@@ -1,15 +1,8 @@
 package gui;
 
 import dblis.SportData2;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -71,7 +64,7 @@ public class Jorrick {
                         event, startdate.getTime(), enddate.getTime());
         final XYChart.Series<String, Number> serie = new XYChart.Series();
         
-        serie.getData().add(new XYChart.Data(event, pop));
+        serie.getData().add(new XYChart.Data("", pop));
         serie.setName(event);
         
         return serie;
