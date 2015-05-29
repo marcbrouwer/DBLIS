@@ -211,7 +211,7 @@ public class ServerAccess {
             final Map<String, Object> params = new HashMap();
             params.put("sport", sport);
             final String response
-                    = getResponseObject("getAlts", params).toString();
+                    = getResponseObject("getAlternatives", params).toString();
             final JSONArray json = new JSONArray(response);
 
             JSONObject obj;
@@ -219,7 +219,7 @@ public class ServerAccess {
             for (int i = 0; i < json.length(); i++) {
                 try {
                     obj = json.getJSONObject(i);
-                    alt = obj.getString("sport");
+                    alt = obj.getString("keyword");
                     type = obj.getString("type");
                     alts.put(alt, type);
                 } catch (JSONException ex) {

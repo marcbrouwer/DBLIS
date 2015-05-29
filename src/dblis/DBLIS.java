@@ -120,8 +120,8 @@ public class DBLIS implements Runnable {
     
     @Override
     public void run() {
-        final ServerAccess sa = new ServerAccess();
-        initWordsFilter();
+        //final ServerAccess sa = new ServerAccess();
+        //initWordsFilter();
         
         //System.out.println("Start time: " + (new Date(starttime * 1000)) + "\n");
         
