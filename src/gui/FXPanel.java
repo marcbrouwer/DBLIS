@@ -22,6 +22,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -257,12 +259,12 @@ public class FXPanel extends JFXPanel {
         }
         
         if(isData0){ // This is if there is no data to view.
-            /*Alert alert = new Alert(AlertType.INFORMATION);
+            Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("There is no data to show for this sport at the given date.");
 
-            alert.showAndWait();*/
+            alert.showAndWait();
         } else { // If there is data to view
 
             PieChart pie = new PieChart(
