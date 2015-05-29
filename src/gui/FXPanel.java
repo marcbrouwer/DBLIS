@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,6 +23,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -232,7 +235,9 @@ public class FXPanel extends JFXPanel {
         });
     }
 
+    
     private void makePieChart(String sport, Date date) {
+           
         final Stage primaryStage = new Stage();
         primaryStage.setTitle("Popularity for " + sport + ", " + date);
 
@@ -243,17 +248,40 @@ public class FXPanel extends JFXPanel {
         final Map<String, Double> sportPop = SportData2.getInstance()
                 .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
 
-        sportPop.entrySet().stream().forEach(entry -> {
+        boolean isData0 = true; //If there is no data to view -> true, if there is ->false
+            
+        for (Entry<String, Double> entry : sportPop.entrySet()) {
             list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
-        });
+            if(entry.getValue()!=0 && !entry.getValue().isNaN()){
+                isData0 = false;
+            }
+            System.out.println(";pievalue " + entry.getValue());
+        }
+        
+        //for(int i=0; i < list.size();i++){
+        //    if(list.get(i).getPieValue()!=0 && list.get(i).getPieValue()){
+        //        isData0 = false;
+        //        System.out.println("i = " + i + " ;pievalue " + list.get(i).getPieValue());
+        //    }
+        //}
+        
+        if(isData0){ // This is if there is no data to view.
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("There is no data to view.");
 
-        PieChart pie = new PieChart(
-                FXCollections.observableArrayList(list));
-        pie.setTitle("Popularity for " + sport + ", " + date);
+            alert.showAndWait();
+        } else { // If there is data to view
 
-        Scene scene = new Scene(pie, 800, 600);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+            PieChart pie = new PieChart(
+                    FXCollections.observableArrayList(list));
+            pie.setTitle("Popularity for " + sport + ", " + date);
+
+            Scene scene = new Scene(pie, 800, 600);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        }
     }
 
 }
