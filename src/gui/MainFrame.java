@@ -13,12 +13,16 @@ import javax.swing.JCheckBox;
  * @author Chen
  */
 public class MainFrame extends CenterFrame {
+    
     private FXPanel fxPanel;
+    DefaultListModel candidateListModel = new DefaultListModel();
+    DefaultListModel eventListModel = new DefaultListModel();
 
     /**
      * Creates new form MainFrame
      */
     List<JCheckBox> sportCheckboxes;
+    
     public MainFrame() {
         initComponents();
         centerize();
@@ -673,10 +677,12 @@ public class MainFrame extends CenterFrame {
     }//GEN-LAST:event_jCheckBox1ActionPerformed
 
     private void showComparisonBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showComparisonBtnActionPerformed
-        // TODO add your handling code here:
         setParameters();
         List<String> candidates = getCandidates();
         SportData2.getInstance().setSelected(candidates);
+        PopFrame pf = new PopFrame(5);
+        pf.setVisible(true);
+        pf.toFront();
     }//GEN-LAST:event_showComparisonBtnActionPerformed
 
     private void histogramBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_histogramBtnActionPerformed
@@ -685,17 +691,7 @@ public class MainFrame extends CenterFrame {
         pf.setVisible(true);
         pf.toFront();
     }//GEN-LAST:event_histogramBtnActionPerformed
-    DefaultListModel candidateListModel = new DefaultListModel();
     
-    private List<String> getCandidates(){
-        List<String> candidates = new ArrayList<>();
-        for(int i = 0; i < candidateListModel.size(); i++){
-            String match = candidateListModel.getElementAt(i).toString().replaceAll("vs", ";&;");
-            candidates.add(match);
-            System.out.println(match);
-        }
-        return candidates;
-    }
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
         // TODO add your handling code here:
         String newCandidate;
@@ -734,12 +730,36 @@ public class MainFrame extends CenterFrame {
         }
         sportChanged();
     }//GEN-LAST:event_comparisonTypeChangedHandler
-    DefaultListModel eventListModel = new DefaultListModel();
+    
     private void sportTypeChangedHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportTypeChangedHandler
         // TODO add your handling code here:
         sportChanged();
         
     }//GEN-LAST:event_sportTypeChangedHandler
+    
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+        if(!candidateList.isSelectionEmpty()){
+            candidateListModel.remove(candidateList.getSelectedIndex());
+        }
+        
+    }//GEN-LAST:event_deleteBtnActionPerformed
+
+    private void clearCandidateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearCandidateBtnActionPerformed
+        // TODO add your handling code here:
+        candidateListModel.clear();
+    }//GEN-LAST:event_clearCandidateBtnActionPerformed
+    
+    private List<String> getCandidates(){
+        List<String> candidates = new ArrayList<>();
+        for(int i = 0; i < candidateListModel.size(); i++){
+            String match = candidateListModel.getElementAt(i).toString().replaceAll("vs", ";&;");
+            candidates.add(match);
+            System.out.println(match);
+        }
+        return candidates;
+    }
+    
     public void sportChanged(){
         String sport = sportComboBox.getSelectedItem().toString().toLowerCase();
         
@@ -760,19 +780,7 @@ public class MainFrame extends CenterFrame {
             }
             
     }
-    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-        // TODO add your handling code here:
-        if(!candidateList.isSelectionEmpty()){
-            candidateListModel.remove(candidateList.getSelectedIndex());
-        }
-        
-    }//GEN-LAST:event_deleteBtnActionPerformed
-
-    private void clearCandidateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearCandidateBtnActionPerformed
-        // TODO add your handling code here:
-        candidateListModel.clear();
-    }//GEN-LAST:event_clearCandidateBtnActionPerformed
-
+    
     private void setParameters() {
         int timeInterval = 0;
         String selected = timeIntervalCombo.getSelectedItem().toString();

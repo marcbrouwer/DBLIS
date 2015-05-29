@@ -111,6 +111,8 @@ public class FXPanel extends JFXPanel {
 
         final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, seriesRest);
         final LineChart<Date, Number> lineChartFootball = new LineChart<>(dateAxis2, numberAxis2, seriesFootball);
+        
+        boolean showStage = false;
         if (SportData2.getInstance().footballSeperate() && selected.contains("football")) {
             //if (selected.contains("football")) {
 
@@ -119,6 +121,7 @@ public class FXPanel extends JFXPanel {
                 seriesRest.addAll(getSeries(selected));
 
                 addShowPieOnClick(seriesFootball);
+                showStage = true;
             //}
             
         } else {
@@ -129,8 +132,7 @@ public class FXPanel extends JFXPanel {
 
         Scene scene = new Scene(lineChart, 800, 600);
         Scene sceneFootball = new Scene(lineChartFootball, 800, 600);
-        List<String> selectedd = SportData2.getInstance().getSelected();
-        if (SportData2.getInstance().footballSeperate() && selectedd.contains("football")) {
+        if (showStage) {
             primaryStage.setScene(sceneFootball);
             primaryStage.show();
         }

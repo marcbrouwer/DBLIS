@@ -60,12 +60,25 @@ public class Jorrick {
         final Date enddate = SportData2.getInstance().getEndDate();
         
         //Creating variables required
-        final int pop = SportData2.getInstance().getPopularity(
-                        event, startdate.getTime(), enddate.getTime());
         final XYChart.Series<String, Number> serie = new XYChart.Series();
         
+        final String sep = ";&;";
+        int pop = 0;
+        
+        if (event.contains(sep)) {
+            String[] teams = event.split(sep);
+            pop += SportData2.getInstance().getPopularity(
+                        teams[0], startdate.getTime(), enddate.getTime());
+            pop += SportData2.getInstance().getPopularity(
+                        teams[1], startdate.getTime(), enddate.getTime());
+            serie.setName(teams[0] + " - " + teams[1]);
+        } else { 
+            pop = SportData2.getInstance().getPopularity(
+                        event, startdate.getTime(), enddate.getTime());
+            serie.setName(event);
+        }
+        
         serie.getData().add(new XYChart.Data("", pop));
-        serie.setName(event);
         
         return serie;
     }
