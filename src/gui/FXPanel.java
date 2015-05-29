@@ -269,7 +269,7 @@ public class FXPanel extends JFXPanel {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText("There is no data to view.");
+            alert.setContentText("There is no data to show for this sport at the given date.");
 
             alert.showAndWait();
         } else { // If there is data to view
