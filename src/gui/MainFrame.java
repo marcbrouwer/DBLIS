@@ -471,6 +471,7 @@ public class MainFrame extends CenterFrame {
         });
 
         addTeamBtn.setText("Add");
+        addTeamBtn.setEnabled(false);
         addTeamBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addTeamBtnActionPerformed(evt);
@@ -722,8 +723,6 @@ public class MainFrame extends CenterFrame {
             String newCandidate = eventList.getSelectedValue().toString();
             candidateListModel.addElement(newCandidate);
         }
-        
-        
     }//GEN-LAST:event_addEventBtnActionPerformed
 
     private void comparisonTypeChangedHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comparisonTypeChangedHandler
@@ -821,13 +820,18 @@ public class MainFrame extends CenterFrame {
             for (String p : players) {
                 eventListModel.addElement(p);
             }
-        }else{
+        }else if(type == 1){
             List<String> teams = SportData2.getInstance().getTeams(sport);
             teamAComboBox.removeAllItems();
             teamBComboBox.removeAllItems();
             for (String s : teams) {
                 teamAComboBox.addItem(s);
                 teamBComboBox.addItem(s);
+            }
+        }else{
+            List<String> other = SportData2.getInstance().getOther(sport);
+            for (String o : other) {
+                eventListModel.addElement(o);
             }
         }
     }
