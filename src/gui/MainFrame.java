@@ -471,6 +471,7 @@ public class MainFrame extends CenterFrame {
         });
 
         addTeamBtn.setText("Add");
+        addTeamBtn.setEnabled(false);
         addTeamBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addTeamBtnActionPerformed(evt);
@@ -722,8 +723,6 @@ public class MainFrame extends CenterFrame {
             String newCandidate = eventList.getSelectedValue().toString();
             candidateListModel.addElement(newCandidate);
         }
-        
-        
     }//GEN-LAST:event_addEventBtnActionPerformed
 
     private void comparisonTypeChangedHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comparisonTypeChangedHandler
