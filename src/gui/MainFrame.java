@@ -810,28 +810,29 @@ public class MainFrame extends CenterFrame {
         String sport = sportComboBox.getSelectedItem().toString().toLowerCase();
         eventListModel.clear();
         int type = typeComboBox.getSelectedIndex();
-        if (type == 0) {
-            List<String> events = SportData2.getInstance().getEvents(sport);
-            for (String s : events) {
+        if (type == 0 || type == 2 || type == 3) {
+            List<String> toAdd = new ArrayList<>();
+            switch(type){
+            case 0:
+                toAdd = SportData2.getInstance().getEvents(sport);
+                break;
+            case 2:
+                toAdd = SportData2.getInstance().getPlayers(sport);
+                break;
+            case 3:
+                toAdd = SportData2.getInstance().getOther(sport);
+                break;
+            }
+            for (String s : toAdd) {
                 eventListModel.addElement(s);
-            }
-        } else if(type == 2){
-            List<String> players = SportData2.getInstance().getPlayers(sport);
-            for (String p : players) {
-                eventListModel.addElement(p);
-            }
-        }else if(type == 1){
+            }     
+        }else{
             List<String> teams = SportData2.getInstance().getTeams(sport);
             teamAComboBox.removeAllItems();
             teamBComboBox.removeAllItems();
             for (String s : teams) {
                 teamAComboBox.addItem(s);
                 teamBComboBox.addItem(s);
-            }
-        }else{
-            List<String> other = SportData2.getInstance().getOther(sport);
-            for (String o : other) {
-                eventListModel.addElement(o);
             }
         }
     }
