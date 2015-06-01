@@ -150,6 +150,55 @@ public class SportData2 {
         return getTypes(sport, "P");
     }
     
+    public final List<String> getOther(String sport) {
+        return getTypes(sport, "O");
+    }
+    
+    public final Map<String, Double> getMostCommonHashtags(List<String> keywords) {
+        final Map<String, Double> hashtags = new HashMap();
+        
+        getRelatedTweets(keywords).forEach(te -> {
+            te.getHashtags().stream().forEach(hashtag -> {
+                if (!hashtags.containsKey(hashtag)) {
+                    hashtags.put(hashtag, 0.0);
+                }
+                hashtags.put(hashtag, hashtags.get(hashtag) + 1);
+            });
+        });
+        
+        keywords.stream().forEach(keyword -> hashtags.remove(keyword));
+        
+        return hashtags;
+    }
+    
+    public final Map<String, Double> getMostCommonHashtags(List<String> keywords,
+            long starttime, long endtime) {
+        final Map<String, Double> hashtags = new HashMap();
+        
+        getRelatedTweets(keywords, starttime, endtime).forEach(te -> {
+            te.getHashtags().stream().forEach(hashtag -> {
+                if (!hashtags.containsKey(hashtag)) {
+                    hashtags.put(hashtag, 0.0);
+                }
+                hashtags.put(hashtag, hashtags.get(hashtag) + 1);
+            });
+        });
+        
+        keywords.stream().forEach(keyword -> hashtags.remove(keyword));
+        
+        return hashtags;
+    }
+    
+    public final Map<String, Double> getMostCommonHashtagsAsPercentage(
+            List<String> keywords) {
+        return getAsPercentage(getMostCommonHashtags(keywords));
+    }
+    
+    public final Map<String, Double> getMostCommonHashtagsAsPercentage(
+            List<String> keywords, long starttime, long endtime) {
+        return getAsPercentage(getMostCommonHashtags(keywords));
+    }
+    
     public final int getRetweetCount(String sport) {
         return getRetweetCount(getRelatedTweets(sport));
     }
@@ -490,6 +539,16 @@ public class SportData2 {
         return calS.getTimeInMillis() - 1;
     }
     
+    private Stream<TweetEntity> getRelatedTweets(String sport) {
+        final String sportL = sport.toLowerCase();
+        if (relations.containsKey(sportL)) {
+            return tweets.parallelStream()
+                    .filter(te -> te.isRelatedTo(getKeywords(sportL)));
+        }
+        return tweets.parallelStream()
+                .filter(te -> te.isRelatedTo(sportL));
+    }
+    
     private Stream<TweetEntity> getRelatedTweets(String sport, long starttime, 
             long endtime) {
         final String sportL = sport.toLowerCase();
@@ -503,14 +562,15 @@ public class SportData2 {
                 .filter(te -> te.isRelatedTo(sportL));
     }
     
-    private Stream<TweetEntity> getRelatedTweets(String sport) {
-        final String sportL = sport.toLowerCase();
-        if (relations.containsKey(sportL)) {
-            return tweets.parallelStream()
-                    .filter(te -> te.isRelatedTo(getKeywords(sportL)));
-        }
+    private Stream<TweetEntity> getRelatedTweets(List<String> keywords) {
+        return tweets.parallelStream().filter(te -> te.isRelatedTo(keywords));
+    }
+    
+    private Stream<TweetEntity> getRelatedTweets(List<String> keywords, 
+            long starttime, long endtime) {
         return tweets.parallelStream()
-                .filter(te -> te.isRelatedTo(sportL));
+                .filter(te -> te.isInTimeFrame(starttime, endtime))
+                .filter(te -> te.isRelatedTo(keywords));
     }
     
     private int getRetweetCount(Stream<TweetEntity> data) {

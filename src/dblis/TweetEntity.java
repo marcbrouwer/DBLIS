@@ -1,8 +1,12 @@
 package dblis;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import twitter4j.Place;
 import twitter4j.Status;
 
@@ -186,6 +190,28 @@ public class TweetEntity {
                 || lowerText.contains("@" + word + ".")
                 || lowerText.contains("@" + word + "!")
                 || lowerText.contains("@" + word + "?");
+    }
+    
+    public Set<String> getHashtags() {
+        final Set<String> hashtags = new HashSet();
+        final Set<String> hashwords = new HashSet();
+        final Set<String> words = new HashSet();
+        
+        words.addAll(Arrays.asList(text.toLowerCase().split(" ")));
+        words.stream().filter(word -> word.startsWith("#"))
+                .forEach(word -> hashwords.add(word));
+        
+        final Set<String> splits = new HashSet();
+        hashwords.stream().forEach(word -> {
+            splits.addAll(Arrays.asList(word.split("#")));
+            
+            splits.stream().filter(tag -> !tag.equals("") && !tag.equals(" "))
+                    .forEach(tag -> hashtags.add(tag));
+            
+            splits.clear();
+        });
+        
+        return hashtags;
     }
     
     public final boolean isInTimeFrame(long starttime, long endtime) {
