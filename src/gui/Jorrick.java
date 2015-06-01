@@ -83,4 +83,51 @@ public class Jorrick {
         return serie;
     }
     
+    public static Scene drawBarChartUsers() {
+        final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
+
+        final CategoryAxis xAxis = new CategoryAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Event");
+        yAxis.setLabel("Number of users");
+        
+        final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
+        
+        final List<String> events = SportData2.getInstance().getSelected();
+        events.stream().forEach(e -> series.addAll(getSerieUsers(e)));
+        
+        Scene scene = new Scene(barChart, 800, 600);
+        
+        return scene;
+    }
+    
+    private static XYChart.Series<String, Number> getSerieUsers(String event) {
+        //Getting the selected information from the GUI
+        final Date startdate = SportData2.getInstance().getStartDate();
+        final Date enddate = SportData2.getInstance().getEndDate();
+        
+        //Creating variables required
+        final XYChart.Series<String, Number> serie = new XYChart.Series();
+        
+        final String sep = ";&;";
+        int pop = 0;
+        
+        if (event.contains(sep)) {
+            String[] teams = event.split(sep);
+            pop += SportData2.getInstance().getNumberUsers(
+                        teams[0], startdate.getTime(), enddate.getTime());
+            pop += SportData2.getInstance().getNumberUsers(
+                        teams[1], startdate.getTime(), enddate.getTime());
+            serie.setName(teams[0] + " - " + teams[1]);
+        } else { 
+            pop = SportData2.getInstance().getNumberUsers(
+                        event, startdate.getTime(), enddate.getTime());
+            serie.setName(event);
+        }
+        
+        serie.getData().add(new XYChart.Data("", pop));
+        
+        return serie;
+    }
+    
 }

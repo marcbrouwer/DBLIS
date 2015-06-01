@@ -224,6 +224,16 @@ public class SportData2 {
                 + getFavCount(sport, starttime, endtime);
     }
     
+    public final int getNumberUsers(String keyword) {
+        return (int) getRelatedTweets(keyword)
+                .map(TweetEntity::getUserID).distinct().count();
+    }
+    
+    public final int getNumberUsers(String keyword, long starttime, long endtime) {
+        return (int) getRelatedTweets(keyword, starttime, endtime)
+                .map(TweetEntity::getUserID).distinct().count();
+    }
+    
     public final Map<String, Double> getPopularitySports(List<String> sports) {
         final Map<String, Double> pop = new HashMap();
         

@@ -166,7 +166,7 @@ public class DBLIS implements Runnable {
         
         // SEARCHING
         
-        //splitJSON();
+        splitJSON();
         SportData2.getInstance().init();
         SportData2.getInstance().search();
         
