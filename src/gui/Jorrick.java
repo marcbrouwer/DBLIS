@@ -17,42 +17,49 @@ import javafx.scene.chart.XYChart;
  * @author Brouwer M.R.
  */
 public class Jorrick {
-    
-    public static Scene drawRelativeChart() {
-        ObservableList<XYChart.Series<Date, Number>> series = FXCollections.observableArrayList();
+    public static Scene drawRelativeChart(FXPanel panel) {
+        Runnable runner = () -> {
+        
+            ObservableList<XYChart.Series<Date, Number>> series = FXCollections.observableArrayList();
 
-        final NumberAxis numberAxis = new NumberAxis();
-        final DateAxis dateAxis = new DateAxis();
-        final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, series);
-        
-        //series.addAll(getSeries()); // implementation should be changed
-        
-        Scene scene = new Scene(lineChart, 800, 600);
-        
-        return scene;
+            final NumberAxis numberAxis = new NumberAxis();
+            final DateAxis dateAxis = new DateAxis();
+            final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, series);
+
+            //series.addAll(getSeries()); // implementation should be changed
+
+            Scene scene = new Scene(lineChart, 800, 600);
+
+            panel.setScene(scene);
+        };
+        Thread t = new Thread(runner);
+        t.start();
+        return null;
     }
     
-    
-    
-    
-    
-    public static Scene drawBarChart() {
-        final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
+    public static Scene drawBarChart(FXPanel panel) {
+        Runnable runner = () -> {
+            final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
-        final CategoryAxis xAxis = new CategoryAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Event");
-        yAxis.setLabel("Popularity");
+            final CategoryAxis xAxis = new CategoryAxis();
+            final NumberAxis yAxis = new NumberAxis();
+            xAxis.setLabel("Event");
+            yAxis.setLabel("Popularity");
+
+            final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
+
+            final List<String> events = SportData2.getInstance().getSelected();
+            events.stream().forEach(e -> series.addAll(getSerie(e)));
+
+            Scene scene = new Scene(barChart, 800, 600);
+            panel.setScene(scene);
+        };
         
-        final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
-        
-        final List<String> events = SportData2.getInstance().getSelected();
-        events.stream().forEach(e -> series.addAll(getSerie(e)));
-        
-        Scene scene = new Scene(barChart, 800, 600);
-        
-        return scene;
+        Thread t = new Thread(runner);
+        t.start();
+        return null;
     }
+    
     
     private static XYChart.Series<String, Number> getSerie(String event) {
         //Getting the selected information from the GUI

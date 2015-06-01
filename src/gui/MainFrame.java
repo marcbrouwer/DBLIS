@@ -2,6 +2,8 @@ package gui;
 
 import dblis.GraphInfo;
 import dblis.SportData2;
+import java.awt.Component;
+import java.awt.Container;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +24,27 @@ public class MainFrame extends CenterFrame {
      * Creates new form MainFrame
      */
     List<JCheckBox> sportCheckboxes;
+    
+    /*
+    * - Function that disables all components in the given container.
+    * @Param, container is the JPanel
+    * @Param, enable, true for enabling, false for disabling.
+    */
+    public void enableComponents(Container container, boolean enable) {
+        Component[] components = container.getComponents();
+        for (Component component : components) {
+            component.setEnabled(enable);
+            if (component instanceof Container) {
+                enableComponents((Container)component, enable);
+            }
+        }
+        if(showYearDataCheckbox.isSelected()){
+            startTimePicker.setEnabled(false);
+            endTimePicker.setEnabled(false);
+        } else {
+            yearCombo.setEnabled(false);
+        }
+    }
     
     public MainFrame() {
         initComponents();
