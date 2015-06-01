@@ -94,14 +94,16 @@ public class MainFrame extends CenterFrame {
         sportLabel2 = new javax.swing.JLabel();
         eventsLabel = new javax.swing.JLabel();
         Candidates = new javax.swing.JLabel();
-        addBtn = new javax.swing.JButton();
-        deleteBtn = new javax.swing.JButton();
+        addEventBtn = new javax.swing.JButton();
         teamALabel = new javax.swing.JLabel();
         teamBComboBox = new javax.swing.JComboBox();
         teamAComboBox = new javax.swing.JComboBox();
         teamBLabel = new javax.swing.JLabel();
         showComparisonBtn = new javax.swing.JButton();
         clearCandidateBtn = new javax.swing.JButton();
+        showComparisonBtn1 = new javax.swing.JButton();
+        deleteOneBtn = new javax.swing.JButton();
+        addTeamBtn = new javax.swing.JButton();
 
         sportsDialog.setTitle("Select the sports to show");
 
@@ -381,7 +383,7 @@ public class MainFrame extends CenterFrame {
         testPanel.setLayout(new java.awt.GridLayout(1, 0));
         visualizationPanel.add(testPanel);
 
-        comparisonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Event&Match comparison"));
+        comparisonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Statistics comparison"));
 
         candidateList.setModel(new javax.swing.AbstractListModel() {
             List<String> items = new ArrayList<>();
@@ -408,7 +410,7 @@ public class MainFrame extends CenterFrame {
             }
         });
 
-        typeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Event", "Match" }));
+        typeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Event", "Match", "Players", "Other" }));
         typeComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comparisonTypeChangedHandler(evt);
@@ -423,19 +425,10 @@ public class MainFrame extends CenterFrame {
 
         Candidates.setText("Candidates");
 
-        addBtn.setFont(new java.awt.Font("宋体", 0, 8)); // NOI18N
-        addBtn.setText(">>");
-        addBtn.addActionListener(new java.awt.event.ActionListener() {
+        addEventBtn.setText("Add");
+        addEventBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addBtnActionPerformed(evt);
-            }
-        });
-
-        deleteBtn.setFont(new java.awt.Font("宋体", 0, 8)); // NOI18N
-        deleteBtn.setText("<<");
-        deleteBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteBtnActionPerformed(evt);
+                addEventBtnActionPerformed(evt);
             }
         });
 
@@ -463,6 +456,27 @@ public class MainFrame extends CenterFrame {
             }
         });
 
+        showComparisonBtn1.setText("Show users");
+        showComparisonBtn1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showComparisonBtn1ActionPerformed(evt);
+            }
+        });
+
+        deleteOneBtn.setText("Delete");
+        deleteOneBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteOneBtnActionPerformed(evt);
+            }
+        });
+
+        addTeamBtn.setText("Add");
+        addTeamBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addTeamBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout comparisonPanelLayout = new javax.swing.GroupLayout(comparisonPanel);
         comparisonPanel.setLayout(comparisonPanelLayout);
         comparisonPanelLayout.setHorizontalGroup(
@@ -484,27 +498,30 @@ public class MainFrame extends CenterFrame {
                         .addComponent(teamALabel)
                         .addComponent(teamBLabel)
                         .addComponent(teamAComboBox, 0, 194, Short.MAX_VALUE)
-                        .addComponent(teamBComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                        .addComponent(teamBComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(addTeamBtn))
+                .addGap(18, 18, 18)
                 .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(eventsLabel)
                     .addGroup(comparisonPanelLayout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(addEventBtn)))
+                .addGap(18, 18, 18)
+                .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Candidates))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, comparisonPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(showComparisonBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(comparisonPanelLayout.createSequentialGroup()
                         .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(addBtn)
-                            .addComponent(deleteBtn))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Candidates)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(comparisonPanelLayout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(showComparisonBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(comparisonPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(clearCandidateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(clearCandidateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(deleteOneBtn)
+                            .addComponent(showComparisonBtn))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         comparisonPanelLayout.setVerticalGroup(
@@ -513,43 +530,50 @@ public class MainFrame extends CenterFrame {
                 .addContainerGap()
                 .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(comparisonPanelLayout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jScrollPane1))
-                    .addGroup(comparisonPanelLayout.createSequentialGroup()
-                        .addComponent(eventsLabel)
-                        .addGap(74, 74, 74))
-                    .addGroup(comparisonPanelLayout.createSequentialGroup()
                         .addComponent(Candidates)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-                            .addGroup(comparisonPanelLayout.createSequentialGroup()
-                                .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(comparisonPanelLayout.createSequentialGroup()
-                                        .addGap(25, 25, 25)
-                                        .addComponent(deleteBtn))
-                                    .addComponent(addBtn)
-                                    .addComponent(showComparisonBtn))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(clearCandidateBtn))))
-                    .addGroup(comparisonPanelLayout.createSequentialGroup()
-                        .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(typeLabel)
-                            .addComponent(sportLabel2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(typeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sportComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(teamALabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(teamAComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(5, 5, 5)
-                        .addComponent(teamBLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(teamBComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addGap(179, 179, 179))
+                    .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(comparisonPanelLayout.createSequentialGroup()
+                            .addComponent(eventsLabel)
+                            .addGap(179, 179, 179))
+                        .addGroup(comparisonPanelLayout.createSequentialGroup()
+                            .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(comparisonPanelLayout.createSequentialGroup()
+                                    .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(typeLabel)
+                                        .addComponent(sportLabel2))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(typeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(sportComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(teamALabel)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(teamAComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(5, 5, 5)
+                                    .addComponent(teamBLabel)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(teamBComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(addTeamBtn)
+                                    .addGap(0, 23, Short.MAX_VALUE))
+                                .addGroup(comparisonPanelLayout.createSequentialGroup()
+                                    .addGap(21, 21, 21)
+                                    .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane2)
+                                        .addComponent(jScrollPane1)
+                                        .addGroup(comparisonPanelLayout.createSequentialGroup()
+                                            .addGroup(comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(addEventBtn)
+                                                .addGroup(comparisonPanelLayout.createSequentialGroup()
+                                                    .addComponent(deleteOneBtn)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addComponent(clearCandidateBtn)))
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(showComparisonBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(showComparisonBtn1)))))
+                            .addContainerGap()))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -560,25 +584,25 @@ public class MainFrame extends CenterFrame {
                 .addContainerGap()
                 .addComponent(visualizationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(155, Short.MAX_VALUE)
+                .addComponent(comparisonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 804, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(155, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(parametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(140, 140, 140))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(90, 90, 90)
-                .addComponent(comparisonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(82, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(visualizationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(parametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(visualizationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(parametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
                 .addComponent(comparisonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -692,34 +716,35 @@ public class MainFrame extends CenterFrame {
         pf.toFront();
     }//GEN-LAST:event_histogramBtnActionPerformed
     
-    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+    private void addEventBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addEventBtnActionPerformed
         // TODO add your handling code here:
-        String newCandidate;
-        if(typeComboBox.getSelectedIndex() == 0){
-            if(!eventList.isSelectionEmpty()){
-                newCandidate = eventList.getSelectedValue().toString();
-                candidateListModel.addElement(newCandidate);
-            }
-        }else{
-            String teamA = teamAComboBox.getSelectedItem().toString();
-            String teamB = teamBComboBox.getSelectedItem().toString();
-            if(!(teamA.isEmpty() && teamB.isEmpty())){
-                newCandidate =  teamA + " vs " + teamB;   
-                candidateListModel.addElement(newCandidate);
-            }
+        if(!eventList.isSelectionEmpty()){
+            String newCandidate = eventList.getSelectedValue().toString();
+            candidateListModel.addElement(newCandidate);
         }
         
-    }//GEN-LAST:event_addBtnActionPerformed
+        
+    }//GEN-LAST:event_addEventBtnActionPerformed
 
     private void comparisonTypeChangedHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comparisonTypeChangedHandler
         // TODO add your handling code here:
-        if(typeComboBox.getSelectedIndex() == 0){
+        int type = typeComboBox.getSelectedIndex();
+        if(type == 0 || type == 2 || type == 3){
+            if(type == 2){
+                eventsLabel.setText("Players");
+            }else if(type == 0){
+                eventsLabel.setText("Events");
+            }else{
+                eventsLabel.setText("Others");
+            }
             teamALabel.setEnabled(false);
             teamBLabel.setEnabled(false);
             teamAComboBox.setEnabled(false);
             teamBComboBox.setEnabled(false);
+            addTeamBtn.setEnabled(false);
             eventsLabel.setEnabled(true);
             eventList.setEnabled(true);
+            addEventBtn.setEnabled(true);
         }else{
             teamALabel.setEnabled(true);
             teamBLabel.setEnabled(true);
@@ -727,7 +752,10 @@ public class MainFrame extends CenterFrame {
             teamBComboBox.setEnabled(true);
             eventsLabel.setEnabled(false);
             eventList.setEnabled(false);
+            addEventBtn.setEnabled(false);
+            addTeamBtn.setEnabled(true);
         }
+        
         sportChanged();
     }//GEN-LAST:event_comparisonTypeChangedHandler
     
@@ -737,18 +765,37 @@ public class MainFrame extends CenterFrame {
         
     }//GEN-LAST:event_sportTypeChangedHandler
     
-    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-        // TODO add your handling code here:
-        if(!candidateList.isSelectionEmpty()){
-            candidateListModel.remove(candidateList.getSelectedIndex());
-        }
-        
-    }//GEN-LAST:event_deleteBtnActionPerformed
-
     private void clearCandidateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearCandidateBtnActionPerformed
         // TODO add your handling code here:
         candidateListModel.clear();
     }//GEN-LAST:event_clearCandidateBtnActionPerformed
+
+    private void showComparisonBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showComparisonBtn1ActionPerformed
+        // TODO add your handling code here:
+        setParameters();
+        List<String> candidates = getCandidates();
+        SportData2.getInstance().setSelected(candidates);
+        PopFrame pf = new PopFrame(5);
+        pf.setVisible(true);
+        pf.toFront();
+    }//GEN-LAST:event_showComparisonBtn1ActionPerformed
+
+    private void deleteOneBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteOneBtnActionPerformed
+        // TODO add your handling code here:
+        if(!candidateList.isSelectionEmpty()){
+            candidateListModel.remove(candidateList.getSelectedIndex());
+        }
+    }//GEN-LAST:event_deleteOneBtnActionPerformed
+
+    private void addTeamBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTeamBtnActionPerformed
+        // TODO add your handling code here:
+        String teamA = teamAComboBox.getSelectedItem().toString();
+        String teamB = teamBComboBox.getSelectedItem().toString();
+        if(!(teamA.isEmpty() && teamB.isEmpty())){
+            String newCandidate =  teamA + " vs " + teamB;   
+            candidateListModel.addElement(newCandidate);
+        }
+    }//GEN-LAST:event_addTeamBtnActionPerformed
     
     private List<String> getCandidates(){
         List<String> candidates = new ArrayList<>();
@@ -762,23 +809,27 @@ public class MainFrame extends CenterFrame {
     
     public void sportChanged(){
         String sport = sportComboBox.getSelectedItem().toString().toLowerCase();
-        
-            eventListModel.clear();
-            if(typeComboBox.getSelectedIndex() == 0){
-                List<String> events = SportData2.getInstance().getEvents(sport);
-                for(String s : events){
-                    eventListModel.addElement(s);
-                }
-            }else{
-                List<String> teams = SportData2.getInstance().getTeams(sport);
-                teamAComboBox.removeAllItems();
-                teamBComboBox.removeAllItems();
-                for(String s : teams){
-                    teamAComboBox.addItem(s);
-                    teamBComboBox.addItem(s);
-                }
+        eventListModel.clear();
+        int type = typeComboBox.getSelectedIndex();
+        if (type == 0) {
+            List<String> events = SportData2.getInstance().getEvents(sport);
+            for (String s : events) {
+                eventListModel.addElement(s);
             }
-            
+        } else if(type == 2){
+            List<String> players = SportData2.getInstance().getPlayers(sport);
+            for (String p : players) {
+                eventListModel.addElement(p);
+            }
+        }else{
+            List<String> teams = SportData2.getInstance().getTeams(sport);
+            teamAComboBox.removeAllItems();
+            teamBComboBox.removeAllItems();
+            for (String s : teams) {
+                teamAComboBox.addItem(s);
+                teamBComboBox.addItem(s);
+            }
+        }
     }
     
     private void setParameters() {
@@ -868,12 +919,13 @@ public class MainFrame extends CenterFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Candidates;
-    private javax.swing.JButton addBtn;
+    private javax.swing.JButton addEventBtn;
+    private javax.swing.JButton addTeamBtn;
     private javax.swing.JList candidateList;
     private javax.swing.JButton clearCandidateBtn;
     private javax.swing.JPanel comparisonPanel;
     private javax.swing.JCheckBox cyclingCheckBox;
-    private javax.swing.JButton deleteBtn;
+    private javax.swing.JButton deleteOneBtn;
     private javax.swing.JLabel endTimeLabel;
     private com.lavantech.gui.comp.DateTimePicker endTimePicker;
     private javax.swing.JList eventList;
@@ -890,6 +942,7 @@ public class MainFrame extends CenterFrame {
     private javax.swing.JButton pieChartBtn;
     private javax.swing.JButton showBtn;
     private javax.swing.JButton showComparisonBtn;
+    private javax.swing.JButton showComparisonBtn1;
     private javax.swing.JCheckBox showYearDataCheckbox;
     private javax.swing.JCheckBox skatingCheckBox;
     private javax.swing.JComboBox sportComboBox;
