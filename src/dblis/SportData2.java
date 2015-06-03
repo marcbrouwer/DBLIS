@@ -510,6 +510,7 @@ public class SportData2 {
     }
     
     public final long[] getLineToPieTimestamps(Date date) {
+<<<<<<< HEAD
         final long[] daystamps = getDayTimestamps(date);
         Calendar calS = Calendar.getInstance();
         calS.setTimeInMillis(date.getTime());
@@ -517,6 +518,20 @@ public class SportData2 {
         Calendar calE = Calendar.getInstance();
         calE.clear();
         calE.setTimeInMillis(daystamps[1]);
+=======
+        Calendar calS = Calendar.getInstance();
+        calS.setTimeInMillis(date.getTime());
+        
+        Calendar calB = Calendar.getInstance();
+        calB.clear();
+        calB.set(calS.get(Calendar.YEAR), calS.get(Calendar.MONTH), 
+                calS.get(Calendar.DATE), 0, 0, 0);
+        
+        Calendar calE = Calendar.getInstance();
+        calE.clear();
+        calE.set(calS.get(Calendar.YEAR), calS.get(Calendar.MONTH), 
+                calS.get(Calendar.DATE), 23, 59, 59);
+>>>>>>> origin/master
         
         if (lineInterval == 7) {
             calE.setTimeInMillis(calE.getTimeInMillis() + 604800000L);
@@ -524,7 +539,11 @@ public class SportData2 {
             calE.setTimeInMillis(getMonthTimeEnd(date.getTime()));
         }
         
+<<<<<<< HEAD
         return new long[]{daystamps[0], calE.getTimeInMillis()};
+=======
+        return new long[]{calB.getTimeInMillis(), calE.getTimeInMillis()};
+>>>>>>> origin/master
     }
     
     public final int getNumberUsersInterestedIn(List<String> sports, 
