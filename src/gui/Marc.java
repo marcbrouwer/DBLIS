@@ -1,7 +1,6 @@
 package gui;
 
 import dblis.SportData2;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -50,6 +49,5 @@ public class Marc {
         t.start();
         return null;
     }
-    
     
 }
