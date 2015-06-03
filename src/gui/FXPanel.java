@@ -48,8 +48,10 @@ public class FXPanel extends JFXPanel {
 
     
     //function that returns the loading screen
-    Scene getLoadingScene(){
-        Scene scene = null;
+    private Scene getLoadingScene(){
+        Scene scene;
+        scene = null;
+        
         try {
             HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
             scene = new Scene(loader, 800, 600, Color.WHITE);
