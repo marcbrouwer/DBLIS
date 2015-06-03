@@ -599,7 +599,7 @@
                                                   </Group>
                                               </Group>
                                               <EmptySpace max="32767" attributes="0"/>
-                                              <Component id="showComparisonBtn" min="-2" pref="19" max="-2" attributes="0"/>
+                                              <Component id="showComparisonBtn" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="showComparisonBtn1" min="-2" max="-2" attributes="0"/>
                                           </Group>

@@ -20,6 +20,8 @@ import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
@@ -45,42 +47,42 @@ public class FXPanel extends JFXPanel {
 
     public void drawScene(int index) {
         final FXPanel thisPanel = this;
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Scene scene = null;
-                try {
-                    HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
-                    scene = new Scene(loader);
-                    setScene(scene);
+        Platform.runLater(() -> {
+            Scene scene1 = null;
+            try {
+                HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
+                scene1 = new Scene(loader);
+                setScene(scene1);
+                System.out.println((new Date()).getTime());
+            }catch (IOException ex) {
+                System.out.println(ex);
+            }
+            switch (index) {
+                case 0:
+                    scene1 = drawSceneWelcome();
+                    break;
+                case 1:
+                    scene1 = drawSceneGoodbye();
+                    break;
+                case 2:
+                    scene1 = drawLineChart(thisPanel);
+                    break;
+                case 3:
+                    scene1 = drawPieChart(thisPanel);
                     System.out.println((new Date()).getTime());
-                } catch (IOException ex) {
-                    System.out.println(ex);
-                }
-                switch (index) {
-                    case 0:
-                        scene = drawSceneWelcome();
-                        break;
-                    case 1:
-                        scene = drawSceneGoodbye();
-                        break;
-                    case 2:
-                        scene = drawLineChart(thisPanel);
-                        break;
-                    case 3:
-                        scene = drawPieChart(thisPanel);
-                        System.out.println((new Date()).getTime());
-                        break;
-                    case 4:
-                        scene = drawRelativeChart(thisPanel);
-                        break;
-                    case 5:
-                        scene = drawBarChart(thisPanel);
-                        break;
-                }
-                if (scene != null) {
-                    setScene(scene);
-                }
+                    break;
+                case 4:
+                    scene1 = null;
+                    break;
+                case 5:
+                    scene1 = drawBarChart(thisPanel);
+                    break;
+                case 6:
+                    scene1 = drawBarChartUsers(thisPanel);
+                    break;
+            }
+            if (scene1 != null) {
+                setScene(scene1);
             }
         });
     }
@@ -160,12 +162,50 @@ public class FXPanel extends JFXPanel {
         return null;
     }
 
-    private Scene drawRelativeChart(FXPanel panel) {
-        return Jorrick.drawRelativeChart(panel);
+    private Scene drawBarChart(FXPanel panel) {
+        Runnable runner = () -> {
+            final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
+
+            final CategoryAxis xAxis = new CategoryAxis();
+            final NumberAxis yAxis = new NumberAxis();
+            xAxis.setLabel("Event");
+            yAxis.setLabel("Popularity");
+
+            final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
+
+            final List<String> events = SportData2.getInstance().getSelected();
+            events.stream().forEach(e -> series.addAll(getSerie(e, true)));
+
+            Scene scene = new Scene(barChart, 800, 600);
+            panel.setScene(scene);
+        };
+        
+        Thread t = new Thread(runner);
+        t.start();
+        return null;
     }
 
-    private Scene drawBarChart(FXPanel panel) {
-        return Jorrick.drawBarChart(panel);
+    private Scene drawBarChartUsers(FXPanel panel) {
+        Runnable runner = () -> {
+            final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
+
+            final CategoryAxis xAxis = new CategoryAxis();
+            final NumberAxis yAxis = new NumberAxis();
+            xAxis.setLabel("Event");
+            yAxis.setLabel("Number of users");
+
+            final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
+
+            final List<String> events = SportData2.getInstance().getSelected();
+            events.stream().forEach(e -> series.addAll(getSerie(e, false)));
+
+            Scene scene = new Scene(barChart, 800, 600);
+            panel.setScene(scene);
+        };
+        
+        Thread t = new Thread(runner);
+        t.start();
+        return null;
     }
 
     private Scene drawPieChart(FXPanel panel) {
@@ -215,7 +255,51 @@ public class FXPanel extends JFXPanel {
         });
     }
 
-    public static Collection<XYChart.Series<Date, Number>> getSeries(List<String> sports) {
+    private XYChart.Series<String, Number> getSerie(String event, boolean pop_user) {
+        //Getting the selected information from the GUI
+        final Date startdate = SportData2.getInstance().getStartDate();
+        final Date enddate = SportData2.getInstance().getEndDate();
+        
+        //Creating variables required
+        final XYChart.Series<String, Number> serie = new XYChart.Series();
+        
+        final String sep = ";&;";
+        int pop = 0;
+        
+        if (pop_user) {
+            if (event.contains(sep)) {
+                String[] teams = event.split(sep);
+                pop += SportData2.getInstance().getPopularity(
+                            teams[0], startdate.getTime(), enddate.getTime());
+                pop += SportData2.getInstance().getPopularity(
+                            teams[1], startdate.getTime(), enddate.getTime());
+                serie.setName(teams[0] + " - " + teams[1]);
+            } else { 
+                pop = SportData2.getInstance().getPopularity(
+                            event, startdate.getTime(), enddate.getTime());
+                serie.setName(event);
+            }
+        } else {
+            if (event.contains(sep)) {
+                String[] teams = event.split(sep);
+                pop += SportData2.getInstance().getNumberUsers(
+                            teams[0], startdate.getTime(), enddate.getTime());
+                pop += SportData2.getInstance().getNumberUsers(
+                            teams[1], startdate.getTime(), enddate.getTime());
+                serie.setName(teams[0] + " - " + teams[1]);
+            } else { 
+                pop = SportData2.getInstance().getNumberUsers(
+                            event, startdate.getTime(), enddate.getTime());
+                serie.setName(event);
+            }
+        }
+        
+        serie.getData().add(new XYChart.Data("", pop));
+        
+        return serie;
+    }
+    
+    private Collection<XYChart.Series<Date, Number>> getSeries(List<String> sports) {
         final Date startdate = SportData2.getInstance().getStartDate();
         final Date enddate = SportData2.getInstance().getEndDate();
         final int interval = SportData2.getInstance().getInterval();
