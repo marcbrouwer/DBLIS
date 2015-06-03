@@ -46,18 +46,29 @@ public class FXPanel extends JFXPanel {
     public FXPanel() {
     }
 
+    
+    //function that returns the loading screen
+    Scene getLoadingScene(){
+        Scene scene = null;
+        try {
+            HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
+            scene = new Scene(loader, 800, 600, Color.WHITE);
+            //System.out.println((new Date()).getTime());
+        }catch (IOException ex) {
+            System.out.println(ex);
+        }
+        return scene;
+    }
+    
     public void drawScene(int index) {
         final FXPanel thisPanel = this;
+        
+        //set the loading screen
+        Scene scene0 = null;
+        scene0 = getLoadingScene();
+        setScene(scene0);
+        
         Platform.runLater(() -> {
-            Scene scene0 = null;
-            try {
-                HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
-                scene0 = new Scene(loader, 800, 600, Color.WHITE);
-                setScene(scene0);
-                System.out.println((new Date()).getTime());
-            }catch (IOException ex) {
-                System.out.println(ex);
-            }
             Scene scene1  = null;
             switch (index) {
                 case 0:
@@ -89,12 +100,14 @@ public class FXPanel extends JFXPanel {
         });
     }
     
+    //Functions that are called when we start loading
     public void startLoading(){
-        
+        MainFrame.enableComponents(false);
     }
     
-    public void stopLoading(){
-        
+    //Functions that are called when we finished loading
+    public void finishedLoading(){
+        MainFrame.enableComponents(true);
     }
 
     private Scene drawSceneWelcome() {
@@ -197,7 +210,7 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawBarChartUsers(FXPanel panel) {
-        MainFrame.enableComponents(false);
+        startLoading();
         Runnable runner = () -> {
             final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
@@ -213,7 +226,7 @@ public class FXPanel extends JFXPanel {
 
             Scene scene = new Scene(barChart, 800, 600);
             
-            MainFrame.enableComponents(true);
+            finishedLoading();
             panel.setScene(scene);
         };
         
@@ -223,7 +236,7 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawPieChart(FXPanel panel) {
-        MainFrame.enableComponents(false);
+        startLoading();
         Runnable runner = () -> {
             final Group root = new Group();
             final Scene scene = new Scene(root);
@@ -251,7 +264,7 @@ public class FXPanel extends JFXPanel {
 
             root.getChildren().add(pie);
             
-            MainFrame.enableComponents(true);
+            finishedLoading();
             panel.setScene(scene);
         };
         Thread t = new Thread(runner);
@@ -367,6 +380,7 @@ public class FXPanel extends JFXPanel {
 
     private void makePieChart(String sport, Date date, Number yValue) {
         if(yValue.intValue()==0){
+            System.out.println("It is 0");
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
@@ -374,22 +388,19 @@ public class FXPanel extends JFXPanel {
 
             alert.showAndWait();
         } else {
-            MainFrame.enableComponents(false);
+            System.out.println("it is not 0");
+            startLoading();
+            
+            //Set a screen
             final Stage primaryStage = new Stage();
             primaryStage.setTitle("Popularity for " + sport + ", " + date);
             
             //setting a scene
             Scene scene0 = null;
-            try {
-                HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
-                scene0 = new Scene(loader, 800, 600, Color.WHITE);
-                setScene(scene0);
-                System.out.println((new Date()).getTime());
-            }catch (IOException ex) {
-                System.out.println(ex);
-            }
+            scene0 = getLoadingScene();
             primaryStage.setScene(scene0);
             primaryStage.show();
+            System.out.println("We set the loading screen");
             
             Runnable runner = () -> {
                 final List<PieChart.Data> list = new ArrayList<>();
@@ -409,8 +420,7 @@ public class FXPanel extends JFXPanel {
                 Scene scene = new Scene(pie, 800, 600);
                 primaryStage.setScene(scene);
                 
-                MainFrame.enableComponents(true);
-                primaryStage.show();
+                finishedLoading();
             };
             Thread t = new Thread(runner);
             t.start();
