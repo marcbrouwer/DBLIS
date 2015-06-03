@@ -874,6 +874,15 @@ public class MainFrame extends CenterFrame {
                 break;
         }
         
+        String yearString = yearCombo.getSelectedItem().toString();
+        int year = 0;
+        
+        try {
+            year = Integer.parseInt(yearString);
+        } catch (NumberFormatException ex) {
+        }
+        
+        SportData2.getInstance().setYear(year);
         SportData2.getInstance().setDates(getStartDate(), getEndDate());
         SportData2.getInstance().setSelected(getSports());
         SportData2.getInstance().setInterval(timeInterval);

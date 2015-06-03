@@ -85,6 +85,7 @@ public class SportData2 {
     private Date startdate = new Date();
     private Date enddate = new Date();
     private int interval = 1;
+    private int year;
     private List<String> selected = new ArrayList<>();
     private boolean footballSeperate = false;
     
@@ -507,6 +508,14 @@ public class SportData2 {
     
     public final boolean footballSeperate() {
         return footballSeperate;
+    }
+    
+    public final void setYear(int year) {
+        this.year = year;
+    }
+    
+    public final int getYear() {
+        return year;
     }
     
     // PRIVATE Methods
