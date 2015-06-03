@@ -136,15 +136,15 @@ public class FXPanel extends JFXPanel {
                 //if (selected.contains("football")) {
 
                     selected.remove("football");
-                    seriesFootball.addAll(getSeries(Arrays.asList("football")));
-                    seriesRest.addAll(getSeries(selected));
+                    seriesFootball.addAll(getSeries(Arrays.asList("football"), false));
+                    seriesRest.addAll(getSeries(selected, false));
 
                     addShowPieOnClick(seriesFootball);
                     showStage = true;
                 //}
 
             } else {
-                seriesRest.addAll(getSeries(selected));
+                seriesRest.addAll(getSeries(selected, false));
             }
 
             addShowPieOnClick(seriesRest);
@@ -299,17 +299,23 @@ public class FXPanel extends JFXPanel {
         return serie;
     }
     
-    private Collection<XYChart.Series<Date, Number>> getSeries(List<String> sports) {
+    private Collection<XYChart.Series<Date, Number>> getSeries(
+            List<String> sports, boolean year) {
         final Date startdate = SportData2.getInstance().getStartDate();
         final Date enddate = SportData2.getInstance().getEndDate();
         final int interval = SportData2.getInstance().getInterval();
 
         final Map<String, Map<Date, Double>> sportpop = new HashMap();
         final Map<String, XYChart.Series<Date, Number>> sportseries = new HashMap();
-
+        
         sports.stream().forEach(s -> {
-            sportpop.put(s, SportData2.getInstance()
-                    .getSportsForDate(startdate, enddate, s, interval));
+            if (!year) {
+                sportpop.put(s, SportData2.getInstance()
+                        .getSportsForDate(startdate, enddate, s, interval));
+            } else {
+                sportpop.put(s, SportData2.getInstance().getSportsForYear(
+                        SportData2.getInstance().getYear(), s, interval));
+            }
             sportseries.put(s, new XYChart.Series());
             sportseries.get(s).setName(s);
 
