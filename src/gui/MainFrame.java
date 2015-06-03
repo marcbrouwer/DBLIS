@@ -93,10 +93,12 @@ public class MainFrame extends CenterFrame {
         parametersPanel = new javax.swing.JPanel();
         selectTimePeriodPanel = new javax.swing.JPanel();
         showYearDataCheckbox = new javax.swing.JCheckBox();
+        jPanel3 = new javax.swing.JPanel();
         yearCombo = new javax.swing.JComboBox();
         startTimePicker = new com.lavantech.gui.comp.DateTimePicker();
         endTimePicker = new com.lavantech.gui.comp.DateTimePicker();
-        paramsBtnPanel = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
         timeIntervalCombo = new javax.swing.JComboBox();
         pieChartBtn = new javax.swing.JButton();
         histogramBtn = new javax.swing.JButton();
@@ -240,6 +242,7 @@ public class MainFrame extends CenterFrame {
         parametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameters"));
 
         showYearDataCheckbox.setText("<html>Show data<br>in one year</html>");
+        showYearDataCheckbox.setPreferredSize(new java.awt.Dimension(93, 50));
         showYearDataCheckbox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 yearDataCheckboxChanged(evt);
@@ -252,10 +255,14 @@ public class MainFrame extends CenterFrame {
         });
         selectTimePeriodPanel.add(showYearDataCheckbox);
 
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Year"));
+        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
+
         yearCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "< -- >", "2015", "2014", "2013" }));
-        yearCombo.setBorder(javax.swing.BorderFactory.createTitledBorder("Year"));
         yearCombo.setEnabled(false);
-        selectTimePeriodPanel.add(yearCombo);
+        jPanel3.add(yearCombo);
+
+        selectTimePeriodPanel.add(jPanel3);
 
         startTimePicker.setBorder(javax.swing.BorderFactory.createTitledBorder("Start Time:"));
         selectTimePeriodPanel.add(startTimePicker);
@@ -263,12 +270,14 @@ public class MainFrame extends CenterFrame {
         endTimePicker.setBorder(javax.swing.BorderFactory.createTitledBorder("End Time:"));
         selectTimePeriodPanel.add(endTimePicker);
 
-        paramsBtnPanel.setPreferredSize(new java.awt.Dimension(101, 115));
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Time Interval"));
+        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.LINE_AXIS));
 
         timeIntervalCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Month", "Week", "Day" }));
-        timeIntervalCombo.setBorder(javax.swing.BorderFactory.createTitledBorder("Time Interval"));
-        timeIntervalCombo.setPreferredSize(new java.awt.Dimension(102, 41));
-        paramsBtnPanel.add(timeIntervalCombo);
+        timeIntervalCombo.setMinimumSize(new java.awt.Dimension(72, 50));
+        jPanel5.add(timeIntervalCombo);
+
+        jPanel1.add(jPanel5);
 
         pieChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/chart_pie_32x32.png"))); // NOI18N
         pieChartBtn.setToolTipText("");
@@ -277,7 +286,7 @@ public class MainFrame extends CenterFrame {
                 pieChartBtnActionPerformed(evt);
             }
         });
-        paramsBtnPanel.add(pieChartBtn);
+        jPanel1.add(pieChartBtn);
 
         histogramBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/bar_chart-512_32x32.png"))); // NOI18N
         histogramBtn.setToolTipText("");
@@ -286,7 +295,7 @@ public class MainFrame extends CenterFrame {
                 histogramBtnActionPerformed(evt);
             }
         });
-        paramsBtnPanel.add(histogramBtn);
+        jPanel1.add(histogramBtn);
 
         sportsChooseBtn.setText("<html><center>Select Sports<br></center></html>");
         sportsChooseBtn.setToolTipText("");
@@ -296,7 +305,7 @@ public class MainFrame extends CenterFrame {
                 sportsChooseBtnActionPerformed(evt);
             }
         });
-        paramsBtnPanel.add(sportsChooseBtn);
+        jPanel1.add(sportsChooseBtn);
 
         showBtn.setText("Show");
         showBtn.setPreferredSize(new java.awt.Dimension(65, 41));
@@ -305,11 +314,10 @@ public class MainFrame extends CenterFrame {
                 showBtnActionPerformed(evt);
             }
         });
-        paramsBtnPanel.add(showBtn);
+        jPanel1.add(showBtn);
 
         showUserInterestsBtn.setText("<html><center>User<br>Interests</center></html>");
-        showUserInterestsBtn.setPreferredSize(new java.awt.Dimension(83, 41));
-        paramsBtnPanel.add(showUserInterestsBtn);
+        jPanel1.add(showUserInterestsBtn);
 
         showTwoChartsChkBox.setText("<html>Two<br>charts</html>");
         showTwoChartsChkBox.addActionListener(new java.awt.event.ActionListener() {
@@ -317,7 +325,7 @@ public class MainFrame extends CenterFrame {
                 showTwoChartsChkBoxActionPerformed(evt);
             }
         });
-        paramsBtnPanel.add(showTwoChartsChkBox);
+        jPanel1.add(showTwoChartsChkBox);
 
         javax.swing.GroupLayout parametersPanelLayout = new javax.swing.GroupLayout(parametersPanel);
         parametersPanel.setLayout(parametersPanelLayout);
@@ -326,20 +334,18 @@ public class MainFrame extends CenterFrame {
             .addGroup(parametersPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(parametersPanelLayout.createSequentialGroup()
-                        .addComponent(paramsBtnPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 552, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 24, Short.MAX_VALUE))
-                    .addComponent(selectTimePeriodPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(selectTimePeriodPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE))
                 .addContainerGap())
         );
         parametersPanelLayout.setVerticalGroup(
             parametersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(parametersPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, parametersPanelLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
                 .addComponent(selectTimePeriodPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(paramsBtnPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         visualizationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Visualization"));
@@ -509,12 +515,11 @@ public class MainFrame extends CenterFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(candidatesControlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         comparisonPanelLayout.setVerticalGroup(
             comparisonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -538,19 +543,20 @@ public class MainFrame extends CenterFrame {
                     .addComponent(visualizationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(parametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comparisonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(comparisonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(visualizationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
+                .addComponent(visualizationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(comparisonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(parametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(parametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -875,12 +881,14 @@ public class MainFrame extends CenterFrame {
     private javax.swing.JCheckBox footballCheckBox;
     private javax.swing.JButton histogramBtn;
     private javax.swing.JCheckBox hockeyCheckBox;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private static javax.swing.JPanel parametersPanel;
-    private javax.swing.JPanel paramsBtnPanel;
     private javax.swing.JButton pieChartBtn;
     private javax.swing.JPanel selectTimePeriodPanel;
     private javax.swing.JButton showBtn;
