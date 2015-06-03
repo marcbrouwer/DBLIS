@@ -84,6 +84,7 @@ public class SportData2 {
     
     private Date startdate = new Date();
     private Date enddate = new Date();
+    private int lineInterval = 1;
     private int interval = 1;
     private int year = 0;
     private boolean yearSelected = false;
@@ -508,6 +509,24 @@ public class SportData2 {
         return new long[]{calB.getTimeInMillis(), calE.getTimeInMillis()};
     }
     
+    public final long[] getLineToPieTimestamps(Date date) {
+        final long[] daystamps = getDayTimestamps(date);
+        Calendar calS = Calendar.getInstance();
+        calS.setTimeInMillis(date.getTime());
+        
+        Calendar calE = Calendar.getInstance();
+        calE.clear();
+        calE.setTimeInMillis(daystamps[1]);
+        
+        if (lineInterval == 7) {
+            calE.setTimeInMillis(calE.getTimeInMillis() + 604800000L);
+        } else if (lineInterval == 30) {
+            calE.setTimeInMillis(getMonthTimeEnd(date.getTime()));
+        }
+        
+        return new long[]{daystamps[0], calE.getTimeInMillis()};
+    }
+    
     public final int getNumberUsersInterestedIn(List<String> sports, 
             long starttime, long endtime) {
         if (sports.isEmpty()) {
@@ -586,6 +605,14 @@ public class SportData2 {
     
     public final int getInterval() {
         return interval;
+    }
+    
+    public final void setLineInterval(int interval) {
+        this.lineInterval = interval;
+    }
+    
+    public final int getLineInterval() {
+        return lineInterval;
     }
     
     public final void setFootballSeperate(boolean seperate) {
