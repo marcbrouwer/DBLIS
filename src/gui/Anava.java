@@ -263,7 +263,7 @@ public class Anava {
                 if(total<1){
                     data.get(i).setPercentage(100);
                 } else {
-                    int j = data.get(i).getAmount()/total;
+                    int j = data.get(i).getAmount()*100/total;
                     data.get(i).setPercentage(j);
                 }
             }
@@ -328,6 +328,7 @@ public class Anava {
         public TableData(String sport, Integer amount) {
             this.sport = new SimpleStringProperty(sport);
             this.amount = new SimpleIntegerProperty(amount);
+            this.percentage = new SimpleIntegerProperty(100);
         }
 
         public String getSport() {
