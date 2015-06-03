@@ -50,23 +50,25 @@ public class Anava {
         final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, seriesRest);
         final LineChart<Date, Number> lineChartFootball = new LineChart<>(dateAxis2, numberAxis2, seriesFootball);
 
+        boolean year = SportData2.getInstance().getYearSelected();
+        
         Runnable runner = () -> {
             boolean showStage = false;
-            if (SportData2.getInstance().footballSeperate() && selected.contains("football")) {
-                //if (selected.contains("football")) {
-
+            if(year) {
+                seriesRest.addAll(getSeries(selected,true));
+            }
+            else if (SportData2.getInstance().footballSeperate() && selected.contains("football")) {
+                
                     selected.remove("football");
                     seriesFootball.addAll(getSeries(Arrays.asList("football"), false));
                     seriesRest.addAll(getSeries(selected, false));
 
                     addShowPieOnClick(seriesFootball);
                     showStage = true;
-                //}
-
             } else {
                 seriesRest.addAll(getSeries(selected, false));
             }
-
+            
             addShowPieOnClick(seriesRest);
 
             Scene scene = new Scene(lineChart, 800, 600);
