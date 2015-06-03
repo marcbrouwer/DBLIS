@@ -85,8 +85,12 @@ public class SportData2 {
     private Date startdate = new Date();
     private Date enddate = new Date();
     private int interval = 1;
+<<<<<<< HEAD
     private int year = 0;
     private boolean yearSelected = false;
+=======
+    private int year;
+>>>>>>> origin/master
     private List<String> selected = new ArrayList<>();
     private boolean footballSeperate = false;
     
@@ -519,6 +523,7 @@ public class SportData2 {
         return year;
     }
     
+<<<<<<< HEAD
     public final void setYearSelected(boolean selected) {
         yearSelected = selected;
     }
@@ -527,6 +532,8 @@ public class SportData2 {
         return yearSelected;
     }
     
+=======
+>>>>>>> origin/master
     // PRIVATE Methods
     
     private long getMonthTimeStart(long starttime) {

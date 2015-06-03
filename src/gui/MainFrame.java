@@ -883,7 +883,10 @@ public class MainFrame extends CenterFrame {
         }
         
         SportData2.getInstance().setYear(year);
+<<<<<<< HEAD
         SportData2.getInstance().setYearSelected(showYearDataCheckbox.isSelected());
+=======
+>>>>>>> origin/master
         SportData2.getInstance().setDates(getStartDate(), getEndDate());
         SportData2.getInstance().setSelected(getSports());
         SportData2.getInstance().setInterval(timeInterval);
