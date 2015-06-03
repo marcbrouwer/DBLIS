@@ -58,7 +58,7 @@ public class Marc {
             final CategoryAxis xAxis = new CategoryAxis();
             final NumberAxis yAxis = new NumberAxis();
             xAxis.setLabel("Hashtags");
-            yAxis.setLabel("Popularity");
+            yAxis.setLabel("Number of hashtags");
 
             final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
 
@@ -87,8 +87,8 @@ public class Marc {
             final List<Double> values = new ArrayList<>(pop.values());
             Collections.sort(values, Collections.reverseOrder());
             double min = 1.0;
-            if (values.size() >= 10) {
-                min = values.get(9);
+            if (values.size() >= 20) {
+                min = values.get(19);
             } else if (!values.isEmpty()) {
                 min = values.get(values.size() - 1);
             }
