@@ -50,23 +50,20 @@ public class Anava {
         final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, seriesRest);
         final LineChart<Date, Number> lineChartFootball = new LineChart<>(dateAxis2, numberAxis2, seriesFootball);
 
-        boolean year = SportData2.getInstance().getYearSelected();
+        final boolean year = SportData2.getInstance().getYearSelected();
         
-        Runnable runner = () -> {
+        //Runnable runner = () -> {
             boolean showStage = false;
-            if(year) {
-                seriesRest.addAll(getSeries(selected,true));
-            }
-            else if (SportData2.getInstance().footballSeperate() && selected.contains("football")) {
+            if (SportData2.getInstance().footballSeperate() && selected.contains("football")) {
                 
                     selected.remove("football");
-                    seriesFootball.addAll(getSeries(Arrays.asList("football"), false));
-                    seriesRest.addAll(getSeries(selected, false));
+                    seriesFootball.addAll(getSeries(Arrays.asList("football"), year));
+                    seriesRest.addAll(getSeries(selected, year));
 
                     addShowPieOnClick(seriesFootball);
                     showStage = true;
             } else {
-                seriesRest.addAll(getSeries(selected, false));
+                seriesRest.addAll(getSeries(selected, year));
             }
             
             addShowPieOnClick(seriesRest);
@@ -78,9 +75,9 @@ public class Anava {
                 primaryStage.show();
             }
             panel.setScene(scene);
-        };
+        /*};
         Thread t = new Thread(runner);
-        t.start();
+        t.start();*/
         return null;
     }
     
@@ -162,7 +159,7 @@ public class Anava {
             primaryStage.setScene(scene0);
             primaryStage.show();
             
-            Runnable runner = () -> {
+            //Runnable runner = () -> {
                 final List<PieChart.Data> list = new ArrayList<>();
 
                 final long[] stamps = SportData2.getInstance().getDayTimestamps(date);
@@ -180,9 +177,9 @@ public class Anava {
                 Scene scene = new Scene(pie, 800, 600);
                 primaryStage.setScene(scene);
                 primaryStage.show();
-            };
+            /*};
             Thread t = new Thread(runner);
-            t.start();
+            t.start();*/
         }
     }
 
