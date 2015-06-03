@@ -199,98 +199,111 @@ public class Anava {
     private final static ObservableList<TableData> data = FXCollections.observableArrayList();
     
     public static void createTheFuckingTable(){
-        
-        System.out.println("0");
-        
-        final Stage primaryStage = new Stage();
-        Scene scene = new Scene(new Group());
-        primaryStage.setTitle("Amount of users tweeting");
-        primaryStage.setWidth(500);
-        primaryStage.setHeight(500);
-        
-        //final Map<String, Integer> numberUsers = new HashMap();
-        int total = 0;
-        final List<String> selected = SportData2.getInstance().getSelected();
-        
-        System.out.println("1");
-        
-        if(SportData2.getInstance().getYearSelected()){
+        if(SportData2.getInstance().getSelected().size()<2){
             
-            final int year = SportData2.getInstance().getYear();
-            
-            //for(String sport : selected){
-            for(int i=0; i<selected.size(); i++){
-                data.add(new TableData(selected.get(i), SportData2.getInstance()
-                        .getNumberUsersInterestedIn(selected.get(i), year)));
-                total += data.get(i).getAmount();
-                /*numberUsers.put(sport, SportData2.getInstance()
-                        .getNumberUsersInterestedIn(sport, year));
-                total += numberUsers.get(sport);*/
-            }
-            data.add(new TableData("Both", SportData2.getInstance()
-                    .getNumberUsersInterestedIn(selected, year)));
-            /*numberUsers.put("Both", SportData2.getInstance()
-                    .getNumberUsersInterestedIn(selected, year)); */
-            
+            System.out.println("The amount of sports selected is less then 2");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("The amount of sports selected is less then 2");
+
+            alert.showAndWait();
         } else {
-            final long startTime = SportData2.getInstance().getStartDate().getTime();
-            final long endTime = SportData2.getInstance().getEndDate().getTime();
-            
-            for(int i=0; i<selected.size(); i++){
-                data.add(new TableData(selected.get(i), SportData2.getInstance()
-                    .getNumberUsersInterestedIn(selected.get(i), startTime, endTime)));
-                total += data.get(i).getAmount();
+            System.out.println("0");
+
+            final Stage primaryStage = new Stage();
+            Scene scene = new Scene(new Group());
+            primaryStage.setTitle("Amount of users tweeting");
+            primaryStage.setWidth(500);
+            primaryStage.setHeight(500);
+
+            //final Map<String, Integer> numberUsers = new HashMap();
+            int total = 0;
+            final List<String> selected = SportData2.getInstance().getSelected();
+
+            System.out.println("1");
+
+            if(SportData2.getInstance().getYearSelected()){
+
+                final int year = SportData2.getInstance().getYear();
+
+                //for(String sport : selected){
+                for(int i=0; i<selected.size(); i++){
+                    data.add(new TableData(selected.get(i), SportData2.getInstance()
+                            .getNumberUsersInterestedIn(selected.get(i), year)));
+                    total += data.get(i).getAmount();
+                    /*numberUsers.put(sport, SportData2.getInstance()
+                            .getNumberUsersInterestedIn(sport, year));
+                    total += numberUsers.get(sport);*/
+                }
+                data.add(new TableData("Both", SportData2.getInstance()
+                        .getNumberUsersInterestedIn(selected, year)));
+                /*numberUsers.put("Both", SportData2.getInstance()
+                        .getNumberUsersInterestedIn(selected, year)); */
+
+            } else {
+                final long startTime = SportData2.getInstance().getStartDate().getTime();
+                final long endTime = SportData2.getInstance().getEndDate().getTime();
+
+                for(int i=0; i<selected.size(); i++){
+                    data.add(new TableData(selected.get(i), SportData2.getInstance()
+                        .getNumberUsersInterestedIn(selected.get(i), startTime, endTime)));
+                    total += data.get(i).getAmount();
+                }
+
+                data.add(new TableData("Both", SportData2.getInstance()
+                        .getNumberUsersInterestedIn(selected, startTime, endTime)));
             }
-            
-            data.add(new TableData("Both", SportData2.getInstance()
-                    .getNumberUsersInterestedIn(selected, startTime, endTime)));
+            total -= data.get(data.size()-1).getAmount();
+
+
+            System.out.println("2");
+
+            for(int i=0; i<data.size(); i++){
+                if(total<1){
+                    data.get(i).setPercentage(100);
+                } else {
+                    int j = data.get(i).getAmount()/total;
+                    data.get(i).setPercentage(j);
+                }
+            }
+
+            System.out.println("3");
+
+
+
+            final Label label = new Label("Amount of people talking");
+            label.setFont(new Font("Arial", 20));
+
+            table.setEditable(false);
+
+            TableColumn sports = new TableColumn("Sport");
+            sports.setMinWidth(200);
+            sports.setCellValueFactory(new PropertyValueFactory<>("sport"));
+
+            TableColumn totalAmount = new TableColumn("Total amount");
+            totalAmount.setMinWidth(100);
+            totalAmount.setCellFactory(new PropertyValueFactory<>("amount"));
+
+            TableColumn percentage = new TableColumn("Percentage");
+            percentage.setMinWidth(100);
+            percentage.setCellFactory(new PropertyValueFactory<>("percentage"));
+
+            table.getColumns().addAll(sports, totalAmount, percentage);
+
+            final VBox vbox = new VBox();
+            vbox.setSpacing(5);
+            vbox.setPadding(new Insets(10, 0, 0, 10));
+            vbox.getChildren().addAll(label, table);
+
+            ((Group) scene.getRoot()).getChildren().addAll(vbox);
+
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            System.out.println("4");
+        
         }
-        total -= data.get(data.size()-1).getAmount();
-        
-        
-        System.out.println("2");
-        
-        for(int i=0; i<data.size(); i++){
-            int j = data.get(i).getAmount()/total;
-            data.get(i).setPercentage(j);
-        }
-        
-        System.out.println("3");
-        
-        
- 
-        final Label label = new Label("Amount of people talking");
-        label.setFont(new Font("Arial", 20));
- 
-        table.setEditable(false);
- 
-        TableColumn sports = new TableColumn("Sport");
-        sports.setMinWidth(200);
-        sports.setCellValueFactory(new PropertyValueFactory<>("sport"));
-        
-        TableColumn totalAmount = new TableColumn("Total amount");
-        totalAmount.setMinWidth(100);
-        totalAmount.setCellFactory(new PropertyValueFactory<>("amount"));
-        
-        TableColumn percentage = new TableColumn("Percentage");
-        percentage.setMinWidth(100);
-        percentage.setCellFactory(new PropertyValueFactory<>("percentage"));
-        
-        table.getColumns().addAll(sports, totalAmount, percentage);
- 
-        final VBox vbox = new VBox();
-        vbox.setSpacing(5);
-        vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label, table);
- 
-        ((Group) scene.getRoot()).getChildren().addAll(vbox);
- 
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        
-        System.out.println("4");
-        
-        
     }
     
     public static class TableData {

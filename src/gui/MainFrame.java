@@ -309,6 +309,11 @@ public class MainFrame extends CenterFrame {
         jPanel1.add(showBtn);
 
         showUserInterestsBtn.setText("<html><center>User<br>Interests</center></html>");
+        showUserInterestsBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showUserInterestsBtnActionPerformed(evt);
+            }
+        });
         jPanel1.add(showUserInterestsBtn);
 
         showTwoChartsChkBox.setText("<html>Two<br>charts</html>");
@@ -698,6 +703,13 @@ public class MainFrame extends CenterFrame {
             candidateListModel.addElement(newCandidate);
         }
     }//GEN-LAST:event_addTeamBtnActionPerformed
+
+    private void showUserInterestsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showUserInterestsBtnActionPerformed
+        setParameters();
+        PopFrame pf = new PopFrame(4);
+        pf.setVisible(true);
+        pf.toFront();        
+    }//GEN-LAST:event_showUserInterestsBtnActionPerformed
     
     private List<String> getCandidates(){
         List<String> candidates = new ArrayList<>();
