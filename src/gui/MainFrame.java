@@ -592,13 +592,8 @@ public class MainFrame extends CenterFrame {
     }//GEN-LAST:event_yearDataCheckboxChanged
 
     private void showBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showBtnActionPerformed
-        System.out.println("Pressed");
         setParameters();
-        
-        GraphInfo graphInfo = new GraphInfo(startTimePicker.getDate(),
-                endTimePicker.getDate(), footballCheckBox.isSelected(),
-            hockeyCheckBox.isSelected(), cyclingCheckBox.isSelected(),
-            tennisCheckBox.isSelected(), skatingCheckBox.isSelected(), 1);
+        SportData2.getInstance().setLineInterval(getInterval());
         fxPanel.drawScene(2);
     }//GEN-LAST:event_showBtnActionPerformed
 
@@ -741,6 +736,23 @@ public class MainFrame extends CenterFrame {
     }
     
     private void setParameters() {
+        String yearString = yearCombo.getSelectedItem().toString();
+        int year = 0;
+        
+        try {
+            year = Integer.parseInt(yearString);
+        } catch (NumberFormatException ex) {
+        }
+        
+        SportData2.getInstance().setYear(year);
+        SportData2.getInstance().setYearSelected(showYearDataCheckbox.isSelected());
+        SportData2.getInstance().setDates(getStartDate(), getEndDate());
+        SportData2.getInstance().setSelected(getSports());
+        SportData2.getInstance().setInterval(getInterval());
+        SportData2.getInstance().setFootballSeperate(showTwoChartsChkBox.isSelected());
+    }
+    
+    private int getInterval() {
         int timeInterval = 0;
         String selected = timeIntervalCombo.getSelectedItem().toString();
         switch (selected) {
@@ -754,21 +766,7 @@ public class MainFrame extends CenterFrame {
                 timeInterval = 1;
                 break;
         }
-        
-        String yearString = yearCombo.getSelectedItem().toString();
-        int year = 0;
-        
-        try {
-            year = Integer.parseInt(yearString);
-        } catch (NumberFormatException ex) {
-        }
-        
-        SportData2.getInstance().setYear(year);
-        SportData2.getInstance().setYearSelected(showYearDataCheckbox.isSelected());
-        SportData2.getInstance().setDates(getStartDate(), getEndDate());
-        SportData2.getInstance().setSelected(getSports());
-        SportData2.getInstance().setInterval(timeInterval);
-        SportData2.getInstance().setFootballSeperate(showTwoChartsChkBox.isSelected());
+        return timeInterval;
     }
     
     private Date getStartDate() {

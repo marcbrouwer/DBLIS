@@ -84,7 +84,6 @@ public class FXPanel extends JFXPanel {
                     break;
                 case 3:
                     scene1 = drawPieChart(thisPanel);
-                    System.out.println((new Date()).getTime());
                     break;
                 case 4:
                     Anava.createTheFuckingTable();
@@ -408,7 +407,7 @@ public class FXPanel extends JFXPanel {
             Runnable runner = () -> {
                 final List<PieChart.Data> list = new ArrayList<>();
 
-                final long[] stamps = SportData2.getInstance().getDayTimestamps(date);
+                final long[] stamps = SportData2.getInstance().getLineToPieTimestamps(date);
 
                 final Map<String, Double> sportPop = SportData2.getInstance()
                         .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);

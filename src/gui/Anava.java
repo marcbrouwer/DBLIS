@@ -145,7 +145,7 @@ public class Anava {
         });
     }
 
-    /** COPIED NOT CHANGED */
+    /** !!!     !!!     !!!     C H A N G E D     !!!     !!!     !!! */
     private static void makePieChart(String sport, Date date, Number yValue) {
         if(yValue.intValue()==0){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -173,17 +173,16 @@ public class Anava {
             
             //Runnable runner = () -> {
                 final List<PieChart.Data> list = new ArrayList<>();
-
-                final long[] stamps = SportData2.getInstance().getDayTimestamps(date);
-
+                
+                final long[] stamps = SportData2.getInstance().getLineToPieTimestamps(date);
+                
                 final Map<String, Double> sportPop = SportData2.getInstance()
                         .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
 
                 for (Map.Entry<String, Double> entry : sportPop.entrySet()) {
                     list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
                 }
-                PieChart pie = new PieChart(
-                        FXCollections.observableArrayList(list));
+                PieChart pie = new PieChart(FXCollections.observableArrayList(list));
                 pie.setTitle("Popularity for " + sport + ", " + date);
 
                 Scene scene = new Scene(pie, 800, 600);
@@ -199,8 +198,8 @@ public class Anava {
     private final static ObservableList<TableData> data = FXCollections.observableArrayList();
     
     public static void createTheFuckingTable(){
-        if(SportData2.getInstance().getSelected().size()<2){
-            
+        if (SportData2.getInstance().getSelected().size() < 2) {
+
             System.out.println("The amount of sports selected is less then 2");
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Error");
@@ -228,7 +227,7 @@ public class Anava {
                 final int year = SportData2.getInstance().getYear();
 
                 //for(String sport : selected){
-                for(int i=0; i<selected.size(); i++){
+                for (int i = 0; i < selected.size(); i++) {
                     data.add(new TableData(selected.get(i), SportData2.getInstance()
                             .getNumberUsersInterestedIn(selected.get(i), year)));
                     total += data.get(i).getAmount();
