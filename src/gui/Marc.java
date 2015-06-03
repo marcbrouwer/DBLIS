@@ -1,6 +1,7 @@
 package gui;
 
 import dblis.SportData2;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -17,7 +18,30 @@ import javafx.scene.chart.XYChart;
  */
 public class Marc {
     
-    private Scene drawBarChartHashtags(FXPanel panel) {
+    public static Scene drawBarChart(FXPanel panel) {
+        Runnable runner = () -> {
+            final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
+
+            final CategoryAxis xAxis = new CategoryAxis();
+            final NumberAxis yAxis = new NumberAxis();
+            xAxis.setLabel("Event");
+            yAxis.setLabel("Popularity");
+
+            final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
+
+            final List<String> events = SportData2.getInstance().getSelected();
+            events.stream().forEach(e -> series.addAll(getSerie(e, true)));
+
+            Scene scene = new Scene(barChart, 800, 600);
+            panel.setScene(scene);
+        };
+        
+        Thread t = new Thread(runner);
+        t.start();
+        return null;
+    }
+    
+    public static Scene drawBarChartHashtags(FXPanel panel) {
         Runnable runner = () -> {
             final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
@@ -48,6 +72,51 @@ public class Marc {
         Thread t = new Thread(runner);
         t.start();
         return null;
+    }
+    
+    /** COPIED NOT CHANGED */
+    private static XYChart.Series<String, Number> getSerie(String event, boolean pop_user) {
+        //Getting the selected information from the GUI
+        final Date startdate = SportData2.getInstance().getStartDate();
+        final Date enddate = SportData2.getInstance().getEndDate();
+        
+        //Creating variables required
+        final XYChart.Series<String, Number> serie = new XYChart.Series();
+        
+        final String sep = ";&;";
+        int pop = 0;
+        
+        if (pop_user) {
+            if (event.contains(sep)) {
+                String[] teams = event.split(sep);
+                pop += SportData2.getInstance().getPopularity(
+                            teams[0], startdate.getTime(), enddate.getTime());
+                pop += SportData2.getInstance().getPopularity(
+                            teams[1], startdate.getTime(), enddate.getTime());
+                serie.setName(teams[0] + " - " + teams[1]);
+            } else { 
+                pop = SportData2.getInstance().getPopularity(
+                            event, startdate.getTime(), enddate.getTime());
+                serie.setName(event);
+            }
+        } else {
+            if (event.contains(sep)) {
+                String[] teams = event.split(sep);
+                pop += SportData2.getInstance().getNumberUsers(
+                            teams[0], startdate.getTime(), enddate.getTime());
+                pop += SportData2.getInstance().getNumberUsers(
+                            teams[1], startdate.getTime(), enddate.getTime());
+                serie.setName(teams[0] + " - " + teams[1]);
+            } else { 
+                pop = SportData2.getInstance().getNumberUsers(
+                            event, startdate.getTime(), enddate.getTime());
+                serie.setName(event);
+            }
+        }
+        
+        serie.getData().add(new XYChart.Data("", pop));
+        
+        return serie;
     }
     
 }

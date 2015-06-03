@@ -114,23 +114,23 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawLineChart(FXPanel panel) {
+        return Anava.drawLineChart(panel);
+        /*ObservableList<XYChart.Series<Date, Number>> seriesFootball = FXCollections.observableArrayList();
+        ObservableList<XYChart.Series<Date, Number>> seriesRest = FXCollections.observableArrayList();
 
-            ObservableList<XYChart.Series<Date, Number>> seriesFootball = FXCollections.observableArrayList();
-            ObservableList<XYChart.Series<Date, Number>> seriesRest = FXCollections.observableArrayList();
+        final Stage primaryStage = new Stage();
+        primaryStage.setTitle("Football Popup");
 
-            final Stage primaryStage = new Stage();
-            primaryStage.setTitle("Football Popup");
+        final NumberAxis numberAxis = new NumberAxis();
+        final DateAxis dateAxis = new DateAxis();
 
-            final NumberAxis numberAxis = new NumberAxis();
-            final DateAxis dateAxis = new DateAxis();
+        final NumberAxis numberAxis2 = new NumberAxis();
+        final DateAxis dateAxis2 = new DateAxis();
 
-            final NumberAxis numberAxis2 = new NumberAxis();
-            final DateAxis dateAxis2 = new DateAxis();
+        final List<String> selected = SportData2.getInstance().getSelected();
 
-            final List<String> selected = SportData2.getInstance().getSelected();
-
-            final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, seriesRest);
-            final LineChart<Date, Number> lineChartFootball = new LineChart<>(dateAxis2, numberAxis2, seriesFootball);
+        final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, seriesRest);
+        final LineChart<Date, Number> lineChartFootball = new LineChart<>(dateAxis2, numberAxis2, seriesFootball);
 
         Runnable runner = () -> {
             boolean showStage = false;
@@ -161,11 +161,12 @@ public class FXPanel extends JFXPanel {
         };
         Thread t = new Thread(runner);
         t.start();
-        return null;
+        return null;*/
     }
 
     private Scene drawBarChart(FXPanel panel) {
-        Runnable runner = () -> {
+        return Marc.drawBarChart(panel);
+        /*Runnable runner = () -> {
             final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
             final CategoryAxis xAxis = new CategoryAxis();
@@ -184,7 +185,7 @@ public class FXPanel extends JFXPanel {
         
         Thread t = new Thread(runner);
         t.start();
-        return null;
+        return null;*/
     }
 
     private Scene drawBarChartUsers(FXPanel panel) {
