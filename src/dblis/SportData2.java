@@ -319,7 +319,7 @@ public class SportData2 {
     }
     
     public final Map<String, Double> getPopularityKeywords(String sport) {
-        final Map<String, Double> pop = new HashMap();
+        final Map<String, Double> pop = new ConcurrentHashMap();
         
         if (relations.containsKey(sport)) {
             getKeywords(sport).stream().forEach(keyword -> 
@@ -331,7 +331,7 @@ public class SportData2 {
     
     public final Map<String, Double> getPopularityKeywords(String sport, long starttime, 
             long endtime) {
-        final Map<String, Double> pop = new HashMap();
+        final Map<String, Double> pop = new ConcurrentHashMap();
         
         if (relations.containsKey(sport)) {
             getKeywords(sport).stream().forEach(keyword -> 
