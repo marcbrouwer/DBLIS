@@ -508,6 +508,55 @@ public class SportData2 {
         return new long[]{calB.getTimeInMillis(), calE.getTimeInMillis()};
     }
     
+    public final int getNumberUsersInterestedIn(List<String> sports, 
+            long starttime, long endtime) {
+        if (sports.isEmpty()) {
+            return 0;
+        }
+        
+        final Set<Long> userids = new HashSet();
+        userids.addAll(getUsersInterestedIn(sports.get(0), starttime, endtime));
+        
+        final Set<Long> newIds = new HashSet();
+        final Set<Long> join = new HashSet();
+        for (int i = 1; i < sports.size(); i++) {
+            if (userids.isEmpty()) {
+                return 0;
+            }
+            newIds.clear();
+            join.clear();
+            
+            newIds.addAll(getUsersInterestedIn(sports.get(i), starttime, endtime));
+            join.addAll(userids.stream()
+                    .filter(id -> newIds.contains(id))
+                    .map(id -> id).collect(Collectors.toCollection(HashSet::new)));
+            
+            userids.clear();
+            userids.addAll(join);
+        }
+        
+        return userids.size();
+    }
+    
+    public final int getNumberUsersInterestedIn(List<String> sports, int year) {
+        final long starttime = (new Date(getYearTimeStart(year))).getTime();
+        final long endtime = (new Date(getYearTimeEnd(year))).getTime();
+        
+        return getNumberUsersInterestedIn(sports, starttime, endtime);
+    }
+    
+    public final int getNumberUsersInterestedIn(String sport, 
+            long starttime, long endtime) {
+        return getUsersInterestedIn(sport, starttime, endtime).size();
+    }
+    
+    public final int getNumberUsersInterestedIn(String sport, int year) {
+        final long starttime = (new Date(getYearTimeStart(year))).getTime();
+        final long endtime = (new Date(getYearTimeEnd(year))).getTime();
+        
+        return getNumberUsersInterestedIn(sport, starttime, endtime);
+    }
+    
     // TEMP Setters and Getters
     
     public final void setDates(Date startdate, Date enddate) {
@@ -635,6 +684,13 @@ public class SportData2 {
         return tweets.parallelStream()
                 .filter(te -> te.isInTimeFrame(starttime, endtime))
                 .filter(te -> te.isRelatedTo(keywords));
+    }
+    
+    private Set<Long> getUsersInterestedIn(String sport, long starttime, 
+            long endtime) {
+        return getRelatedTweets(sport, starttime, endtime)
+                .map(TweetEntity::getUserID)
+                .collect(Collectors.toCollection(HashSet::new));
     }
     
     private int getRetweetCount(Stream<TweetEntity> data) {
