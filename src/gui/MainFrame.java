@@ -136,11 +136,6 @@ public class MainFrame extends CenterFrame {
         footballCheckBox.setText("Football");
 
         hockeyCheckBox.setText("Hockey");
-        hockeyCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hockeyCheckBoxActionPerformed(evt);
-            }
-        });
 
         cyclingCheckBox.setText("Cycling");
 
@@ -560,12 +555,7 @@ public class MainFrame extends CenterFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void hockeyCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hockeyCheckBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_hockeyCheckBoxActionPerformed
-
     private void sportsChooseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsChooseBtnActionPerformed
-        // TODO add your handling code here:
         /*for(JCheckBox cb : sportCheckboxes){
             cb.setSelected(false);
         }*/
@@ -574,52 +564,42 @@ public class MainFrame extends CenterFrame {
     }//GEN-LAST:event_sportsChooseBtnActionPerformed
 
     private void sportsOKBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsOKBtnActionPerformed
-        // TODO add your handling code here:
         sportsDialog.dispose();
-        
     }//GEN-LAST:event_sportsOKBtnActionPerformed
 
     private void sportsCancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsCancelBtnActionPerformed
-        // TODO add your handling code here:
-        
         sportsDialog.dispose();
     }//GEN-LAST:event_sportsCancelBtnActionPerformed
 
     private void sportsSelectAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsSelectAllBtnActionPerformed
-        // TODO add your handling code here:
-        for(JCheckBox cb : sportCheckboxes){
+        sportCheckboxes.stream().forEach((cb) -> {
             cb.setSelected(true);
-        }
+        });
     }//GEN-LAST:event_sportsSelectAllBtnActionPerformed
 
     private void sportsDeselectAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsDeselectAllBtnActionPerformed
-        // TODO add your handling code here:
-        for(JCheckBox cb : sportCheckboxes){
+        sportCheckboxes.stream().forEach((cb) -> {
             cb.setSelected(false);
-        }
+        });
     }//GEN-LAST:event_sportsDeselectAllBtnActionPerformed
 
     private void sportsInverseSelectionBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsInverseSelectionBtnActionPerformed
-        // TODO add your handling code here:
-        for(JCheckBox cb : sportCheckboxes){
+        sportCheckboxes.stream().forEach((cb) -> {
             cb.setSelected(!cb.isSelected());
-        }
+        });
     }//GEN-LAST:event_sportsInverseSelectionBtnActionPerformed
 
     private void showYearDataCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showYearDataCheckboxActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_showYearDataCheckboxActionPerformed
 
     private void yearDataCheckboxChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_yearDataCheckboxChanged
-        // TODO add your handling code here:
         boolean showYear  = showYearDataCheckbox.isSelected();
         this.yearCombo.setEnabled(showYear);
         this.startTimePicker.setEnabled(!showYear);
         this.endTimePicker.setEnabled(!showYear);
     }//GEN-LAST:event_yearDataCheckboxChanged
 
-    // If the show button is pressed we update the graph
-    // 
     private void showBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showBtnActionPerformed
         System.out.println("Pressed");
         setParameters();
@@ -639,7 +619,7 @@ public class MainFrame extends CenterFrame {
     }//GEN-LAST:event_pieChartBtnActionPerformed
 
     private void showTwoChartsChkBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showTwoChartsChkBoxActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_showTwoChartsChkBoxActionPerformed
 
     private void showComparisonBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showComparisonBtnActionPerformed
@@ -659,7 +639,6 @@ public class MainFrame extends CenterFrame {
     }//GEN-LAST:event_histogramBtnActionPerformed
     
     private void addEventBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addEventBtnActionPerformed
-        // TODO add your handling code here:
         if(!eventList.isSelectionEmpty()){
             String newCandidate = eventList.getSelectedValue().toString();
             candidateListModel.addElement(newCandidate);
@@ -689,18 +668,14 @@ public class MainFrame extends CenterFrame {
     }//GEN-LAST:event_comparisonTypeChangedHandler
     
     private void sportTypeChangedHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportTypeChangedHandler
-        // TODO add your handling code here:
         sportChanged();
-        
     }//GEN-LAST:event_sportTypeChangedHandler
     
     private void clearCandidateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearCandidateBtnActionPerformed
-        // TODO add your handling code here:
         candidateListModel.clear();
     }//GEN-LAST:event_clearCandidateBtnActionPerformed
 
     private void showComparisonBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showComparisonBtn1ActionPerformed
-        // TODO add your handling code here:
         setParameters();
         List<String> candidates = getCandidates();
         SportData2.getInstance().setSelected(candidates);
@@ -710,14 +685,12 @@ public class MainFrame extends CenterFrame {
     }//GEN-LAST:event_showComparisonBtn1ActionPerformed
 
     private void deleteOneBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteOneBtnActionPerformed
-        // TODO add your handling code here:
         if(!candidateList.isSelectionEmpty()){
             candidateListModel.remove(candidateList.getSelectedIndex());
         }
     }//GEN-LAST:event_deleteOneBtnActionPerformed
 
     private void addTeamBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTeamBtnActionPerformed
-        // TODO add your handling code here:
         String teamA = teamAComboBox.getSelectedItem().toString();
         String teamB = teamBComboBox.getSelectedItem().toString();
         if(!(teamA.isEmpty() && teamB.isEmpty())){
