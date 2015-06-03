@@ -1,6 +1,10 @@
 package gui;
 
 import dblis.SportData2;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +15,8 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 /**
  *
@@ -19,7 +25,7 @@ import javafx.scene.chart.XYChart;
 public class Marc {
     
     public static Scene drawBarChart(FXPanel panel) {
-        Runnable runner = () -> {
+        //Runnable runner = () -> {
             final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
             final CategoryAxis xAxis = new CategoryAxis();
@@ -31,18 +37,23 @@ public class Marc {
 
             final List<String> events = SportData2.getInstance().getSelected();
             events.stream().forEach(e -> series.addAll(getSerie(e, true)));
+            
+            addShowHashtagsOnClick(series);
 
             Scene scene = new Scene(barChart, 800, 600);
             panel.setScene(scene);
-        };
+        /*};
         
         Thread t = new Thread(runner);
-        t.start();
+        t.start();*/
         return null;
     }
     
-    public static Scene drawBarChartHashtags(FXPanel panel) {
-        Runnable runner = () -> {
+    public static Scene drawBarChartHashtags() {
+        //Runnable runner = () -> {
+            final Stage primaryStage = new Stage();
+            primaryStage.setTitle("Hashtags");
+
             final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
             final CategoryAxis xAxis = new CategoryAxis();
@@ -57,21 +68,49 @@ public class Marc {
             final long endtime = SportData2.getInstance().getEndDate().getTime();
             
             final Map<String, Double> pop = SportData2.getInstance().getMostCommonHashtags(selected, starttime, endtime);
-            final XYChart.Series<String, Number> serie = new XYChart.Series();
+            final List<Double> values = new ArrayList<>(pop.values());
+            Collections.sort(values, Collections.reverseOrder());
+            double min = 1.0;
+            if (values.size() >= 10) {
+                min = values.get(9);
+            } else if (!values.isEmpty()) {
+                min = values.get(values.size() - 1);
+            }
+            final double atleast = min;
             
-            selected.stream().forEach(hashtag -> {
-                serie.getData().add(new XYChart.Data("", pop.get(hashtag)));
-                serie.setName(hashtag);
-                series.add(serie);
-            });
-            
+            pop.entrySet().stream()
+                .filter(entry -> entry.getValue() >= atleast)
+                .forEach(hashtag -> {
+                    final XYChart.Series<String, Number> serie = new XYChart.Series();
+                    serie.getData().add(new XYChart.Data("", hashtag.getValue()));
+                    serie.setName(hashtag.getKey());
+                    series.add(serie);
+                });
+
             Scene scene = new Scene(barChart, 800, 600);
-            panel.setScene(scene);
-        };
+
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        /*};
         
         Thread t = new Thread(runner);
-        t.start();
+        t.start();*/
         return null;
+    }
+    
+    private static void addShowHashtagsOnClick(ObservableList<XYChart.Series<String, Number>> series) {
+        series.stream().forEach(serie -> {
+            serie.getData().stream().forEach(data -> {
+                try {
+                    data.getNode().setOnMousePressed((MouseEvent mouseEvent) -> {
+                        SportData2.getInstance().setSelected(Arrays.asList(serie.getName()));
+                        drawBarChartHashtags();
+                    });
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
+            });
+        });
     }
     
     /** COPIED NOT CHANGED */

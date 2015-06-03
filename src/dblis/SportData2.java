@@ -175,7 +175,7 @@ public class SportData2 {
     
     public final Map<String, Double> getMostCommonHashtags(List<String> keywords,
             long starttime, long endtime) {
-        final Map<String, Double> hashtags = new HashMap();
+        final Map<String, Double> hashtags = new ConcurrentHashMap();
         
         getRelatedTweets(keywords, starttime, endtime).forEach(te -> {
             te.getHashtags().stream().forEach(hashtag -> {
