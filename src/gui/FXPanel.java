@@ -74,7 +74,11 @@ public class FXPanel extends JFXPanel {
             Scene scene1  = null;
             switch (index) {
                 case 0:
+                    Anava.createTheFuckingTable();
                     scene1 = drawSceneWelcome();
+        
+                    System.out.println("5");
+        
                     break;
                 case 1:
                     scene1 = drawSceneGoodbye();
