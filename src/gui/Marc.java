@@ -3,7 +3,6 @@ package gui;
 import dblis.SportData2;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -64,10 +63,27 @@ public class Marc {
             final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
 
             final List<String> selected = SportData2.getInstance().getSelected();
-            final long starttime = SportData2.getInstance().getStartDate().getTime();
-            final long endtime = SportData2.getInstance().getEndDate().getTime();
+            final List<String> copy = new ArrayList<>(selected);
+            copy.stream().forEach(keyword -> {
+                if (keyword.contains(" - ")) {
+                    selected.remove(keyword);
+                    final String[] splits = keyword.split(" - ");
+                    selected.add(splits[0]);
+                    selected.add(splits[1]);
+                }
+            });
             
-            final Map<String, Double> pop = SportData2.getInstance().getMostCommonHashtags(selected, starttime, endtime);
+            final Map<String, Double> pop;
+            
+            if (SportData2.getInstance().getYearSelected()) {
+                final int year = SportData2.getInstance().getYear();
+                pop = SportData2.getInstance().getMostCommonHashtags(selected, year);
+            } else {
+                final long starttime = SportData2.getInstance().getStartDate().getTime();
+                final long endtime = SportData2.getInstance().getEndDate().getTime();
+                pop = SportData2.getInstance().getMostCommonHashtags(selected, starttime, endtime);
+            }
+            
             final List<Double> values = new ArrayList<>(pop.values());
             Collections.sort(values, Collections.reverseOrder());
             double min = 1.0;
@@ -126,31 +142,61 @@ public class Marc {
         int pop = 0;
         
         if (pop_user) {
+            
             if (event.contains(sep)) {
+                
                 String[] teams = event.split(sep);
-                pop += SportData2.getInstance().getPopularity(
-                            teams[0], startdate.getTime(), enddate.getTime());
-                pop += SportData2.getInstance().getPopularity(
-                            teams[1], startdate.getTime(), enddate.getTime());
+                if (SportData2.getInstance().getYearSelected()) {
+                    final int year = SportData2.getInstance().getYear();
+                    pop += SportData2.getInstance().getPopularity(teams[0], year);
+                    pop += SportData2.getInstance().getPopularity(teams[1], year);
+                } else {
+                    pop += SportData2.getInstance().getPopularity(
+                                teams[0], startdate.getTime(), enddate.getTime());
+                    pop += SportData2.getInstance().getPopularity(
+                                teams[1], startdate.getTime(), enddate.getTime());
+                }
                 serie.setName(teams[0] + " - " + teams[1]);
+                
             } else { 
-                pop = SportData2.getInstance().getPopularity(
-                            event, startdate.getTime(), enddate.getTime());
+                if (SportData2.getInstance().getYearSelected()) {
+                    final int year = SportData2.getInstance().getYear();
+                    pop = SportData2.getInstance().getPopularity(event, year);
+                } else {
+                    pop = SportData2.getInstance().getPopularity(
+                                event, startdate.getTime(), enddate.getTime());
+                }
                 serie.setName(event);
             }
+            
         } else {
+            
             if (event.contains(sep)) {
+                
                 String[] teams = event.split(sep);
-                pop += SportData2.getInstance().getNumberUsers(
-                            teams[0], startdate.getTime(), enddate.getTime());
-                pop += SportData2.getInstance().getNumberUsers(
-                            teams[1], startdate.getTime(), enddate.getTime());
+                if (SportData2.getInstance().getYearSelected()) {
+                    final int year = SportData2.getInstance().getYear();
+                    pop += SportData2.getInstance().getNumberUsers(teams[0], year);
+                    pop += SportData2.getInstance().getNumberUsers(teams[1], year);
+                } else {
+                    pop += SportData2.getInstance().getNumberUsers(
+                                teams[0], startdate.getTime(), enddate.getTime());
+                    pop += SportData2.getInstance().getNumberUsers(
+                                teams[1], startdate.getTime(), enddate.getTime());
+                }
                 serie.setName(teams[0] + " - " + teams[1]);
+                
             } else { 
-                pop = SportData2.getInstance().getNumberUsers(
-                            event, startdate.getTime(), enddate.getTime());
+                if (SportData2.getInstance().getYearSelected()) {
+                    final int year = SportData2.getInstance().getYear();
+                    pop = SportData2.getInstance().getNumberUsers(event, year);
+                } else {
+                    pop = SportData2.getInstance().getNumberUsers(
+                                event, startdate.getTime(), enddate.getTime());
+                }
                 serie.setName(event);
             }
+            
         }
         
         serie.getData().add(new XYChart.Data("", pop));

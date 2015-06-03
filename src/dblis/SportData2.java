@@ -191,6 +191,26 @@ public class SportData2 {
         return hashtags;
     }
     
+    public final Map<String, Double> getMostCommonHashtags(List<String> keywords,
+            int year) {
+        final Map<String, Double> hashtags = new ConcurrentHashMap();
+        final long starttime = (new Date(getYearTimeStart(year))).getTime();
+        final long endtime = (new Date(getYearTimeEnd(year))).getTime();
+        
+        getRelatedTweets(keywords, starttime, endtime).forEach(te -> {
+            te.getHashtags().stream().forEach(hashtag -> {
+                if (!hashtags.containsKey(hashtag)) {
+                    hashtags.put(hashtag, 0.0);
+                }
+                hashtags.put(hashtag, hashtags.get(hashtag) + 1);
+            });
+        });
+        
+        keywords.stream().forEach(keyword -> hashtags.remove(keyword));
+        
+        return hashtags;
+    }
+    
     public final Map<String, Double> getMostCommonHashtagsAsPercentage(
             List<String> keywords) {
         return getAsPercentage(getMostCommonHashtags(keywords));
@@ -226,12 +246,28 @@ public class SportData2 {
                 + getFavCount(sport, starttime, endtime);
     }
     
+    public final int getPopularity(String sport, int year) {
+        final long starttime = (new Date(getYearTimeStart(year))).getTime();
+        final long endtime = (new Date(getYearTimeEnd(year))).getTime();
+        
+        return getRetweetCount(sport, starttime, endtime) 
+                + getFavCount(sport, starttime, endtime);
+    }
+    
     public final int getNumberUsers(String keyword) {
         return (int) getRelatedTweets(keyword)
                 .map(TweetEntity::getUserID).distinct().count();
     }
     
     public final int getNumberUsers(String keyword, long starttime, long endtime) {
+        return (int) getRelatedTweets(keyword, starttime, endtime)
+                .map(TweetEntity::getUserID).distinct().count();
+    }
+    
+    public final int getNumberUsers(String keyword, int year) {
+        final long starttime = (new Date(getYearTimeStart(year))).getTime();
+        final long endtime = (new Date(getYearTimeEnd(year))).getTime();
+        
         return (int) getRelatedTweets(keyword, starttime, endtime)
                 .map(TweetEntity::getUserID).distinct().count();
     }
@@ -492,7 +528,7 @@ public class SportData2 {
     }
     
     public final List<String> getSelected() {
-        return selected;
+        return new ArrayList<>(selected);
     }
     
     public final void setInterval(int interval) {
