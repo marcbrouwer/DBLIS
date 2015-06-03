@@ -650,14 +650,12 @@
         <Component class="javax.swing.JComboBox" name="sportComboBox">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="7">
-                <StringItem index="0" value="&lt; -- &gt;"/>
-                <StringItem index="1" value="Football"/>
-                <StringItem index="2" value="Hockey"/>
-                <StringItem index="3" value="Tennis"/>
-                <StringItem index="4" value="Skating"/>
-                <StringItem index="5" value="Cycling"/>
-                <StringItem index="6" value=" "/>
+              <StringArray count="5">
+                <StringItem index="0" value="Football"/>
+                <StringItem index="1" value="Hockey"/>
+                <StringItem index="2" value="Tennis"/>
+                <StringItem index="3" value="Skating"/>
+                <StringItem index="4" value="Cycling"/>
               </StringArray>
             </Property>
           </Properties>
@@ -668,11 +666,12 @@
         <Component class="javax.swing.JComboBox" name="typeComboBox">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
+              <StringArray count="5">
                 <StringItem index="0" value="Event"/>
-                <StringItem index="1" value="Match"/>
-                <StringItem index="2" value="Players"/>
-                <StringItem index="3" value="Other"/>
+                <StringItem index="1" value="Team"/>
+                <StringItem index="2" value="Player"/>
+                <StringItem index="3" value="Match"/>
+                <StringItem index="4" value="Other"/>
               </StringArray>
             </Property>
           </Properties>

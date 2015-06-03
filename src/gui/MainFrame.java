@@ -426,14 +426,14 @@ public class MainFrame extends CenterFrame {
         });
         jScrollPane1.setViewportView(eventList);
 
-        sportComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "< -- >", "Football", "Hockey", "Tennis", "Skating", "Cycling", " " }));
+        sportComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Football", "Hockey", "Tennis", "Skating", "Cycling" }));
         sportComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sportTypeChangedHandler(evt);
             }
         });
 
-        typeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Event", "Match", "Players", "Other" }));
+        typeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Event", "Team", "Player", "Match", "Other" }));
         typeComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comparisonTypeChangedHandler(evt);
@@ -748,16 +748,8 @@ public class MainFrame extends CenterFrame {
     }//GEN-LAST:event_addEventBtnActionPerformed
 
     private void comparisonTypeChangedHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comparisonTypeChangedHandler
-        // TODO add your handling code here:
-        int type = typeComboBox.getSelectedIndex();
-        if(type == 0 || type == 2 || type == 3){
-            if(type == 2){
-                eventsLabel.setText("Players");
-            }else if(type == 0){
-                eventsLabel.setText("Events");
-            }else{
-                eventsLabel.setText("Others");
-            }
+        if (!typeComboBox.getSelectedItem().toString().equals("Match")) {
+            eventsLabel.setText(typeComboBox.getSelectedItem().toString());
             teamALabel.setEnabled(false);
             teamBLabel.setEnabled(false);
             teamAComboBox.setEnabled(false);
@@ -766,7 +758,7 @@ public class MainFrame extends CenterFrame {
             eventsLabel.setEnabled(true);
             eventList.setEnabled(true);
             addEventBtn.setEnabled(true);
-        }else{
+        } else {
             teamALabel.setEnabled(true);
             teamBLabel.setEnabled(true);
             teamAComboBox.setEnabled(true);
@@ -831,24 +823,26 @@ public class MainFrame extends CenterFrame {
     public void sportChanged(){
         String sport = sportComboBox.getSelectedItem().toString().toLowerCase();
         eventListModel.clear();
-        int type = typeComboBox.getSelectedIndex();
-        if (type == 0 || type == 2 || type == 3) {
+        if (!typeComboBox.getSelectedItem().toString().equals("Match")) {
             List<String> toAdd = new ArrayList<>();
-            switch(type){
-            case 0:
-                toAdd = SportData2.getInstance().getEvents(sport);
-                break;
-            case 2:
-                toAdd = SportData2.getInstance().getPlayers(sport);
-                break;
-            case 3:
-                toAdd = SportData2.getInstance().getOther(sport);
-                break;
+            switch (typeComboBox.getSelectedItem().toString()) {
+                case "Event":
+                    toAdd = SportData2.getInstance().getEvents(sport);
+                    break;
+                case "Team":
+                    toAdd = SportData2.getInstance().getTeams(sport);
+                    break;
+                case "Player":
+                    toAdd = SportData2.getInstance().getPlayers(sport);
+                    break;
+                case "Other":
+                    toAdd = SportData2.getInstance().getOther(sport);
+                    break;
             }
             for (String s : toAdd) {
                 eventListModel.addElement(s);
             }     
-        }else{
+        } else {
             List<String> teams = SportData2.getInstance().getTeams(sport);
             teamAComboBox.removeAllItems();
             teamBComboBox.removeAllItems();
