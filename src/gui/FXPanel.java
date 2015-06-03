@@ -30,6 +30,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -48,15 +49,16 @@ public class FXPanel extends JFXPanel {
     public void drawScene(int index) {
         final FXPanel thisPanel = this;
         Platform.runLater(() -> {
-            Scene scene1 = null;
+            Scene scene0 = null;
             try {
                 HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
-                scene1 = new Scene(loader);
-                setScene(scene1);
+                scene0 = new Scene(loader, 800, 600, Color.WHITE);
+                setScene(scene0);
                 System.out.println((new Date()).getTime());
             }catch (IOException ex) {
                 System.out.println(ex);
             }
+            Scene scene1  = null;
             switch (index) {
                 case 0:
                     scene1 = drawSceneWelcome();
@@ -112,7 +114,6 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawLineChart(FXPanel panel) {
-        Runnable runner = () -> {
 
             ObservableList<XYChart.Series<Date, Number>> seriesFootball = FXCollections.observableArrayList();
             ObservableList<XYChart.Series<Date, Number>> seriesRest = FXCollections.observableArrayList();
@@ -131,6 +132,7 @@ public class FXPanel extends JFXPanel {
             final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, seriesRest);
             final LineChart<Date, Number> lineChartFootball = new LineChart<>(dateAxis2, numberAxis2, seriesFootball);
 
+        Runnable runner = () -> {
             boolean showStage = false;
             if (SportData2.getInstance().footballSeperate() && selected.contains("football")) {
                 //if (selected.contains("football")) {
@@ -340,7 +342,7 @@ public class FXPanel extends JFXPanel {
             serie.getData().stream().forEach(data -> {
                 try {
                     data.getNode().setOnMousePressed((MouseEvent mouseEvent) -> {
-                        makePieChart(serie.getName(), data.getXValue());
+                        makePieChart(serie.getName(), data.getXValue(), data.getYValue());
                     });
                 } catch (Exception ex) {
                     System.out.println(ex);
@@ -349,44 +351,52 @@ public class FXPanel extends JFXPanel {
         });
     }
 
-    private void makePieChart(String sport, Date date) {
-           
-        final Stage primaryStage = new Stage();
-        primaryStage.setTitle("Popularity for " + sport + ", " + date);
-
-        final List<PieChart.Data> list = new ArrayList<>();
-
-        final long[] stamps = SportData2.getInstance().getDayTimestamps(date);
-
-        final Map<String, Double> sportPop = SportData2.getInstance()
-                .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
-
-        boolean isData0 = true; //If there is no data to view -> true, if there is ->false
-            
-        for (Entry<String, Double> entry : sportPop.entrySet()) {
-            list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
-            if(entry.getValue()!=0 && !entry.getValue().isNaN()){
-                isData0 = false;
-            }
-            System.out.println(";pievalue " + entry.getValue());
-        }
-        
-        if(isData0){ // This is if there is no data to view.
+    private void makePieChart(String sport, Date date, Number yValue) {
+        if(yValue.intValue()==0){
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("There is no data to show for this sport at the given date.");
 
             alert.showAndWait();
-        } else { // If there is data to view
-
-            PieChart pie = new PieChart(
-                    FXCollections.observableArrayList(list));
-            pie.setTitle("Popularity for " + sport + ", " + date);
-
-            Scene scene = new Scene(pie, 800, 600);
-            primaryStage.setScene(scene);
+        } else {
+            final Stage primaryStage = new Stage();
+            primaryStage.setTitle("Popularity for " + sport + ", " + date);
+            
+            //setting a scene
+            Scene scene0 = null;
+            try {
+                HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
+                scene0 = new Scene(loader, 800, 600, Color.WHITE);
+                setScene(scene0);
+                System.out.println((new Date()).getTime());
+            }catch (IOException ex) {
+                System.out.println(ex);
+            }
+            primaryStage.setScene(scene0);
             primaryStage.show();
+            
+            Runnable runner = () -> {
+                final List<PieChart.Data> list = new ArrayList<>();
+
+                final long[] stamps = SportData2.getInstance().getDayTimestamps(date);
+
+                final Map<String, Double> sportPop = SportData2.getInstance()
+                        .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
+
+                for (Entry<String, Double> entry : sportPop.entrySet()) {
+                    list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+                }
+                PieChart pie = new PieChart(
+                        FXCollections.observableArrayList(list));
+                pie.setTitle("Popularity for " + sport + ", " + date);
+
+                Scene scene = new Scene(pie, 800, 600);
+                primaryStage.setScene(scene);
+                primaryStage.show();
+            };
+            Thread t = new Thread(runner);
+            t.start();
         }
     }
 
