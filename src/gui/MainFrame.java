@@ -30,7 +30,7 @@ public class MainFrame extends CenterFrame {
     * @Param, container is the JPanel
     * @Param, enable, true for enabling, false for disabling.
     */
-    public void enableComponents(Container container, boolean enable) {
+    public static void enableComponents(Container container, boolean enable) {
         Component[] components = container.getComponents();
         for (Component component : components) {
             component.setEnabled(enable);
@@ -44,6 +44,10 @@ public class MainFrame extends CenterFrame {
         } else {
             yearCombo.setEnabled(false);
         }
+    }
+    
+    public static void enableComponents(boolean enable){
+        enableComponents(parametersPanel, enable);
     }
     
     public MainFrame() {
@@ -958,7 +962,7 @@ public class MainFrame extends CenterFrame {
     private javax.swing.JCheckBox cyclingCheckBox;
     private javax.swing.JButton deleteOneBtn;
     private javax.swing.JLabel endTimeLabel;
-    private com.lavantech.gui.comp.DateTimePicker endTimePicker;
+    private static com.lavantech.gui.comp.DateTimePicker endTimePicker;
     private javax.swing.JList eventList;
     private javax.swing.JLabel eventsLabel;
     private javax.swing.JCheckBox footballCheckBox;
@@ -969,12 +973,12 @@ public class MainFrame extends CenterFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton lineChartBtn;
     private javax.swing.JButton listBtn;
-    private javax.swing.JPanel parametersPanel;
+    private static javax.swing.JPanel parametersPanel;
     private javax.swing.JButton pieChartBtn;
     private javax.swing.JButton showBtn;
     private javax.swing.JButton showComparisonBtn;
     private javax.swing.JButton showComparisonBtn1;
-    private javax.swing.JCheckBox showYearDataCheckbox;
+    private static javax.swing.JCheckBox showYearDataCheckbox;
     private javax.swing.JCheckBox skatingCheckBox;
     private javax.swing.JComboBox sportComboBox;
     private javax.swing.JLabel sportLabel2;
@@ -987,7 +991,7 @@ public class MainFrame extends CenterFrame {
     private javax.swing.JButton sportsOKBtn;
     private javax.swing.JButton sportsSelectAllBtn;
     private javax.swing.JLabel startTimeLabel;
-    private com.lavantech.gui.comp.DateTimePicker startTimePicker;
+    private static com.lavantech.gui.comp.DateTimePicker startTimePicker;
     private javax.swing.JComboBox teamAComboBox;
     private javax.swing.JLabel teamALabel;
     private javax.swing.JComboBox teamBComboBox;
@@ -999,7 +1003,7 @@ public class MainFrame extends CenterFrame {
     private javax.swing.JComboBox typeComboBox;
     private javax.swing.JLabel typeLabel;
     private javax.swing.JPanel visualizationPanel;
-    private javax.swing.JComboBox yearCombo;
+    private static javax.swing.JComboBox yearCombo;
     private javax.swing.JLabel yearLabel;
     // End of variables declaration//GEN-END:variables
 }

@@ -88,6 +88,14 @@ public class FXPanel extends JFXPanel {
             }
         });
     }
+    
+    public void startLoading(){
+        
+    }
+    
+    public void stopLoading(){
+        
+    }
 
     private Scene drawSceneWelcome() {
         Group root = new Group();
@@ -189,6 +197,7 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawBarChartUsers(FXPanel panel) {
+        MainFrame.enableComponents(false);
         Runnable runner = () -> {
             final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
@@ -203,6 +212,8 @@ public class FXPanel extends JFXPanel {
             events.stream().forEach(e -> series.addAll(getSerie(e, false)));
 
             Scene scene = new Scene(barChart, 800, 600);
+            
+            MainFrame.enableComponents(true);
             panel.setScene(scene);
         };
         
@@ -212,6 +223,7 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawPieChart(FXPanel panel) {
+        MainFrame.enableComponents(false);
         Runnable runner = () -> {
             final Group root = new Group();
             final Scene scene = new Scene(root);
@@ -239,6 +251,7 @@ public class FXPanel extends JFXPanel {
 
             root.getChildren().add(pie);
             
+            MainFrame.enableComponents(true);
             panel.setScene(scene);
         };
         Thread t = new Thread(runner);
@@ -361,6 +374,7 @@ public class FXPanel extends JFXPanel {
 
             alert.showAndWait();
         } else {
+            MainFrame.enableComponents(false);
             final Stage primaryStage = new Stage();
             primaryStage.setTitle("Popularity for " + sport + ", " + date);
             
@@ -394,6 +408,8 @@ public class FXPanel extends JFXPanel {
 
                 Scene scene = new Scene(pie, 800, 600);
                 primaryStage.setScene(scene);
+                
+                MainFrame.enableComponents(true);
                 primaryStage.show();
             };
             Thread t = new Thread(runner);
