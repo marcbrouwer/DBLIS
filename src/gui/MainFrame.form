@@ -344,7 +344,6 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/gui/icons/chart_pie_32x32.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pieChartBtnActionPerformed"/>
@@ -355,7 +354,6 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/gui/icons/bar_chart-512_32x32.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="histogramBtnActionPerformed"/>
@@ -364,7 +362,6 @@
             <Component class="javax.swing.JButton" name="sportsChooseBtn">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;Select Sports&lt;br&gt;&lt;/center&gt;&lt;/html&gt;"/>
-                <Property name="toolTipText" type="java.lang.String" value=""/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[74, 41]"/>
                 </Property>

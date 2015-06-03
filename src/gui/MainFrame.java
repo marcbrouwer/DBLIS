@@ -280,7 +280,6 @@ public class MainFrame extends CenterFrame {
         jPanel1.add(jPanel5);
 
         pieChartBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/chart_pie_32x32.png"))); // NOI18N
-        pieChartBtn.setToolTipText("");
         pieChartBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pieChartBtnActionPerformed(evt);
@@ -289,7 +288,6 @@ public class MainFrame extends CenterFrame {
         jPanel1.add(pieChartBtn);
 
         histogramBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/bar_chart-512_32x32.png"))); // NOI18N
-        histogramBtn.setToolTipText("");
         histogramBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 histogramBtnActionPerformed(evt);
@@ -298,7 +296,6 @@ public class MainFrame extends CenterFrame {
         jPanel1.add(histogramBtn);
 
         sportsChooseBtn.setText("<html><center>Select Sports<br></center></html>");
-        sportsChooseBtn.setToolTipText("");
         sportsChooseBtn.setPreferredSize(new java.awt.Dimension(74, 41));
         sportsChooseBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
