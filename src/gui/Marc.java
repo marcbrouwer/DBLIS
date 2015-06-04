@@ -87,8 +87,8 @@ public class Marc {
             final List<Double> values = new ArrayList<>(pop.values());
             Collections.sort(values, Collections.reverseOrder());
             double min = 1.0;
-            if (values.size() >= 20) {
-                min = values.get(19);
+            if (values.size() >= 10) {
+                min = values.get(9);
             } else if (!values.isEmpty()) {
                 min = values.get(values.size() - 1);
             }

@@ -64,7 +64,7 @@ public class Anava {
 
         final boolean year = SportData2.getInstance().getYearSelected();
         
-        Runnable runner = () -> {
+        //Runnable runner = () -> {
             boolean showStage = false;
             if (SportData2.getInstance().footballSeperate() && selected.contains("football")) {
                 
@@ -87,9 +87,9 @@ public class Anava {
                 primaryStage.show();
             }
             panel.setScene(scene);
-        };
+        /*};
         Thread t = new Thread(runner);
-        t.start();
+        t.start();*/
         return null;
     }
     

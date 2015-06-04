@@ -178,18 +178,32 @@ public class TweetEntity {
         String lowerText = text.toLowerCase();
         return lowerText.contains(" " + word + " ")
                 || lowerText.contains(" " + word + ".")
+                || lowerText.contains(" " + word + ",")
+                || lowerText.contains(" " + word + ":")
+                || lowerText.contains(" " + word + ";")
                 || lowerText.contains(" " + word + "!")
                 || lowerText.contains(" " + word + "?")
+                || lowerText.contains(" " + word + String.valueOf((char) 160))
+                || lowerText.contains(String.valueOf((char) 160) 
+                        + word + String.valueOf((char) 160))
                 
                 || lowerText.contains("#" + word + " ")
                 || lowerText.contains("#" + word + ".")
+                || lowerText.contains("#" + word + ",")
+                || lowerText.contains("#" + word + ":")
+                || lowerText.contains("#" + word + ";")
                 || lowerText.contains("#" + word + "!")
                 || lowerText.contains("#" + word + "?")
+                || lowerText.contains("#" + word + String.valueOf((char) 160))
                 
                 || lowerText.contains("@" + word + " ")
                 || lowerText.contains("@" + word + ".")
+                || lowerText.contains("@" + word + ",")
+                || lowerText.contains("@" + word + ":")
+                || lowerText.contains("@" + word + ";")
                 || lowerText.contains("@" + word + "!")
-                || lowerText.contains("@" + word + "?");
+                || lowerText.contains("@" + word + "?")
+                || lowerText.contains("@" + word + String.valueOf((char) 160));
     }
     
     public Set<String> getHashtags() {

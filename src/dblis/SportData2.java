@@ -162,10 +162,11 @@ public class SportData2 {
         
         getRelatedTweets(keywords).forEach(te -> {
             te.getHashtags().stream().forEach(hashtag -> {
-                if (!hashtags.containsKey(hashtag)) {
-                    hashtags.put(hashtag, 0.0);
+                if (!hashtags.containsKey(trimHashtag(hashtag))) {
+                    hashtags.put(trimHashtag(hashtag), 0.0);
                 }
-                hashtags.put(hashtag, hashtags.get(hashtag) + 1);
+                hashtags.put(trimHashtag(hashtag), 
+                        hashtags.get(trimHashtag(hashtag)) + 1);
             });
         });
         
@@ -180,10 +181,11 @@ public class SportData2 {
         
         getRelatedTweets(keywords, starttime, endtime).forEach(te -> {
             te.getHashtags().stream().forEach(hashtag -> {
-                if (!hashtags.containsKey(hashtag)) {
-                    hashtags.put(hashtag, 0.0);
+                if (!hashtags.containsKey(trimHashtag(hashtag))) {
+                    hashtags.put(trimHashtag(hashtag), 0.0);
                 }
-                hashtags.put(hashtag, hashtags.get(hashtag) + 1);
+                hashtags.put(trimHashtag(hashtag), 
+                        hashtags.get(trimHashtag(hashtag)) + 1);
             });
         });
         
@@ -194,22 +196,10 @@ public class SportData2 {
     
     public final Map<String, Double> getMostCommonHashtags(List<String> keywords,
             int year) {
-        final Map<String, Double> hashtags = new ConcurrentHashMap();
         final long starttime = (new Date(getYearTimeStart(year))).getTime();
         final long endtime = (new Date(getYearTimeEnd(year))).getTime();
         
-        getRelatedTweets(keywords, starttime, endtime).forEach(te -> {
-            te.getHashtags().stream().forEach(hashtag -> {
-                if (!hashtags.containsKey(hashtag)) {
-                    hashtags.put(hashtag, 0.0);
-                }
-                hashtags.put(hashtag, hashtags.get(hashtag) + 1);
-            });
-        });
-        
-        keywords.stream().forEach(keyword -> hashtags.remove(keyword));
-        
-        return hashtags;
+        return getMostCommonHashtags(keywords, starttime, endtime);
     }
     
     public final Map<String, Double> getMostCommonHashtagsAsPercentage(
@@ -865,6 +855,18 @@ public class SportData2 {
                 .filter(alt -> alt.getValue().equals(type)).map(Entry::getKey)
                 .collect(Collectors.toList());
         return types;
+    }
+    
+    private String trimHashtag(String hashtag) {
+        hashtag = hashtag.trim();
+        while (hashtag.endsWith(" ") || hashtag.endsWith(".")
+                || hashtag.endsWith(",") || hashtag.endsWith("!")
+                || hashtag.endsWith("?") || hashtag.endsWith(":")
+                || hashtag.endsWith(";") 
+                || hashtag.endsWith(String.valueOf((char) 160))) {
+            hashtag = hashtag.substring(0, hashtag.length() - 1);
+        }
+        return hashtag;
     }
     
     // Searching
