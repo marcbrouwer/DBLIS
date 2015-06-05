@@ -129,18 +129,22 @@ public class Anava {
 
             TableColumn sports = new TableColumn("Sport");
             sports.setMinWidth(200);
-            sports.setCellValueFactory(new PropertyValueFactory<>("sport"));
+            sports.setCellValueFactory(
+                new PropertyValueFactory<>("sport"));
 
             TableColumn totalAmount = new TableColumn("Total amount");
             totalAmount.setMinWidth(100);
-            totalAmount.setCellFactory(new PropertyValueFactory<>("amount"));
+            totalAmount.setCellValueFactory(
+                new PropertyValueFactory<>("amount"));
 
             TableColumn percentage = new TableColumn("Percentage");
             percentage.setMinWidth(100);
-            percentage.setCellFactory(new PropertyValueFactory<>("percentage"));
+            percentage.setCellValueFactory(
+                new PropertyValueFactory<>("percentage"));
 
+            table.setItems(data);
             table.getColumns().addAll(sports, totalAmount, percentage);
-
+            
             final VBox vbox = new VBox();
             vbox.setSpacing(5);
             vbox.setPadding(new Insets(10, 0, 0, 10));
@@ -160,7 +164,7 @@ public class Anava {
 
         private final StringProperty sport;
         private final IntegerProperty amount;
-        private IntegerProperty percentage;
+        private final IntegerProperty percentage;
 
         /**
          * Default constructor.
@@ -179,6 +183,7 @@ public class Anava {
             this.sport = new SimpleStringProperty(sport);
             this.amount = new SimpleIntegerProperty(amount);
             this.percentage = new SimpleIntegerProperty(100);
+            System.out.println(sport + amount);
         }
 
         public String getSport() {
