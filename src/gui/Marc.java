@@ -51,74 +51,67 @@ public class Marc {
     }
     
     public static Scene drawBarChartHashtags() {
-        //Runnable runner = () -> {
-        Task task = new Task<Void>() {
-            @Override
-            public Void call() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Stage primaryStage = new Stage();
-                        primaryStage.setTitle("Hashtags");
+        Runnable task = () -> {
+            final Stage primaryStage = new Stage();
+            primaryStage.setTitle("Hashtags");
 
-                        final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
+            final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
-                        final CategoryAxis xAxis = new CategoryAxis();
-                        final NumberAxis yAxis = new NumberAxis();
-                        xAxis.setLabel("Hashtags");
-                        yAxis.setLabel("Number of hashtags");
+            final CategoryAxis xAxis = new CategoryAxis();
+            final NumberAxis yAxis = new NumberAxis();
+            xAxis.setLabel("Hashtags");
+            yAxis.setLabel("Number of hashtags");
 
-                        final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
+            final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
 
-                        final List<String> selected = SportData2.getInstance().getSelected();
-                        final List<String> copy = new ArrayList<>(selected);
-                        copy.stream().forEach(keyword -> {
-                            if (keyword.contains(" - ")) {
-                                selected.remove(keyword);
-                                final String[] splits = keyword.split(" - ");
-                                selected.add(splits[0]);
-                                selected.add(splits[1]);
-                            }
-                        });
+            final List<String> selected = SportData2.getInstance().getSelected();
+            final List<String> copy = new ArrayList<>(selected);
+            copy.stream().forEach(keyword -> {
+                if (keyword.contains(" - ")) {
+                    selected.remove(keyword);
+                    final String[] splits = keyword.split(" - ");
+                    selected.add(splits[0]);
+                    selected.add(splits[1]);
+                }
+            });
 
-                        final Map<String, Double> pop;
+            final Map<String, Double> pop;
 
-                        if (SportData2.getInstance().getYearSelected()) {
-                            final int year = SportData2.getInstance().getYear();
-                            pop = SportData2.getInstance().getMostCommonHashtags(selected, year);
-                        } else {
-                            final long starttime = SportData2.getInstance().getStartDate().getTime();
-                            final long endtime = SportData2.getInstance().getEndDate().getTime();
-                            pop = SportData2.getInstance().getMostCommonHashtags(selected, starttime, endtime);
-                        }
-
-                        final List<Double> values = new ArrayList<>(pop.values());
-                        Collections.sort(values, Collections.reverseOrder());
-                        double min = 1.0;
-                        if (values.size() >= 10) {
-                            min = values.get(9);
-                        } else if (!values.isEmpty()) {
-                            min = values.get(values.size() - 1);
-                        }
-                        final double atleast = min;
-
-                        pop.entrySet().stream()
-                                .filter(entry -> entry.getValue() >= atleast)
-                                .forEach(hashtag -> {
-                                    final XYChart.Series<String, Number> serie = new XYChart.Series();
-                                    serie.getData().add(new XYChart.Data("", hashtag.getValue()));
-                                    serie.setName(hashtag.getKey());
-                                    series.add(serie);
-                                });
-
-                        Scene scene = new Scene(barChart, 800, 600);
-
-                        primaryStage.setScene(scene);
-                        primaryStage.show();
-                    }
-                });
-                return null;
+            if (SportData2.getInstance().getYearSelected()) {
+                final int year = SportData2.getInstance().getYear();
+                pop = SportData2.getInstance().getMostCommonHashtags(selected, year);
+            } else {
+                final long starttime = SportData2.getInstance().getStartDate().getTime();
+                final long endtime = SportData2.getInstance().getEndDate().getTime();
+                pop = SportData2.getInstance().getMostCommonHashtags(selected, starttime, endtime);
             }
+
+            final List<Double> values = new ArrayList<>(pop.values());
+            Collections.sort(values, Collections.reverseOrder());
+            double min = 1.0;
+            if (values.size() >= 10) {
+                min = values.get(9);
+            } else if (!values.isEmpty()) {
+                min = values.get(values.size() - 1);
+            }
+            final double atleast = min;
+
+            pop.entrySet().stream()
+                    .filter(entry -> entry.getValue() >= atleast)
+                    .forEach(hashtag -> {
+                        final XYChart.Series<String, Number> serie = new XYChart.Series();
+                        serie.getData().add(new XYChart.Data("", hashtag.getValue()));
+                        serie.setName(hashtag.getKey());
+                        series.add(serie);
+                    });
+
+            Scene scene = new Scene(barChart, 800, 600);
+            Platform.runLater(() -> {
+                primaryStage.setScene(scene);
+                primaryStage.show();
+
+            });
+
         };
 
         Thread t = new Thread(task);
