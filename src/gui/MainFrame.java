@@ -254,7 +254,7 @@ public class MainFrame extends CenterFrame {
         timeIntervalPickerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Time Interval"));
         timeIntervalPickerPanel.setLayout(new javax.swing.BoxLayout(timeIntervalPickerPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        timeIntervalCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Month", "Week", "Day" }));
+        timeIntervalCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Day", "Week", "Month" }));
         timeIntervalCombo.setMinimumSize(new java.awt.Dimension(72, 50));
         timeIntervalPickerPanel.add(timeIntervalCombo);
 
