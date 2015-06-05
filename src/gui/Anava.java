@@ -38,6 +38,7 @@ public class Anava {
 
             alert.showAndWait();
         } else {
+            data.clear();
             final Stage primaryStage = new Stage();
             Scene scene = new Scene(new Group());
             primaryStage.setTitle("Number of users tweeting");
