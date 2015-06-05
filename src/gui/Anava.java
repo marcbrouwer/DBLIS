@@ -31,8 +31,6 @@ public class Anava {
     
     public static void createTheFuckingTable(){
         if (SportData2.getInstance().getSelected().size() < 2) {
-
-            System.out.println("The amount of sports selected is less then 2");
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
@@ -40,11 +38,9 @@ public class Anava {
 
             alert.showAndWait();
         } else {
-            System.out.println("0");
-
             final Stage primaryStage = new Stage();
             Scene scene = new Scene(new Group());
-            primaryStage.setTitle("Amount of users tweeting");
+            primaryStage.setTitle("Number of users tweeting");
             primaryStage.setWidth(500);
             primaryStage.setHeight(500);
 
@@ -52,7 +48,6 @@ public class Anava {
             int total = 0;
             final List<String> selected = SportData2.getInstance().getSelected();
 
-            System.out.println("1");
 
             if(SportData2.getInstance().getYearSelected()){
 
@@ -87,8 +82,7 @@ public class Anava {
             }
             total -= data.get(data.size()-1).getAmount();
 
-
-            System.out.println("2");
+            data.add(new TableData("Total persons", total, 100));
 
             for(int i=0; i<data.size(); i++){
                 if(total<1){
@@ -99,11 +93,9 @@ public class Anava {
                 }
             }
 
-            System.out.println("3");
 
 
-
-            final Label label = new Label("Amount of people talking");
+            final Label label = new Label("Number of users tweeting");
             label.setFont(new Font("Arial", 20));
 
             table.setEditable(false);
@@ -164,6 +156,13 @@ public class Anava {
             this.sport = new SimpleStringProperty(sport);
             this.amount = new SimpleIntegerProperty(amount);
             this.percentage = new SimpleIntegerProperty(100);
+            System.out.println(sport + amount);
+        }
+        
+        public TableData(String sport, Integer amount, Integer percentage) {
+            this.sport = new SimpleStringProperty(sport);
+            this.amount = new SimpleIntegerProperty(amount);
+            this.percentage = new SimpleIntegerProperty(percentage);
             System.out.println(sport + amount);
         }
 

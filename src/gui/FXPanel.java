@@ -98,7 +98,6 @@ public class FXPanel extends JFXPanel {
                     break;
                 case 4:
                     Anava.createTheFuckingTable();
-                    //scene1 = drawUserTable();
                     break;
                 case 5:
                     scene1 = drawBarChart(thisPanel);
