@@ -19,7 +19,7 @@ public class MainFrame extends CenterFrame {
     private FXPanel fxPanel;
     DefaultListModel candidateListModel = new DefaultListModel();
     DefaultListModel eventListModel = new DefaultListModel();
-
+    boolean[] sportsSelection = new boolean[5];
     /**
      * Creates new form MainFrame
      */
@@ -551,15 +551,26 @@ public class MainFrame extends CenterFrame {
             cb.setSelected(false);
         }*/
         sportsDialog.setSize(380, 180);
-        sportsDialog.show();
+        sportsDialog.show(); 
     }//GEN-LAST:event_sportsChooseBtnActionPerformed
 
     private void sportsOKBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsOKBtnActionPerformed
+        sportsSelection[0] = footballCheckBox.isSelected();
+        sportsSelection[1] = hockeyCheckBox.isSelected();
+        sportsSelection[2] = cyclingCheckBox.isSelected();
+        sportsSelection[3] = tennisCheckBox.isSelected();
+        sportsSelection[4] = skatingCheckBox.isSelected();
         sportsDialog.dispose();
     }//GEN-LAST:event_sportsOKBtnActionPerformed
 
     private void sportsCancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsCancelBtnActionPerformed
+        footballCheckBox.setSelected(sportsSelection[0]);
+        hockeyCheckBox.setSelected(sportsSelection[1]);
+        cyclingCheckBox.setSelected(sportsSelection[2]);
+        tennisCheckBox.setSelected(sportsSelection[3]);
+        skatingCheckBox.setSelected(sportsSelection[4]);
         sportsDialog.dispose();
+        
     }//GEN-LAST:event_sportsCancelBtnActionPerformed
 
     private void sportsSelectAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sportsSelectAllBtnActionPerformed
