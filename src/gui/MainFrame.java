@@ -551,6 +551,7 @@ public class MainFrame extends CenterFrame {
             cb.setSelected(false);
         }*/
         sportsDialog.setSize(380, 180);
+        sportsDialog.setLocationRelativeTo(this);
         sportsDialog.show(); 
     }//GEN-LAST:event_sportsChooseBtnActionPerformed
 
