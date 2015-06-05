@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -137,8 +138,7 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawLineChart(FXPanel panel) {
-        return Anava.drawLineChart(panel);
-        /*ObservableList<XYChart.Series<Date, Number>> seriesFootball = FXCollections.observableArrayList();
+        ObservableList<XYChart.Series<Date, Number>> seriesFootball = FXCollections.observableArrayList();
         ObservableList<XYChart.Series<Date, Number>> seriesRest = FXCollections.observableArrayList();
 
         final Stage primaryStage = new Stage();
@@ -155,36 +155,44 @@ public class FXPanel extends JFXPanel {
         final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, numberAxis, seriesRest);
         final LineChart<Date, Number> lineChartFootball = new LineChart<>(dateAxis2, numberAxis2, seriesFootball);
 
-        Runnable runner = () -> {
-            boolean showStage = false;
-            if (SportData2.getInstance().footballSeperate() && selected.contains("football")) {
-                //if (selected.contains("football")) {
+        final boolean year = SportData2.getInstance().getYearSelected();
+        
+        Task task = new Task<Void>() {
+            @Override
+            public Void call() {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean showStage = false;
+                        if (SportData2.getInstance().footballSeperate() && selected.contains("football")) {
 
-                    selected.remove("football");
-                    seriesFootball.addAll(getSeries(Arrays.asList("football"), false));
-                    seriesRest.addAll(getSeries(selected, false));
+                            selected.remove("football");
+                            seriesFootball.addAll(getSeries(Arrays.asList("football"), year));
+                            seriesRest.addAll(getSeries(selected, year));
 
-                    addShowPieOnClick(seriesFootball);
-                    showStage = true;
-                //}
+                            addShowPieOnClick(seriesFootball);
+                            showStage = true;
+                        } else {
+                            seriesRest.addAll(getSeries(selected, year));
+                        }
 
-            } else {
-                seriesRest.addAll(getSeries(selected, false));
+                        addShowPieOnClick(seriesRest);
+
+                        Scene scene = new Scene(lineChart, 800, 600);
+                        Scene sceneFootball = new Scene(lineChartFootball, 800, 600);
+                        if (showStage) {
+                            primaryStage.setScene(sceneFootball);
+                            primaryStage.show();
+                        }
+                        panel.setScene(scene);
+                    }
+                });
+                return null;
             }
-
-            addShowPieOnClick(seriesRest);
-
-            Scene scene = new Scene(lineChart, 800, 600);
-            Scene sceneFootball = new Scene(lineChartFootball, 800, 600);
-            if (showStage) {
-                primaryStage.setScene(sceneFootball);
-                primaryStage.show();
-            }
-            panel.setScene(scene);
         };
-        Thread t = new Thread(runner);
+        Thread t = new Thread(task);
         t.start();
-        return null;*/
+        return null;
     }
 
     private Scene drawBarChart(FXPanel panel) {
@@ -381,50 +389,55 @@ public class FXPanel extends JFXPanel {
     }
 
     private void makePieChart(String sport, Date date, Number yValue) {
-        if(yValue.intValue()==0){
-            System.out.println("It is 0");
-            Alert alert = new Alert(AlertType.INFORMATION);
+         if(yValue.intValue()==0){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("There is no data to show for this sport at the given date.");
 
             alert.showAndWait();
         } else {
-            System.out.println("it is not 0");
-            startLoading();
-            
-            //Set a screen
             final Stage primaryStage = new Stage();
             primaryStage.setTitle("Popularity for " + sport + ", " + date);
             
             //setting a scene
             Scene scene0 = null;
-            scene0 = getLoadingScene();
+            try {
+                HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
+                scene0 = new Scene(loader, 800, 600, Color.WHITE);
+            } catch (IOException ex) {
+            }
             primaryStage.setScene(scene0);
             primaryStage.show();
-            System.out.println("We set the loading screen");
-            
-            Runnable runner = () -> {
-                final List<PieChart.Data> list = new ArrayList<>();
 
-                final long[] stamps = SportData2.getInstance().getLineToPieTimestamps(date);
+            Task task = new Task<Void>() {
+                @Override
+                public Void call() {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            final List<PieChart.Data> list = new ArrayList<>();
 
-                final Map<String, Double> sportPop = SportData2.getInstance()
-                        .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
+                            final long[] stamps = SportData2.getInstance().getLineToPieTimestamps(date);
 
-                for (Entry<String, Double> entry : sportPop.entrySet()) {
-                    list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+                            final Map<String, Double> sportPop = SportData2.getInstance()
+                                    .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
+
+                            for (Map.Entry<String, Double> entry : sportPop.entrySet()) {
+                                list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+                            }
+                            PieChart pie = new PieChart(FXCollections.observableArrayList(list));
+                            pie.setTitle("Popularity for " + sport + ", " + date);
+
+                            Scene scene = new Scene(pie, 800, 600);
+                            primaryStage.setScene(scene);
+                            primaryStage.show();
+                        }
+                    });
+                    return null;
                 }
-                PieChart pie = new PieChart(
-                        FXCollections.observableArrayList(list));
-                pie.setTitle("Popularity for " + sport + ", " + date);
-
-                Scene scene = new Scene(pie, 800, 600);
-                primaryStage.setScene(scene);
-                
-                finishedLoading();
             };
-            Thread t = new Thread(runner);
+            Thread t = new Thread(task);
             t.start();
         }
     }
