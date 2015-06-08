@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gui;
 
 import dblis.Abort;
@@ -26,7 +21,7 @@ public class BootFrame extends CenterFrame {
     }
     
     private void retrieveData() {
-        Runnable runnable = ()->SportData2.getInstance().init();
+        Runnable runnable = () -> SportData2.getInstance().init();
         Thread thread = new Thread(runnable);
         thread.start();
     }

@@ -172,6 +172,18 @@ public class SportData2 {
         
         keywords.stream().forEach(keyword -> hashtags.remove(keyword));
         
+        Set<String> remove = new HashSet();
+        hashtags.keySet().stream().forEach(hashtag -> {
+            for (String excl : getHashtagsToExclude()) {
+                if (hashtag.contains(excl)) {
+                    remove.add(hashtag);
+                    break;
+                }
+            }
+        });
+        
+        remove.stream().forEach(rm -> hashtags.remove(rm));
+        
         return hashtags;
     }
     
@@ -190,6 +202,18 @@ public class SportData2 {
         });
         
         keywords.stream().forEach(keyword -> hashtags.remove(keyword));
+        
+        Set<String> remove = new HashSet();
+        hashtags.keySet().stream().forEach(hashtag -> {
+            for (String excl : getHashtagsToExclude()) {
+                if (hashtag.contains(excl)) {
+                    remove.add(hashtag);
+                    break;
+                }
+            }
+        });
+        
+        remove.stream().forEach(rm -> hashtags.remove(rm));
         
         return hashtags;
     }
@@ -795,6 +819,8 @@ public class SportData2 {
             System.out.println("getTweetsJSONFile - " + ex);
         }
         
+        numberTweets = json.length();
+        
         JSONObject obj;
         TweetEntity te;
         for (int i = 0; i < json.length(); i++) {
@@ -867,6 +893,10 @@ public class SportData2 {
             hashtag = hashtag.substring(0, hashtag.length() - 1);
         }
         return hashtag;
+    }
+    
+    private List<String> getHashtagsToExclude() {
+        return Arrays.asList("nieuws", "news", "sport");
     }
     
     // Searching

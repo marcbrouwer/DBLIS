@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -53,22 +55,19 @@ public class FXPanel extends JFXPanel {
     private final TableView table = new TableView();
     private final ObservableList<TableData> data = FXCollections.observableArrayList();
     
-    public FXPanel() {
-    }
+    public FXPanel() {}
 
-    
-    //function that returns the loading screen
+    /** function that returns the loading screen */
     private Scene getLoadingScene(){
-        Scene scene;
-        scene = null;
+        Scene scene = null;
         
         try {
             HBox loader = FXMLLoader.load(getClass().getResource("loader.fxml"));
             scene = new Scene(loader, 800, 600, Color.WHITE);
-            //System.out.println((new Date()).getTime());
         }catch (IOException ex) {
             System.out.println(ex);
         }
+        
         return scene;
     }
     
@@ -76,13 +75,11 @@ public class FXPanel extends JFXPanel {
         final FXPanel thisPanel = this;
         
         //set the loading screen
-        Scene scene0 = null;
-        scene0 = getLoadingScene();
-        setScene(scene0);
+        setScene(getLoadingScene());
         setVisible(true);
         
         Platform.runLater(() -> {
-            Scene scene1  = null;
+            Scene scene1 = null;
             switch (index) {
                 case 0:
                     scene1 = drawSceneWelcome();
@@ -97,7 +94,7 @@ public class FXPanel extends JFXPanel {
                     scene1 = drawPieChart(thisPanel);
                     break;
                 case 4:
-                    Anava.createTheFuckingTable();
+                    scene1 = drawUserTable(thisPanel);
                     break;
                 case 5:
                     scene1 = drawBarChart(thisPanel);
@@ -129,7 +126,7 @@ public class FXPanel extends JFXPanel {
         text.setX(50);
         text.setY(50);
         text.setFont(new Font(15));
-        text.setText("Welcome JavaFX!");
+        text.setText("Welcome To The Bird Is Fit");
         root.getChildren().add(text);
         return scene;
     }
@@ -199,8 +196,7 @@ public class FXPanel extends JFXPanel {
     }
 
     private Scene drawBarChart(FXPanel panel) {
-        return Marc.drawBarChart(panel);
-        /*Runnable runner = () -> {
+        Runnable runner = () -> {
             final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
             final CategoryAxis xAxis = new CategoryAxis();
@@ -212,6 +208,8 @@ public class FXPanel extends JFXPanel {
 
             final List<String> events = SportData2.getInstance().getSelected();
             events.stream().forEach(e -> series.addAll(getSerie(e, true)));
+            
+            addShowHashtagsOnClick(series);
 
             Scene scene = new Scene(barChart, 800, 600);
             panel.setScene(scene);
@@ -219,7 +217,7 @@ public class FXPanel extends JFXPanel {
         
         Thread t = new Thread(runner);
         t.start();
-        return null;*/
+        return null;
     }
 
     private Scene drawBarChartUsers(FXPanel panel) {
@@ -285,97 +283,98 @@ public class FXPanel extends JFXPanel {
         return null;
     }
 
-    private Scene drawUserTable(){
+    private Scene drawUserTable(FXPanel panel){
         if (SportData2.getInstance().getSelected().size() < 2) {
-
-            System.out.println("The amount of sports selected is less then 2");
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText("The amount of sports selected is less then 2");
+            alert.setContentText("The number of sports selected is less then 2");
 
             alert.showAndWait();
-        } else {
-
-            final Stage primaryStage = new Stage();
-            Scene scene = new Scene(new Group());
-            primaryStage.setTitle("Amount of users tweeting");
-            primaryStage.setWidth(500);
-            primaryStage.setHeight(500);
-
-            //final Map<String, Integer> numberUsers = new HashMap();
-            int total = 0;
-            final List<String> selected = SportData2.getInstance().getSelected();
-
-            if(SportData2.getInstance().getYearSelected()){
-
-                final int year = SportData2.getInstance().getYear();
-
-                for (int i = 0; i < selected.size(); i++) {
-                    data.add(new TableData(selected.get(i), SportData2.getInstance()
-                            .getNumberUsersInterestedIn(selected.get(i), year)));
-                    total += data.get(i).getAmount();
-                }
-                data.add(new TableData("Both", SportData2.getInstance()
-                        .getNumberUsersInterestedIn(selected, year)));
-
-            } else {
-                final long startTime = SportData2.getInstance().getStartDate().getTime();
-                final long endTime = SportData2.getInstance().getEndDate().getTime();
-
-                for(int i=0; i<selected.size(); i++){
-                    data.add(new TableData(selected.get(i), SportData2.getInstance()
-                        .getNumberUsersInterestedIn(selected.get(i), startTime, endTime)));
-                    total += data.get(i).getAmount();
-                }
-
-                data.add(new TableData("Both", SportData2.getInstance()
-                        .getNumberUsersInterestedIn(selected, startTime, endTime)));
-            }
-            total -= data.get(data.size()-1).getAmount();
-
-            for(int i=0; i<data.size(); i++){
-                if(total<1){
-                    data.get(i).setPercentage(100);
-                } else {
-                    int j = data.get(i).getAmount()*100/total;
-                    data.get(i).setPercentage(j);
-                }
-            }
-
-            final Label label = new Label("Amount of people talking");
-            label.setFont(new Font("Arial", 20));
-
-            table.setEditable(false);
-
-            TableColumn sports = new TableColumn("Sport");
-            sports.setMinWidth(200);
-            sports.setCellValueFactory(
-                new PropertyValueFactory<>("sport"));
-
-            TableColumn totalAmount = new TableColumn("Total amount");
-            totalAmount.setMinWidth(100);
-            totalAmount.setCellValueFactory(
-                new PropertyValueFactory<>("amount"));
-
-            TableColumn percentage = new TableColumn("Percentage");
-            percentage.setMinWidth(100);
-            percentage.setCellValueFactory(
-                new PropertyValueFactory<>("percentage"));
-
-            table.setItems(data);
-            table.getColumns().addAll(sports, totalAmount, percentage);
+            panel.setVisible(false);
             
-            final VBox vbox = new VBox();
-            vbox.setSpacing(5);
-            vbox.setPadding(new Insets(10, 0, 0, 10));
-            vbox.getChildren().addAll(label, table);
+        } else {
+            Runnable runner = () -> {
+                data.clear();
 
-            ((Group) scene.getRoot()).getChildren().addAll(vbox);
+                int total = 0;
+                final List<String> selected = SportData2.getInstance().getSelected();
 
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        
+                if (SportData2.getInstance().getYearSelected()) {
+
+                    final int year = SportData2.getInstance().getYear();
+
+                    for (int i = 0; i < selected.size(); i++) {
+                        data.add(new TableData(selected.get(i), SportData2.getInstance()
+                                .getNumberUsersInterestedIn(selected.get(i), year)));
+                        total += data.get(i).getAmount();
+                    }
+                    data.add(new TableData("number of users tweeting about all", SportData2.getInstance()
+                            .getNumberUsersInterestedIn(selected, year)));
+
+                } else {
+                    final long startTime = SportData2.getInstance().getStartDate().getTime();
+                    final long endTime = SportData2.getInstance().getEndDate().getTime();
+
+                    for (int i = 0; i < selected.size(); i++) {
+                        data.add(new TableData(selected.get(i), SportData2.getInstance()
+                                .getNumberUsersInterestedIn(selected.get(i), startTime, endTime)));
+                        total += data.get(i).getAmount();
+                    }
+
+                    data.add(new TableData("number of users tweeting about all", SportData2.getInstance()
+                            .getNumberUsersInterestedIn(selected, startTime, endTime)));
+                }
+                total -= data.get(data.size() - 1).getAmount();
+
+                data.add(new TableData("number of users tweeting", total, 100.0));
+
+                for (int i = 0; i < data.size() - 1; i++) {
+                    if (total < 1) {
+                        data.get(i).setPercentage(100.0);
+                    } else {
+                        int j = data.get(i).getAmount() * 100000 / total;
+                        j += 5;
+                        j = j / 10;
+                        double k = j / 100.0;
+                        data.get(i).setPercentage(k);
+                    }
+                }
+
+                final Label label = new Label("Number of users tweeting");
+                label.setFont(new Font("Arial", 20));
+
+                table.setEditable(false);
+
+                TableColumn sports = new TableColumn("Sport");
+                sports.setMinWidth(200);
+                sports.setCellValueFactory(
+                        new PropertyValueFactory<>("sport"));
+
+                TableColumn totalAmount = new TableColumn("Total amount");
+                totalAmount.setMinWidth(100);
+                totalAmount.setCellValueFactory(
+                        new PropertyValueFactory<>("amount"));
+
+                TableColumn percentage = new TableColumn("Percentage");
+                percentage.setMinWidth(100);
+                percentage.setCellValueFactory(new PropertyValueFactory<>("percentage"));
+
+                table.setItems(data);
+                table.getColumns().addAll(sports, totalAmount, percentage);
+
+                final VBox vbox = new VBox();
+                vbox.setSpacing(5);
+                vbox.setPadding(new Insets(10, 0, 0, 10));
+                vbox.getChildren().addAll(label, table);
+
+                Platform.runLater(() -> {
+                    final Scene scene = new Scene(vbox);
+                    panel.setScene(scene);
+                });
+            };
+            Thread t = new Thread(runner);
+            t.start();
         }
         return null;
     }
@@ -392,7 +391,7 @@ public class FXPanel extends JFXPanel {
         });
     }
 
-    private XYChart.Series<String, Number> getSerie(String event, boolean pop_user) {
+    /*private XYChart.Series<String, Number> getSerie(String event, boolean pop_user) {
         //Getting the selected information from the GUI
         final Date startdate = SportData2.getInstance().getStartDate();
         final Date enddate = SportData2.getInstance().getEndDate();
@@ -429,6 +428,81 @@ public class FXPanel extends JFXPanel {
                             event, startdate.getTime(), enddate.getTime());
                 serie.setName(event);
             }
+        }
+        
+        serie.getData().add(new XYChart.Data("", pop));
+        
+        return serie;
+    }
+    */
+    
+    private XYChart.Series<String, Number> getSerie(String event, boolean pop_user) {
+        //Getting the selected information from the GUI
+        final Date startdate = SportData2.getInstance().getStartDate();
+        final Date enddate = SportData2.getInstance().getEndDate();
+        
+        //Creating variables required
+        final XYChart.Series<String, Number> serie = new XYChart.Series();
+        
+        final String sep = ";&;";
+        int pop = 0;
+        
+        if (pop_user) {
+            
+            if (event.contains(sep)) {
+                
+                String[] teams = event.split(sep);
+                if (SportData2.getInstance().getYearSelected()) {
+                    final int year = SportData2.getInstance().getYear();
+                    pop += SportData2.getInstance().getPopularity(teams[0], year);
+                    pop += SportData2.getInstance().getPopularity(teams[1], year);
+                } else {
+                    pop += SportData2.getInstance().getPopularity(
+                                teams[0], startdate.getTime(), enddate.getTime());
+                    pop += SportData2.getInstance().getPopularity(
+                                teams[1], startdate.getTime(), enddate.getTime());
+                }
+                serie.setName(teams[0] + " - " + teams[1]);
+                
+            } else { 
+                if (SportData2.getInstance().getYearSelected()) {
+                    final int year = SportData2.getInstance().getYear();
+                    pop = SportData2.getInstance().getPopularity(event, year);
+                } else {
+                    pop = SportData2.getInstance().getPopularity(
+                                event, startdate.getTime(), enddate.getTime());
+                }
+                serie.setName(event);
+            }
+            
+        } else {
+            
+            if (event.contains(sep)) {
+                
+                String[] teams = event.split(sep);
+                if (SportData2.getInstance().getYearSelected()) {
+                    final int year = SportData2.getInstance().getYear();
+                    pop += SportData2.getInstance().getNumberUsers(teams[0], year);
+                    pop += SportData2.getInstance().getNumberUsers(teams[1], year);
+                } else {
+                    pop += SportData2.getInstance().getNumberUsers(
+                                teams[0], startdate.getTime(), enddate.getTime());
+                    pop += SportData2.getInstance().getNumberUsers(
+                                teams[1], startdate.getTime(), enddate.getTime());
+                }
+                serie.setName(teams[0] + " - " + teams[1]);
+                
+            } else { 
+                if (SportData2.getInstance().getYearSelected()) {
+                    final int year = SportData2.getInstance().getYear();
+                    pop = SportData2.getInstance().getNumberUsers(event, year);
+                } else {
+                    pop = SportData2.getInstance().getNumberUsers(
+                                event, startdate.getTime(), enddate.getTime());
+                }
+                serie.setName(event);
+            }
+            
         }
         
         serie.getData().add(new XYChart.Data("", pop));
@@ -486,8 +560,91 @@ public class FXPanel extends JFXPanel {
         });
     }
 
+    private void addShowHashtagsOnClick(ObservableList<XYChart.Series<String, Number>> series) {
+        series.stream().forEach(serie -> {
+            serie.getData().stream().forEach(data -> {
+                try {
+                    data.getNode().setOnMousePressed((MouseEvent mouseEvent) -> {
+                        SportData2.getInstance().setSelected(Arrays.asList(serie.getName()));
+                        drawBarChartHashtags();
+                    });
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
+            });
+        });
+    }
+    
+    private Scene drawBarChartHashtags() {
+        Runnable task = () -> {
+            final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
+
+            final CategoryAxis xAxis = new CategoryAxis();
+            final NumberAxis yAxis = new NumberAxis();
+            xAxis.setLabel("Hashtags");
+            yAxis.setLabel("Number of hashtags");
+
+            final BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis, series);
+
+            final List<String> selected = SportData2.getInstance().getSelected();
+            final List<String> copy = new ArrayList<>(selected);
+            copy.stream().forEach(keyword -> {
+                if (keyword.contains(" - ")) {
+                    selected.remove(keyword);
+                    final String[] splits = keyword.split(" - ");
+                    selected.add(splits[0]);
+                    selected.add(splits[1]);
+                }
+            });
+
+            final Map<String, Double> pop;
+
+            if (SportData2.getInstance().getYearSelected()) {
+                final int year = SportData2.getInstance().getYear();
+                pop = SportData2.getInstance().getMostCommonHashtags(selected, year);
+            } else {
+                final long starttime = SportData2.getInstance().getStartDate().getTime();
+                final long endtime = SportData2.getInstance().getEndDate().getTime();
+                pop = SportData2.getInstance().getMostCommonHashtags(selected, starttime, endtime);
+            }
+
+            final List<Double> values = new ArrayList<>(pop.values());
+            Collections.sort(values, Collections.reverseOrder());
+            double min = 1.0;
+            if (values.size() >= 10) {
+                min = values.get(9);
+            } else if (!values.isEmpty()) {
+                min = values.get(values.size() - 1);
+            }
+            final double atleast = min;
+
+            pop.entrySet().stream()
+                    .filter(entry -> entry.getValue() >= atleast)
+                    .forEach(hashtag -> {
+                        final XYChart.Series<String, Number> serie = new XYChart.Series();
+                        serie.getData().add(new XYChart.Data("", hashtag.getValue()));
+                        serie.setName(hashtag.getKey());
+                        series.add(serie);
+                    });
+
+            Scene scene = new Scene(barChart, 800, 600);
+            Platform.runLater(() -> {
+                final Stage primaryStage = new Stage();
+                primaryStage.setTitle("Hashtags");
+                primaryStage.setScene(scene);
+                primaryStage.show();
+
+            });
+
+        };
+
+        Thread t = new Thread(task);
+        t.start();
+        return null;
+    }
+
     private void makePieChart(String sport, Date date, Number yValue) {
-         if(yValue.intValue()==0){
+        if (yValue.intValue() == 0) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
@@ -497,7 +654,7 @@ public class FXPanel extends JFXPanel {
         } else {
             final Stage primaryStage = new Stage();
             primaryStage.setTitle("Popularity for " + sport + ", " + date);
-            
+
             //setting a scene
             Scene scene0 = null;
             try {
@@ -508,29 +665,29 @@ public class FXPanel extends JFXPanel {
             primaryStage.setScene(scene0);
             primaryStage.show();
 
-             Runnable task = () -> {
-                 final List<PieChart.Data> list = new ArrayList<>();
+            Runnable task = () -> {
+                final List<PieChart.Data> list = new ArrayList<>();
 
-                 final long[] stamps = SportData2.getInstance().getLineToPieTimestamps(date);
+                final long[] stamps = SportData2.getInstance().getLineToPieTimestamps(date);
 
-                 final Map<String, Double> sportPop = SportData2.getInstance()
-                         .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
+                final Map<String, Double> sportPop = SportData2.getInstance()
+                        .getPopularityKeywordsAsPercentage(sport, stamps[0], stamps[1]);
 
-                 for (Map.Entry<String, Double> entry : sportPop.entrySet()) {
-                     list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
-                 }
-                 PieChart pie = new PieChart(FXCollections.observableArrayList(list));
-                 pie.setTitle("Popularity for " + sport + ", " + date);
+                for (Map.Entry<String, Double> entry : sportPop.entrySet()) {
+                    list.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+                }
+                PieChart pie = new PieChart(FXCollections.observableArrayList(list));
+                pie.setTitle("Popularity for " + sport + ", " + date);
 
-                 Platform.runLater(() -> {
-                     Scene scene1 = new Scene(pie, 800, 600);
-                     primaryStage.setScene(scene1);
-                     primaryStage.show();
-                 });
+                Platform.runLater(() -> {
+                    Scene scene1 = new Scene(pie, 800, 600);
+                    primaryStage.setScene(scene1);
+                    primaryStage.show();
+                });
 
-             };
-             Thread t = new Thread(task);
-             t.start();
+            };
+            Thread t = new Thread(task);
+            t.start();
         }
     }
 
@@ -538,7 +695,7 @@ public class FXPanel extends JFXPanel {
 
         private final StringProperty sport;
         private final IntegerProperty amount;
-        private final IntegerProperty percentage;
+        private final DoubleProperty percentage;
 
         /**
          * Default constructor.
@@ -547,16 +704,17 @@ public class FXPanel extends JFXPanel {
             this(null, null);
         }
 
-        /**
-         * Constructor with some initial data.
-         * 
-         * @param firstName
-         * @param lastName
-         */
         public TableData(String sport, Integer amount) {
             this.sport = new SimpleStringProperty(sport);
             this.amount = new SimpleIntegerProperty(amount);
-            this.percentage = new SimpleIntegerProperty(100);
+            this.percentage = new SimpleDoubleProperty(100);
+            System.out.println(sport + amount);
+        }
+
+        public TableData(String sport, Integer amount, Double percentage) {
+            this.sport = new SimpleStringProperty(sport);
+            this.amount = new SimpleIntegerProperty(amount);
+            this.percentage = new SimpleDoubleProperty(percentage);
             System.out.println(sport + amount);
         }
 
@@ -583,17 +741,18 @@ public class FXPanel extends JFXPanel {
         public IntegerProperty amountProperty() {
             return amount;
         }
-        
-        public Integer getPercentage() {
+
+        public Double getPercentage() {
             return percentage.get();
         }
-        
-        public void setPercentage(Integer percent) {
+
+        public void setPercentage(Double percent) {
             this.percentage.set(percent);
         }
-        
-        public IntegerProperty percentageProperty() {
+
+        public DoubleProperty percentageProperty() {
             return percentage;
         }
     }
+
 }
