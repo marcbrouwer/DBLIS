@@ -52,9 +52,6 @@ public class Marc {
     
     public static Scene drawBarChartHashtags() {
         Runnable task = () -> {
-            final Stage primaryStage = new Stage();
-            primaryStage.setTitle("Hashtags");
-
             final ObservableList<XYChart.Series<String, Number>> series = FXCollections.observableArrayList();
 
             final CategoryAxis xAxis = new CategoryAxis();
@@ -107,6 +104,8 @@ public class Marc {
 
             Scene scene = new Scene(barChart, 800, 600);
             Platform.runLater(() -> {
+                final Stage primaryStage = new Stage();
+                primaryStage.setTitle("Hashtags");
                 primaryStage.setScene(scene);
                 primaryStage.show();
 

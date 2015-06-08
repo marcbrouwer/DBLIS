@@ -1,6 +1,5 @@
 package gui;
 
-import dblis.GraphInfo;
 import dblis.SportData2;
 import java.awt.Component;
 import java.awt.Container;
