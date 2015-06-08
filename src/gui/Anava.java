@@ -2,7 +2,9 @@ package gui;
 
 import dblis.SportData2;
 import java.util.List;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -63,7 +65,7 @@ public class Anava {
                             .getNumberUsersInterestedIn(sport, year));
                     total += numberUsers.get(sport);*/
                 }
-                data.add(new TableData("Both", SportData2.getInstance()
+                data.add(new TableData("number of users tweeting about all", SportData2.getInstance()
                         .getNumberUsersInterestedIn(selected, year)));
                 /*numberUsers.put("Both", SportData2.getInstance()
                         .getNumberUsersInterestedIn(selected, year)); */
@@ -83,14 +85,18 @@ public class Anava {
             }
             total -= data.get(data.size()-1).getAmount();
 
-            data.add(new TableData("Total persons", total, 100));
+            data.add(new TableData("number of users tweeting", total, 100.0));
 
-            for(int i=0; i<data.size(); i++){
+            for(int i=0; i<data.size()-1; i++){
                 if(total<1){
-                    data.get(i).setPercentage(100);
+                    data.get(i).setPercentage(100.0);
                 } else {
-                    int j = data.get(i).getAmount()*100/total;
-                    data.get(i).setPercentage(j);
+                    int j = data.get(i).getAmount()*10000/total;
+                    j += 5;
+                    System.out.println(j + " j");
+                    double k = j/100.0;
+                    System.out.println(k + " k");
+                    data.get(i).setPercentage(k);
                 }
             }
 
@@ -138,7 +144,7 @@ public class Anava {
 
         private final StringProperty sport;
         private final IntegerProperty amount;
-        private final IntegerProperty percentage;
+        private final DoubleProperty percentage;
 
         /**
          * Default constructor.
@@ -156,14 +162,14 @@ public class Anava {
         public TableData(String sport, Integer amount) {
             this.sport = new SimpleStringProperty(sport);
             this.amount = new SimpleIntegerProperty(amount);
-            this.percentage = new SimpleIntegerProperty(100);
+            this.percentage = new SimpleDoubleProperty(100);
             System.out.println(sport + amount);
         }
         
-        public TableData(String sport, Integer amount, Integer percentage) {
+        public TableData(String sport, Integer amount, Double percentage) {
             this.sport = new SimpleStringProperty(sport);
             this.amount = new SimpleIntegerProperty(amount);
-            this.percentage = new SimpleIntegerProperty(percentage);
+            this.percentage = new SimpleDoubleProperty(percentage);
             System.out.println(sport + amount);
         }
 
@@ -191,15 +197,15 @@ public class Anava {
             return amount;
         }
         
-        public Integer getPercentage() {
+        public Double getPercentage() {
             return percentage.get();
         }
         
-        public void setPercentage(Integer percent) {
+        public void setPercentage(Double percent) {
             this.percentage.set(percent);
         }
         
-        public IntegerProperty percentageProperty() {
+        public DoubleProperty percentageProperty() {
             return percentage;
         }
     }
