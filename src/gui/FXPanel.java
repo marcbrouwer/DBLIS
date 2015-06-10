@@ -293,7 +293,7 @@ public class FXPanel extends JFXPanel {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText("The number of sports selected is less then 2");
+            alert.setContentText("The number of sports selected is less than 2");
 
             alert.showAndWait();
             panel.setVisible(false);
@@ -338,11 +338,9 @@ public class FXPanel extends JFXPanel {
                     if (total < 1) {
                         data.get(i).setPercentage(100.0);
                     } else {
-                        int j = data.get(i).getAmount() * 100000 / total;
-                        j += 5;
-                        j = j / 10;
-                        double k = j / 100.0;
-                        data.get(i).setPercentage(k);
+                        data.get(i).setPercentage(
+                                (double) Math.round(data.get(i).getAmount() 
+                                        * 100f / (double) total));
                     }
                 }
 
@@ -406,51 +404,6 @@ public class FXPanel extends JFXPanel {
         });
     }
 
-    /*private XYChart.Series<String, Number> getSerie(String event, boolean pop_user) {
-        //Getting the selected information from the GUI
-        final Date startdate = SportData2.getInstance().getStartDate();
-        final Date enddate = SportData2.getInstance().getEndDate();
-        
-        //Creating variables required
-        final XYChart.Series<String, Number> serie = new XYChart.Series();
-        
-        final String sep = ";&;";
-        int pop = 0;
-        
-        if (pop_user) {
-            if (event.contains(sep)) {
-                String[] teams = event.split(sep);
-                pop += SportData2.getInstance().getPopularity(
-                            teams[0], startdate.getTime(), enddate.getTime());
-                pop += SportData2.getInstance().getPopularity(
-                            teams[1], startdate.getTime(), enddate.getTime());
-                serie.setName(teams[0] + " - " + teams[1]);
-            } else { 
-                pop = SportData2.getInstance().getPopularity(
-                            event, startdate.getTime(), enddate.getTime());
-                serie.setName(event);
-            }
-        } else {
-            if (event.contains(sep)) {
-                String[] teams = event.split(sep);
-                pop += SportData2.getInstance().getNumberUsers(
-                            teams[0], startdate.getTime(), enddate.getTime());
-                pop += SportData2.getInstance().getNumberUsers(
-                            teams[1], startdate.getTime(), enddate.getTime());
-                serie.setName(teams[0] + " - " + teams[1]);
-            } else { 
-                pop = SportData2.getInstance().getNumberUsers(
-                            event, startdate.getTime(), enddate.getTime());
-                serie.setName(event);
-            }
-        }
-        
-        serie.getData().add(new XYChart.Data("", pop));
-        
-        return serie;
-    }
-    */
-    
     private XYChart.Series<String, Number> getSerie(String event, boolean pop_user) {
         //Getting the selected information from the GUI
         final Date startdate = SportData2.getInstance().getStartDate();
@@ -723,14 +676,14 @@ public class FXPanel extends JFXPanel {
             this.sport = new SimpleStringProperty(sport);
             this.amount = new SimpleIntegerProperty(amount);
             this.percentage = new SimpleDoubleProperty(100);
-            System.out.println(sport + amount);
+            //System.out.println(sport + amount);
         }
 
         public TableData(String sport, Integer amount, Double percentage) {
             this.sport = new SimpleStringProperty(sport);
             this.amount = new SimpleIntegerProperty(amount);
             this.percentage = new SimpleDoubleProperty(percentage);
-            System.out.println(sport + amount);
+            //System.out.println(sport + amount);
         }
 
         public String getSport() {

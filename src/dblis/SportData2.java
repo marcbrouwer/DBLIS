@@ -881,6 +881,7 @@ public class SportData2 {
         set.addAll(clusterYears("rolandgarros"));
         set.add("roland");
         set.add("garros");
+        set.add("rollandgarros");
         cluster.put("rolandgarros", set);
         
         set = new HashSet();
@@ -888,6 +889,20 @@ public class SportData2 {
         set.add("giroditalia");
         set.add("girod'italia");
         cluster.put("giro", set);
+        
+        set = new HashSet();
+        set.add("bradleywiggins");
+        set.add("wiggo");
+        cluster.put("wiggins", set);
+        
+        set = new HashSet();
+        set.add("alberto");
+        cluster.put("contador", set);
+        
+        set = new HashSet();
+        set.add("lance");
+        set.add("armstrong");
+        cluster.put("lancearmstrong", set);
         
         // Values to cluster
         final Set<String> clusterValues = new HashSet();
