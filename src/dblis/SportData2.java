@@ -904,6 +904,40 @@ public class SportData2 {
         set.add("armstrong");
         cluster.put("lancearmstrong", set);
         
+        set = new HashSet();
+        set.add("menu");
+        set.add("mufc");
+        cluster.put("manutd", set);
+        
+        set = new HashSet();
+        set.add("memphis");
+        cluster.put("depay", set);
+        
+        set = new HashSet();
+        set.add("roda");
+        cluster.put("rodaja", set);
+        
+        set = new HashSet();
+        set.add("barca");
+        set.add("barça");
+        cluster.put("fcbarcalona", set);
+        
+        set = new HashSet();
+        set.add("ucl");
+        set.add("uefachampionsleague");
+        set.add("champions league");
+        cluster.put("championsleague", set);
+        
+        set = new HashSet();
+        set.add("goahead");
+        cluster.put("goaheadeagles", set);
+        
+        set = new HashSet();
+        set.add("ireenwust");
+        set.add("wust");
+        set.add("wüst");
+        cluster.put("ireenwüst", set);
+        
         // Values to cluster
         final Set<String> clusterValues = new HashSet();
         cluster.values().stream().forEach(values -> clusterValues.addAll(values));
