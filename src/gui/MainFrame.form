@@ -688,6 +688,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteOneBtnActionPerformed"/>
               </Events>
             </Component>
+            <Component class="javax.swing.JButton" name="addAllCandidateBtn">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Add all"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addAllCandidateBtnActionPerformed"/>
+              </Events>
+            </Component>
             <Component class="javax.swing.JButton" name="clearCandidateBtn">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Clear all"/>

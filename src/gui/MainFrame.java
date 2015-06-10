@@ -4,8 +4,11 @@ import dblis.SportData2;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 
@@ -131,6 +134,7 @@ public class MainFrame extends CenterFrame {
         candidatesControlPanel = new javax.swing.JPanel();
         addEventBtn = new javax.swing.JButton();
         deleteOneBtn = new javax.swing.JButton();
+        addAllCandidateBtn = new javax.swing.JButton();
         clearCandidateBtn = new javax.swing.JButton();
 
         sportsDialog.setTitle("Select the sports to show");
@@ -481,6 +485,14 @@ public class MainFrame extends CenterFrame {
         });
         candidatesControlPanel.add(deleteOneBtn);
 
+        addAllCandidateBtn.setText("Add all");
+        addAllCandidateBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addAllCandidateBtnActionPerformed(evt);
+            }
+        });
+        candidatesControlPanel.add(addAllCandidateBtn);
+
         clearCandidateBtn.setText("Clear all");
         clearCandidateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -702,6 +714,20 @@ public class MainFrame extends CenterFrame {
         pf.setVisible(true);
         pf.toFront();        
     }//GEN-LAST:event_showUserInterestsBtnActionPerformed
+
+    private void addAllCandidateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAllCandidateBtnActionPerformed
+        String[] all = Arrays.copyOf(eventListModel.toArray(), eventListModel.getSize(), String[].class);
+        //String[] all = (String[]) eventListModel.toArray();
+        String[] candidates = Arrays.copyOf(candidateListModel.toArray(), candidateListModel.getSize(), String[].class);
+        //String[] candidates = (String[]) candidateListModel.toArray();
+        Set<String> allSet = new HashSet<>(Arrays.asList(all));
+        Set<String> candidatesSet = new HashSet<>(Arrays.asList(candidates));
+        allSet.removeAll(candidatesSet);
+        for(String s : allSet){
+            candidateListModel.addElement(s);
+        }
+        
+    }//GEN-LAST:event_addAllCandidateBtnActionPerformed
     
     private List<String> getCandidates(){
         List<String> candidates = new ArrayList<>();
@@ -810,6 +836,7 @@ public class MainFrame extends CenterFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel OkPanel;
+    private javax.swing.JButton addAllCandidateBtn;
     private javax.swing.JButton addEventBtn;
     private javax.swing.JButton addTeamBtn;
     private javax.swing.JList candidateList;
