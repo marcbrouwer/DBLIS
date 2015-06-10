@@ -158,33 +158,7 @@ public class SportData2 {
     }
     
     public final Map<String, Double> getMostCommonHashtags(List<String> keywords) {
-        final Map<String, Double> hashtags = new HashMap();
-        
-        getRelatedTweets(keywords).forEach(te -> {
-            te.getHashtags().stream().forEach(hashtag -> {
-                if (!hashtags.containsKey(trimHashtag(hashtag))) {
-                    hashtags.put(trimHashtag(hashtag), 0.0);
-                }
-                hashtags.put(trimHashtag(hashtag), 
-                        hashtags.get(trimHashtag(hashtag)) + 1);
-            });
-        });
-        
-        keywords.stream().forEach(keyword -> hashtags.remove(keyword));
-        
-        Set<String> remove = new HashSet();
-        hashtags.keySet().stream().forEach(hashtag -> {
-            for (String excl : getHashtagsToExclude()) {
-                if (hashtag.contains(excl)) {
-                    remove.add(hashtag);
-                    break;
-                }
-            }
-        });
-        
-        remove.stream().forEach(rm -> hashtags.remove(rm));
-        
-        return hashtags;
+        return getMostCommonHashtags(keywords, 0, Long.MAX_VALUE);
     }
     
     public final Map<String, Double> getMostCommonHashtags(List<String> keywords,
@@ -215,7 +189,7 @@ public class SportData2 {
         
         remove.stream().forEach(rm -> hashtags.remove(rm));
         
-        return hashtags;
+        return clusterHashtags(hashtags);
     }
     
     public final Map<String, Double> getMostCommonHashtags(List<String> keywords,
@@ -896,7 +870,62 @@ public class SportData2 {
     }
     
     private List<String> getHashtagsToExclude() {
-        return Arrays.asList("nieuws", "news", "sport");
+        return Arrays.asList("nieuws", "news", "sport", "actueel", "*****");
+    }
+    
+    private Map<String, Double> clusterHashtags(Map<String, Double> hashtags) {
+        final Map<String, Set<String>> cluster = new HashMap();
+        Set<String> set = new HashSet();
+        
+        set.addAll(clusterYears("rg"));
+        set.addAll(clusterYears("rolandgarros"));
+        set.add("roland");
+        set.add("garros");
+        cluster.put("rolandgarros", set);
+        
+        set = new HashSet();
+        set.addAll(clusterYears("giro"));
+        set.add("giroditalia");
+        set.add("girod'italia");
+        cluster.put("giro", set);
+        
+        // Values to cluster
+        final Set<String> clusterValues = new HashSet();
+        cluster.values().stream().forEach(values -> clusterValues.addAll(values));
+        
+        // Combine hashtags
+        hashtags.entrySet().stream().forEach(hashtag -> {
+            if (clusterValues.contains(hashtag.getKey())) {
+                for (Entry<String, Set<String>> entry : cluster.entrySet()) {
+                    if (entry.getValue().contains(hashtag.getKey())) {
+                        if (hashtags.containsKey(entry.getKey())) {
+                            hashtags.put(entry.getKey(), 
+                                    hashtags.get(entry.getKey()) 
+                                            + hashtag.getValue());
+                            hashtags.put(hashtag.getKey(), 0.0);
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+        
+        // Remove hastags with value 0
+        final Set<String> remove = hashtags.entrySet().stream()
+                .filter(entry -> entry.getValue() == 0)
+                .map(Entry::getKey).collect(Collectors.toCollection(HashSet::new));
+        remove.stream().forEach(tag -> hashtags.remove(tag));
+        
+        return hashtags;
+    }
+    
+    private Set<String> clusterYears(String tag) {
+        final Set<String> set = new HashSet();
+        for (int i = 14; i <= (new Date()).getYear() + 1901 - 2000; i++) {
+            set.add(tag + i);
+            set.add(tag + (2000 + i));
+        }
+        return set;
     }
     
     // Searching

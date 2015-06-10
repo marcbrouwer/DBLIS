@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
+import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -20,6 +21,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
@@ -38,7 +40,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -52,7 +57,7 @@ import javafx.stage.Stage;
 public class FXPanel extends JFXPanel {
 
     private static final Dimension POPSIZE = new Dimension(780, 578);
-    private final TableView table = new TableView();
+    private final CustomTableView table = new CustomTableView();
     private final ObservableList<TableData> data = FXCollections.observableArrayList();
     
     public FXPanel() {}
@@ -270,7 +275,7 @@ public class FXPanel extends JFXPanel {
             pie.setPrefSize(POPSIZE.width, POPSIZE.height);
 
             list.stream().forEach(data -> {
-                setDrilldownData(pie, data, data.getName());
+                setDrilldownData(panel, scene, pie, data, data.getName());
             });
 
             root.getChildren().add(pie);
@@ -294,7 +299,7 @@ public class FXPanel extends JFXPanel {
             panel.setVisible(false);
             
         } else {
-            Runnable runner = () -> {
+            final Runnable runner = () -> {
                 data.clear();
 
                 int total = 0;
@@ -344,50 +349,60 @@ public class FXPanel extends JFXPanel {
                 final Label label = new Label("Number of users tweeting");
                 label.setFont(new Font("Arial", 20));
 
-                table.setEditable(false);
+                table.table.setEditable(false);
 
-                TableColumn sports = new TableColumn("Sport");
-                sports.setMinWidth(200);
-                sports.setCellValueFactory(
-                        new PropertyValueFactory<>("sport"));
+                CustomTableColumn sports = new CustomTableColumn("Sport");
+                //sports.setMinWidth(200);
+                sports.setPercentWidth(50);
+                sports.setCellValueFactory(new PropertyValueFactory<>("sport"));
 
-                TableColumn totalAmount = new TableColumn("Total amount");
-                totalAmount.setMinWidth(100);
-                totalAmount.setCellValueFactory(
-                        new PropertyValueFactory<>("amount"));
+                CustomTableColumn totalAmount = new CustomTableColumn("Total amount");
+                //totalAmount.setMinWidth(100);
+                totalAmount.setPercentWidth(25);
+                totalAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
-                TableColumn percentage = new TableColumn("Percentage");
-                percentage.setMinWidth(100);
+                CustomTableColumn percentage = new CustomTableColumn("Percentage");
+                //percentage.setMinWidth(100);
+                percentage.setPercentWidth(25);
                 percentage.setCellValueFactory(new PropertyValueFactory<>("percentage"));
 
-                table.setItems(data);
-                table.getColumns().addAll(sports, totalAmount, percentage);
-
+                table.table.setItems(data);
+                table.table.getColumns().addAll(sports, totalAmount, percentage);
+                table.table.setPrefHeight(600);
+                
                 final VBox vbox = new VBox();
+                vbox.setPrefHeight(600);
                 vbox.setSpacing(5);
                 vbox.setPadding(new Insets(10, 0, 0, 10));
                 vbox.getChildren().addAll(label, table);
 
                 Platform.runLater(() -> {
-                    final Scene scene = new Scene(vbox);
+                    final Scene scene = new Scene(vbox, 800, 600);
                     panel.setScene(scene);
                 });
             };
-            Thread t = new Thread(runner);
+            final Thread t = new Thread(runner);
             t.start();
         }
         return null;
     }
     
-    private void setDrilldownData(final PieChart pie, PieChart.Data data, final String sport) {
+    private void setDrilldownData(FXPanel panel, Scene scene, 
+            final PieChart pie, PieChart.Data data, final String sport) {
         data.getNode().setOnMouseClicked((MouseEvent t) -> {
-            final List<PieChart.Data> list = new ArrayList<>();
-            final Map<String, Double> cPop
-                    = SportData2.getInstance().getPopularityKeywordsAsPercentage(sport);
-            cPop.entrySet().stream().forEach(keyword -> {
-                list.add(new PieChart.Data(keyword.getKey(), keyword.getValue()));
-            });
-            pie.setData(FXCollections.observableArrayList(list));
+            panel.setScene(getLoadingScene());
+            final Runnable runnerd = () -> {
+                final List<PieChart.Data> list = new ArrayList<>();
+                final Map<String, Double> cPop
+                        = SportData2.getInstance().getPopularityKeywordsAsPercentage(sport);
+                cPop.entrySet().stream().forEach(keyword -> {
+                    list.add(new PieChart.Data(keyword.getKey(), keyword.getValue()));
+                });
+                pie.setData(FXCollections.observableArrayList(list));
+                panel.setScene(scene);
+            };
+            final Thread td = new Thread(runnerd);
+            td.start();
         });
     }
 
@@ -691,7 +706,7 @@ public class FXPanel extends JFXPanel {
         }
     }
 
-    private class TableData {
+    public class TableData {
 
         private final StringProperty sport;
         private final IntegerProperty amount;
@@ -755,4 +770,115 @@ public class FXPanel extends JFXPanel {
         }
     }
 
+    /**
+     * CustomTableView to hold the table and grid.
+     */
+    public class CustomTableView<s> extends StackPane {
+
+        private TableView<s> table;
+
+        @SuppressWarnings("rawtypes")
+        public CustomTableView() {
+            this.table = new TableView<s>();
+            final GridPane grid = new GridPane();
+            this.table.getColumns().addListener(new ListChangeListener<TableColumn>() {
+
+                public void onChanged(javafx.collections.ListChangeListener.Change arg0) {
+                    grid.getColumnConstraints().clear();
+                    ColumnConstraints[] arr1 = new ColumnConstraints[CustomTableView.this.table.getColumns().size()];
+                    StackPane[] arr2 = new StackPane[CustomTableView.this.table.getColumns().size()];
+                    int i = 0;
+                    for (TableColumn column : CustomTableView.this.table.getColumns()) {
+                        CustomTableColumn col = (CustomTableColumn) column;
+                        ColumnConstraints consta = new ColumnConstraints();
+                        consta.setPercentWidth(col.getPercentWidth());
+                        StackPane sp = new StackPane();
+                        if (i == 0) { // Quick fix for not showing the horizantal scroll bar. 
+                            NumberBinding diff = sp.widthProperty().subtract(3.75);
+                            column.prefWidthProperty().bind(diff);
+                        } else {
+                            column.prefWidthProperty().bind(sp.widthProperty());
+                        }
+                        arr1[i] = consta;
+                        arr2[i] = sp;
+                        i++;
+                    }
+                    grid.getColumnConstraints().addAll(arr1);
+                    grid.addRow(0, arr2);
+                }
+            }
+            );
+            getChildren()
+                    .addAll(grid, table);
+        }
+
+        public TableView<s> getTableView() {
+            return this.table;
+
+        }
+    }
+
+    /**
+     * CustomTableColumn to hold the custom percentWidth property.
+     */
+    public class CustomTableColumn<s> extends TableColumn {
+
+        private SimpleDoubleProperty percentWidth = new SimpleDoubleProperty();
+
+        public CustomTableColumn(String columnName) {
+            super(columnName);
+        }
+
+        public SimpleDoubleProperty percentWidth() {
+            return percentWidth;
+        }
+
+        public double getPercentWidth() {
+            return percentWidth.get();
+        }
+
+        public void setPercentWidth(double percentWidth) {
+            this.percentWidth.set(percentWidth);
+        }
+    }
+
+    /**
+     * * Domain Object.
+     */
+    public class MyDomain {
+
+        private SimpleStringProperty name = new SimpleStringProperty();
+        private SimpleStringProperty description = new SimpleStringProperty();
+        private SimpleStringProperty color = new SimpleStringProperty();
+
+        public MyDomain(String name, String desc, String color) {
+            this.name.set(name);
+            this.description.set(desc);
+            this.color.set(color);
+        }
+
+        public String getDescription() {
+            return description.get();
+        }
+
+        public SimpleStringProperty descriptionProperty() {
+            return description;
+        }
+
+        public String getName() {
+            return name.get();
+        }
+
+        public SimpleStringProperty nameProperty() {
+            return name;
+        }
+
+        public String getColor() {
+            return color.get();
+        }
+
+        public SimpleStringProperty colorProperty() {
+            return color;
+        }
+    }
 }
