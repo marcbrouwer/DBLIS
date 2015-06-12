@@ -31,6 +31,9 @@ public class BootFrame extends CenterFrame {
             int progress = 0;
             while (progress < 100) {
                 try {
+                    if (Abort.getInstance().abort()) {
+                        return;
+                    }
                     Thread.sleep(2000);
                     progress = SportData2.getInstance().getInitProgress();
                     jProgressBar1.setValue(progress);
@@ -39,6 +42,7 @@ public class BootFrame extends CenterFrame {
                 }
             }
             jButton2.setEnabled(true);
+            jButton2.doClick();
         };
         final Thread t = new Thread(r1);
         t.start();
@@ -112,6 +116,7 @@ public class BootFrame extends CenterFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Abort.getInstance().setAbort(true);
         jButton2.setEnabled(false);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

@@ -738,6 +738,9 @@ public class SportData2 {
         
         while (limithigh <= numberTweets && limitlow < limithigh && tries < 3) {
             try {
+                if (Abort.getInstance().abort()) {
+                    break;
+                }
                 tweets.addAll(sa.getTweetsPartNL(limitlow, limithigh));
                 limitlow += part;
                 limithigh += part;
@@ -764,6 +767,9 @@ public class SportData2 {
             JSONArray jsonPart;
             
             while (file.exists()) {
+                if (Abort.getInstance().abort()) {
+                    break;
+                }
                 jsonString = "";
                 final BufferedReader reader = new BufferedReader(
                         new FileReader(file));
@@ -782,6 +788,9 @@ public class SportData2 {
                 
                 jsonPart = new JSONArray(jsonString);
                 for (int i = 0; i < jsonPart.length(); i++) {
+                    if (Abort.getInstance().abort()) {
+                        break;
+                    }
                     json.put(jsonPart.get(i));
                 }
                 
@@ -799,6 +808,9 @@ public class SportData2 {
         TweetEntity te;
         for (int i = 0; i < json.length(); i++) {
             try {
+                if (Abort.getInstance().abort()) {
+                    break;
+                }
                 obj = json.getJSONObject(i);
                 if (obj.getLong("retweetid") != -1) {
                     continue;

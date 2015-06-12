@@ -343,7 +343,7 @@ public class FXPanel extends JFXPanel {
                                         * 100f / (double) total));
                     }
                 }
-
+                
                 final Label label = new Label("Number of users tweeting");
                 label.setFont(new Font("Arial", 20));
 
